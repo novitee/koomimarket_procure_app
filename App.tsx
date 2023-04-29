@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -24,6 +24,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import PhonePicker from "./src/components/ui/PhonePicker"
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -55,12 +57,16 @@ function Section({children, title}: SectionProps): JSX.Element {
   );
 }
 
+const getFlagEmoji = (countryCode: string) => String.fromCodePoint(...[...countryCode.toUpperCase()].map(x=>0x1f1a5+x.charCodeAt(0)))
+
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const [countryCode, setCountryCode] = useState(65)
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -76,6 +82,14 @@ function App(): JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <Text>Country: {getFlagEmoji('sg')}</Text>
+          <View style={{paddingHorizontal: 10}}>
+            <PhonePicker 
+              code={countryCode}
+              number={343000680}
+              onChange={value => setCountryCode(value)}
+            />
+          </View>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
