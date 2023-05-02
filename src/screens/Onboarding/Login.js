@@ -28,6 +28,10 @@ export default function Login({navigation, route}) {
     setNumber(numberValue)
   }
 
+  function onNext() {
+    navigation.navigate("OTP")
+  }
+
   const isDone = !!code && !!number
 
   return (
@@ -43,7 +47,7 @@ export default function Login({navigation, route}) {
         />
       </View>
       <View style={{position: "absolute", width: "100%", paddingHorizontal: 24, bottom: 48}}>
-        <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={null} disabled={!isDone}>
+        <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
           <Text style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</Text>
         </TouchableOpacity>
       </View>

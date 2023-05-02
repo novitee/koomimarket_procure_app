@@ -26,7 +26,7 @@ const RootStackScreen = ({}) => {
   return (
     <NavigationContainer theme={themeConfig}>
       <Stack.Navigator>
-      <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
         {/* {isLogin ? (
           <Stack.Screen name="HomeStack" component={HomeStack} options={{ headerShown: false }} />
         ) : (
