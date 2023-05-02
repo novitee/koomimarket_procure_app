@@ -86,7 +86,7 @@ export default function PhonePicker({code, number, onChange}) {
           <Text style={{fontSize: 12, marginLeft: 2}}>▼</Text>
         </TouchableOpacity>
         <TextInput style={styles.input} 
-          keyboardType="number-pad" returnKeyType="done" placeholder='Enter your phone number...' 
+          keyboardType="number-pad" placeholder='Enter your phone number...' 
           value={phoneNumber || ""}
           onChangeText={onChangePhoneNumber}
         />

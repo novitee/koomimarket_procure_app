@@ -36,21 +36,26 @@ export default function Login({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{paddingHorizontal: 24}}>
-        <View style={{paddingVertical: 92}}>
-          <Text style={{fontSize: 48, fontWeight: 700}}>Login to your account</Text>
+      <KeyboardAvoidingView style={{flex: 1}} 
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS == "ios" ? 80 : 70}
+      >
+        <ScrollView style={{paddingHorizontal: 24, flex: 1}}>
+          <View style={{paddingVertical: 92}}>
+            <Text style={{fontSize: 48, fontWeight: 700}}>Login to your account</Text>
+          </View>
+          <PhonePicker 
+            code={code}
+            number={number}
+            onChange={onChange}
+          />
+        </ScrollView>
+        <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
+          <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
+            <Text style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</Text>
+          </TouchableOpacity>
         </View>
-        <PhonePicker 
-          code={code}
-          number={number}
-          onChange={onChange}
-        />
-      </View>
-      <View style={{position: "absolute", width: "100%", paddingHorizontal: 24, bottom: 48}}>
-        <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
-          <Text style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</Text>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
