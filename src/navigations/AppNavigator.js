@@ -13,8 +13,18 @@ const RootStackScreen = ({}) => {
 
   // if (isLogin == null) return null
 
+  const themeConfig = {
+    dark: false,
+    colors: {
+      background: '#fff',
+      card: '#fff',
+      text: '#000',
+      border: '#d9d9d9',
+    },
+  }
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={themeConfig}>
       <Stack.Navigator>
       <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} />
         {/* {isLogin ? (

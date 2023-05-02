@@ -12,8 +12,8 @@ export default function PhonePicker({code, number, onChange}) {
 
   const [isVisible, setIsVisible] = useState(false)
   const [search, setSearch] = useState("")
-  const [selectedCountry, setSelectedCountry] = useState(null)
-
+  const [selectedCountry, setSelectedCountry] = useState(countries[0])
+  const [phoneNumber, setPhoneNumber] = useState("")
   const [onSearchChange] = useDebounce(handleSearch, 300)
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export default function PhonePicker({code, number, onChange}) {
         setSelectedCountry(currentCountry)
       }
     }
+    if (!!phoneNumber) setPhoneNumber(number)
   }, [code, number])
 
   function handleSearch(value) {
@@ -40,10 +41,18 @@ export default function PhonePicker({code, number, onChange}) {
   function onSelect(item) {
     if (!item) return
     setSelectedCountry(item)
+    setPhoneNumber("")
     if (typeof onChange === "function") {
-      onChange(item.phone_code)
+      onChange(item.phone_code, number)
     }
     setIsVisible(false)
+  }
+
+  function onChangePhoneNumber(value) {
+    setPhoneNumber(value)
+    if (typeof onChange === "function") {
+      onChange(selectedCountry.phone_code, value)
+    }
   }
   
   function renderItem({item}) {
@@ -61,6 +70,8 @@ export default function PhonePicker({code, number, onChange}) {
     )
   }
 
+  const isError = !phoneNumber
+
   const listing = search && countries.filter(country => (
     country.name.toLowerCase().indexOf(search.toLowerCase()) > -1 ||
     country.phone_code.toString().indexOf(search.toLowerCase()) > -1
@@ -68,13 +79,17 @@ export default function PhonePicker({code, number, onChange}) {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={StyleSheet.flatten([styles.container, {borderColor: !!isError ? "#D80D1D" : "#ddd"}])}>
         <TouchableOpacity style={styles.dropdownButton} onPress={onOpen}>
           <Text style={{fontSize: 32}}>{getFlagEmoji(selectedCountry && selectedCountry.code || "sg")}</Text>
           <Text style={{fontSize: 18, fontWeight: 500}}>+{selectedCountry && selectedCountry.phone_code || 65}</Text> 
           <Text style={{fontSize: 12, marginLeft: 2}}>▼</Text>
         </TouchableOpacity>
-        <TextInput style={styles.input} keyboardType="number-pad" />
+        <TextInput style={styles.input} 
+          keyboardType="number-pad" returnKeyType="done" placeholder='Enter your phone number...' 
+          value={phoneNumber || ""}
+          onChangeText={onChangePhoneNumber}
+        />
       </View>
       <Modal
         testID={'modal'}
@@ -116,10 +131,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    borderRadius: 6,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 4
+    paddingHorizontal: 10
   },
   dropdownButton: {
     flexDirection: "row",
@@ -128,7 +142,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginLeft: 10,
-    fontSize: 18
+    fontSize: 18,
+    fontWeight: '500',
+    height: 56
   },
   searchInputWrap: {
     flexDirection: "row", 
