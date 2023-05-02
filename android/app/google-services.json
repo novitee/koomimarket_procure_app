@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "805147007611",
+    "project_id": "koomimarket-procure",
+    "storage_bucket": "koomimarket-procure.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805147007611:android:8ed550febf17df25e720de",
+        "android_client_info": {
+          "package_name": "com.koomimarket.procure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAo7GhIAZIK9SUFGk7ThXv1vG8kLOfZDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,7 @@ import React, {useEffect, useContext, useState, useLayoutEffect} from 'react'
 import {View, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, ActivityIndicator, SafeAreaView, Text, Platform} from 'react-native'
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import LogoIcon from "assets/images/logo.svg"
+import notifee from '@notifee/react-native';
 
 export default function Onboarding({navigation, route}) {
 
@@ -15,6 +16,27 @@ export default function Onboarding({navigation, route}) {
   function onRedirectTo(screen) {
     if (!screen) return
     navigation.navigate(screen)
+  }
+
+  async function showNotif() {
+    await notifee.requestPermission()
+
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    await notifee.displayNotification({
+      title: 'Notification Title',
+      body: 'Main body content of the notification',
+      android: {
+        channelId,
+        // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
   }
 
   return (
