@@ -25,11 +25,13 @@ const RootStackScreen = ({}) => {
   return (
     <NavigationContainer theme={themeConfig}>
       <Stack.Navigator>
-        {!!me ? (
+        <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
+        <Stack.Screen name="HomeStack" component={Home} options={{ headerShown: false }} />
+        {/* {!!me ? (
           <Stack.Screen name="HomeStack" component={Home} options={{ headerShown: false }} />
         ) : (
           <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
-        )}
+        )} */}
       </Stack.Navigator>
     </NavigationContainer>
   )

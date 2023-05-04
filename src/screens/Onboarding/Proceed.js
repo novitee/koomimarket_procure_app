@@ -34,6 +34,9 @@ export default function Proceed({navigation, route}) {
   }
 
   async function onNext() {
+    navigation.navigate("HomeStack", {
+      screen: "Outlets"
+    })
   }
 
 
