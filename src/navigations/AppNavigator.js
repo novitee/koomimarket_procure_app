@@ -4,14 +4,13 @@ import UserProvider, { UserContext } from 'contexts/user'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Onboarding from 'navigations/Onboarding'
+import Home from 'navigations/Home'
 
 const Stack = createStackNavigator();
 
 const RootStackScreen = ({}) => {
 
-  // const { me, isLogin } = useContext(UserContext)
-
-  // if (isLogin == null) return null
+  const { me } = useContext(UserContext)
 
   const themeConfig = {
     dark: false,
@@ -26,12 +25,11 @@ const RootStackScreen = ({}) => {
   return (
     <NavigationContainer theme={themeConfig}>
       <Stack.Navigator>
-      <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
-        {/* {isLogin ? (
-          <Stack.Screen name="HomeStack" component={HomeStack} options={{ headerShown: false }} />
+        {!!me ? (
+          <Stack.Screen name="HomeStack" component={Home} options={{ headerShown: false }} />
         ) : (
-          <Stack.Screen name="OnboardingStack" component={OnboardingStack} options={{ headerShown: false }} />
-        )} */}
+          <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   )

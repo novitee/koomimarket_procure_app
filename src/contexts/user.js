@@ -1,13 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const UserContext = React.createContext()
-// import { isLogin as isLogged, tokenExpired, logout as userLogout, setToken } from "utils/authenticate";
-// import {WEB_CLIENT_ID, IOS_CLIENT_ID} from "react-native-dotenv"
+import {fetchMe} from "services/user"
 
 function UserProvider(props) {
   
   const [me, setMe] = useState(undefined)
   
+  async function getMe() {
+    const data = await fetchMe()
+    if (data?.success) {
+      setMe(data?.data?.me)
+    } else {
+      setMe(undefined)
+    }
+  }
+
+  useEffect(() => {
+    getMe()
+  }, [])
 
   return (
     <UserContext.Provider value={{ me }}>

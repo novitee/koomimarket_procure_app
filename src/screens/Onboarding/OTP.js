@@ -2,6 +2,7 @@ import React, {useEffect, useContext, useState, useLayoutEffect, useRef} from 'r
 import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Text, Platform} from 'react-native'
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import HeaderLeft from "components/HeaderLeft"
+import every from "lodash/every"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 
 export default function OTP({navigation, route}) {
@@ -22,6 +23,12 @@ export default function OTP({navigation, route}) {
   const [activeInput, setActiveInput] = useState(0)
   const [isBackspace, setIsBackspace] = useState(false)
   const [optNumbers, setOptNumbers] = useState(Array(6).fill(''))
+
+  useEffect(() => {
+    if (every(optNumbers, member => member.length > 0)) {
+      navigation.navigate("Proceed")
+    }
+  }, [optNumbers])
 
   function onChangeText(index, value) {
     const _opt = [...optNumbers]

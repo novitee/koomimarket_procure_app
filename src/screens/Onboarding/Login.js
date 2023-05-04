@@ -4,6 +4,7 @@ import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import HeaderLeft from "components/HeaderLeft"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 import PhonePicker from 'components/ui/PhonePicker'
+import {verifyPhoneNumber} from "services/user"
 
 export default function Login({navigation, route}) {
 
@@ -28,7 +29,13 @@ export default function Login({navigation, route}) {
     setNumber(numberValue)
   }
 
-  function onNext() {
+  async function onNext() {
+    // try {
+      // const data = await verifyPhoneNumber({code, number})
+      // console.warn(data)
+    // } catch (error) {
+      // console.warn(error.message)
+    // }
     navigation.navigate("OTP")
   }
 
