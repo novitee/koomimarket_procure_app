@@ -8,7 +8,7 @@ const getFlagEmoji = countryCode => String.fromCodePoint(...[...countryCode.toUp
 
 const HEADER_HEIGHT = 56
 
-export default function PhonePicker({code, number, onChange}) {
+export default function PhonePicker({code, number, onChange, showError = true}) {
 
   const [isVisible, setIsVisible] = useState(false)
   const [search, setSearch] = useState("")
@@ -70,7 +70,7 @@ export default function PhonePicker({code, number, onChange}) {
     )
   }
 
-  const isError = !phoneNumber
+  const isError = showError && !phoneNumber
 
   const listing = search && countries.filter(country => (
     country.name.toLowerCase().indexOf(search.toLowerCase()) > -1 ||
