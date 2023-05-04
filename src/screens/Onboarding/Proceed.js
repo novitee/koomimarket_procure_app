@@ -34,10 +34,10 @@ export default function Proceed({navigation, route}) {
   }
 
   async function onNext() {
-    navigation.navigate("CreateAccount")
-    // navigation.navigate("HomeStack", {
-    //   screen: "Outlets"
-    // })
+    // navigation.navigate("CreateAccount")
+    navigation.navigate("HomeStack", {
+      screen: "Outlets"
+    })
   }
 
 

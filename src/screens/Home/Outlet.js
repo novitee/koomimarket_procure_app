@@ -51,6 +51,10 @@ export default function Home({navigation, route}) {
     )
   }
 
+  function onAddOutlet() {
+    navigation.navigate("AddOutlet")
+  }
+
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -80,7 +84,7 @@ export default function Home({navigation, route}) {
         keyExtractor={(item, index) => index.toString()}
         numColumns={1}
         ListFooterComponent={
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={onAddOutlet}>
             <AddCircleIcon />
             <Text style={styles.buttonText}>Add Outlet</Text>
           </TouchableOpacity>
