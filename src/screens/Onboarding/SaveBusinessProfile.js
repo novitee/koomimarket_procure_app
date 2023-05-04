@@ -41,7 +41,7 @@ export default function Login({navigation, route}) {
           behavior={Platform.OS == "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS == "ios" ? 80 : 70}
         >
-          <ScrollView style={{paddingHorizontal: 24, flex: 1}}>
+          <ScrollView style={{paddingHorizontal: 24, flex: 1}} contentContainerStyle={{paddingBottom: 20}}>
             <View style={{paddingVertical: 24, alignItems: "center"}}>
               <TouchableOpacity style={{position: "relative"}}>
                 <Image source={{uri: "https://randomuser.me/api/portraits/men/97.jpg"}} 

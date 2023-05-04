@@ -36,7 +36,7 @@ export default function SignUp({navigation, route}) {
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS == "ios" ? 80 : 70}
       >
-        <ScrollView style={{paddingHorizontal: 24, flex: 1}}>
+        <ScrollView style={{paddingHorizontal: 24, flex: 1}} contentContainerStyle={{paddingBottom: 20}}>
           <View style={{paddingVertical: 92}}>
             <Text style={{fontSize: 48, fontWeight: 700}}>Sign Up with Mobile Number</Text>
           </View>
