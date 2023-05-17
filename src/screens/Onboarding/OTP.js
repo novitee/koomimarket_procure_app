@@ -4,8 +4,10 @@ import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import HeaderLeft from "components/HeaderLeft"
 import every from "lodash/every"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
+import {verifyOtp} from "services/user"
 
 export default function OTP({navigation, route}) {
+  const { otpToken } = route.params
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -26,7 +28,7 @@ export default function OTP({navigation, route}) {
 
   useEffect(() => {
     if (every(optNumbers, member => member.length > 0)) {
-      navigation.navigate("Proceed")
+      onSave(optNumbers)
     }
   }, [optNumbers])
 
@@ -54,6 +56,20 @@ export default function OTP({navigation, route}) {
       setIsBackspace(true)
     } else {
       setIsBackspace(false)
+    }
+  }
+
+  async function onSave(values) {
+    try {
+      const {data:{token, refreshToken}} = await verifyOtp({
+        otpCode: values.join(""), 
+        otpToken: otpToken
+      })
+      if (token && refreshToken) {
+        navigation.navigate("Proceed")
+      }
+    } catch (error) {
+      console.warn(error.message)
     }
   }
   

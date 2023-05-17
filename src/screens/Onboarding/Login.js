@@ -30,13 +30,16 @@ export default function Login({navigation, route}) {
   }
 
   async function onNext() {
-    // try {
-      // const data = await verifyPhoneNumber({code, number})
-      // console.warn(data)
-    // } catch (error) {
-      // console.warn(error.message)
-    // }
-    navigation.navigate("OTP")
+    try {
+      const {data:{otpToken}, message, success} = await verifyPhoneNumber({code, number})
+      if (success) {
+        navigation.navigate("OTP", {otpToken})
+      } else {
+        console.warn(message)
+      }
+    } catch (error) {
+      console.warn(error.message)
+    }
   }
 
   const isDone = !!code && !!number
