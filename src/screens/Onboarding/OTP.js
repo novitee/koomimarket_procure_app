@@ -1,10 +1,12 @@
 import React, {useEffect, useContext, useState, useLayoutEffect, useRef} from 'react'
-import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Text, Platform} from 'react-native'
+import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native'
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
+import H3 from "components/ui/H3"
 import HeaderLeft from "components/HeaderLeft"
 import every from "lodash/every"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 import {verifyOtp} from "services/user"
+import { scale } from 'utils/scale'
 
 export default function OTP({navigation, route}) {
   const { otpToken } = route.params
@@ -76,8 +78,10 @@ export default function OTP({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{paddingHorizontal: 24}}>
-        <View style={{paddingVertical: 92}}>
-          <Text style={{fontSize: 16, fontWeight: 700, textAlign: "center"}}>We just texted you a code to +6* **** **78 .  Enter the OTP to log in.</Text>
+        <View style={{paddingTop: scale(96)}}>
+          <H3 fontWeight={700} style={{textAlign: "center"}}>We just texted a code to:</H3>
+          <H3 fontWeight={700} style={{textAlign: "center", paddingVertical: 12}}>8123 4578</H3>
+          <H3 fontWeight={700} style={{textAlign: "center"}}>Enter the code below</H3> 
         </View>
         <View style={styles.content}>
           {optNumbers.map((item, index) => {
@@ -123,17 +127,18 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center"
+    alignItems: "center",
+    paddingTop: scale(36)
   },
   input: {
-    height: 48,
+    height: 56,
     borderWidth: 1,
     backgroundColor: "rgba(250, 250, 250, 1)",
     borderColor: "rgba(238, 238, 238, 1)",
     borderRadius: 12,
     marginHorizontal: 4,
     flex: 1,
-    fontSize: 24,
+    fontSize: scale(24),
     fontWeight: '600',
     textAlign: "center"
   }

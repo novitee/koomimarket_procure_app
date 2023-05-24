@@ -1,11 +1,15 @@
 import React, {useEffect, useContext, useState, useLayoutEffect} from 'react'
 import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native'
+import H2 from "components/ui/H2"
+import H3 from "components/ui/H3"
 import P from "components/ui/P"
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import HeaderLeft from "components/HeaderLeft"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 import PhonePicker from 'components/ui/PhonePicker'
+import color from "utils/color"
 import {verifyPhoneNumber} from "services/user"
+import { scale } from 'utils/scale'
 
 export default function Login({navigation, route}) {
 
@@ -52,8 +56,9 @@ export default function Login({navigation, route}) {
         keyboardVerticalOffset={Platform.OS == "ios" ? 80 : 70}
       >
         <ScrollView style={{paddingHorizontal: 24, flex: 1}} contentContainerStyle={{paddingBottom: 20}}>
-          <View style={{paddingVertical: 92}}>
-            <P style={{fontSize: 48, fontWeight: 700}}>Login to your account</P>
+          <View style={{paddingVertical: scale(96)}}>
+            <H2 fontWeight={700} style={{textAlign: "center"}}>What's your phone number?</H2>
+            <H3 fontWeight={300} style={{textAlign: "center", paddingTop: 24}}>We need this to set up your account or help you log back in.</H3>
           </View>
           <PhonePicker 
             code={code}
@@ -63,7 +68,7 @@ export default function Login({navigation, route}) {
         </ScrollView>
         <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
           <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
-            <P style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</P>
+            <P style={StyleSheet.flatten([styles.buttonText, !isDone && {color: color.primary}])}>Next</P>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -73,7 +78,7 @@ export default function Login({navigation, route}) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#D80D1D",
+    backgroundColor: color.primary,
     borderRadius: 100,
     paddingVertical: 18,
     flexDirection: "column",
