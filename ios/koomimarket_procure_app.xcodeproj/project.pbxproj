@@ -15,6 +15,13 @@
 		468E5DE241E0B46ED3B0CBEE /* Pods_koomimarket_procure_app_koomimarket_procure_appTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C8A263D5538BCECED2F9A7E /* Pods_koomimarket_procure_app_koomimarket_procure_appTests.framework */; };
 		5B204D302A0152A10065ED19 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B204D2F2A0152A10065ED19 /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		342AD5F0BC794443B0BF2966 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B3D1EF1971E4FF2ACE0E20A /* Inter-Bold.ttf */; };
+		CEAB8618FE39447CA3F03BB8 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 96EC784191434255B6D285FE /* Inter-ExtraLight.ttf */; };
+		A22F656A16D94B3E83195300 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D826F2A04FD412488929452 /* Inter-Light.ttf */; };
+		E348637C893B4991BD83EF90 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44981E2E5B444864A7515CFD /* Inter-Medium.ttf */; };
+		757DB2E135CF43189F2F676F /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A686C52CDF614B64B8340E9C /* Inter-Regular.ttf */; };
+		5D4877AB64E9458792F4489C /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAAA403869BE470CBF5DC4DA /* Inter-SemiBold.ttf */; };
+		315D246FA90448D0B1C0D618 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA9461F9463F42D9942BAD24 /* Inter-Thin.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +54,13 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = koomimarket_procure_app/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-koomimarket_procure_app-koomimarket_procure_appTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-koomimarket_procure_app-koomimarket_procure_appTests.release.xcconfig"; path = "Target Support Files/Pods-koomimarket_procure_app-koomimarket_procure_appTests/Pods-koomimarket_procure_app-koomimarket_procure_appTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		7B3D1EF1971E4FF2ACE0E20A /* Inter-Bold.ttf */ = {isa = PBXFileReference; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		96EC784191434255B6D285FE /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Inter-ExtraLight.ttf"; path = "../src/assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2D826F2A04FD412488929452 /* Inter-Light.ttf */ = {isa = PBXFileReference; name = "Inter-Light.ttf"; path = "../src/assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		44981E2E5B444864A7515CFD /* Inter-Medium.ttf */ = {isa = PBXFileReference; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A686C52CDF614B64B8340E9C /* Inter-Regular.ttf */ = {isa = PBXFileReference; name = "Inter-Regular.ttf"; path = "../src/assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FAAA403869BE470CBF5DC4DA /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BA9461F9463F42D9942BAD24 /* Inter-Thin.ttf */ = {isa = PBXFileReference; name = "Inter-Thin.ttf"; path = "../src/assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +141,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				F298DA2BB5CC4F8E9DDF9415 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -152,6 +167,21 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		F298DA2BB5CC4F8E9DDF9415 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				7B3D1EF1971E4FF2ACE0E20A /* Inter-Bold.ttf */,
+				96EC784191434255B6D285FE /* Inter-ExtraLight.ttf */,
+				2D826F2A04FD412488929452 /* Inter-Light.ttf */,
+				44981E2E5B444864A7515CFD /* Inter-Medium.ttf */,
+				A686C52CDF614B64B8340E9C /* Inter-Regular.ttf */,
+				FAAA403869BE470CBF5DC4DA /* Inter-SemiBold.ttf */,
+				BA9461F9463F42D9942BAD24 /* Inter-Thin.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -251,6 +281,13 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				5B204D302A0152A10065ED19 /* GoogleService-Info.plist in Resources */,
+				342AD5F0BC794443B0BF2966 /* Inter-Bold.ttf in Resources */,
+				CEAB8618FE39447CA3F03BB8 /* Inter-ExtraLight.ttf in Resources */,
+				A22F656A16D94B3E83195300 /* Inter-Light.ttf in Resources */,
+				E348637C893B4991BD83EF90 /* Inter-Medium.ttf in Resources */,
+				757DB2E135CF43189F2F676F /* Inter-Regular.ttf in Resources */,
+				5D4877AB64E9458792F4489C /* Inter-SemiBold.ttf in Resources */,
+				315D246FA90448D0B1C0D618 /* Inter-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

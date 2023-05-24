@@ -3,6 +3,8 @@ import {View, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, Activi
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import LogoIcon from "assets/images/logo.svg"
 import notifee from '@notifee/react-native';
+import color from "utils/color"
+import P from "components/ui/P"
 
 export default function Onboarding({navigation, route}) {
 
@@ -44,10 +46,10 @@ export default function Onboarding({navigation, route}) {
       <LogoIcon />
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={onRedirectTo.bind(this, "Login")}>
-          <Text style={styles.buttonText}>Login</Text>
+          <P style={styles.buttonText} fontWeight={600}>Login</P>
         </TouchableOpacity>
         <TouchableOpacity style={StyleSheet.flatten([styles.button, styles.customButton])} onPress={onRedirectTo.bind(this, "SignUp")}>
-          <Text style={StyleSheet.flatten([styles.buttonText, {color: "#D80D1D"}])}>Sign Up</Text>
+          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText, {color: color.primary}])}>Sign Up</P>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
     bottom: 48
   },
   button: {
-    backgroundColor: "#D80D1D",
+    backgroundColor: color.primary,
     borderRadius: 100,
     paddingVertical: 18,
     flexDirection: "column",
@@ -71,13 +73,11 @@ const styles = StyleSheet.create({
   },
   customButton: {
     marginTop: 24, 
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(238, 243, 253, 1)",
     borderWidth: 1,
-    borderColor: "#D80D1D"
+    borderColor: "rgba(238, 243, 253, 1)"
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 600,
     color: "#fff"
   }
 })

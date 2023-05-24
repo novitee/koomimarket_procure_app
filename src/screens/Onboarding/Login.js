@@ -1,5 +1,6 @@
 import React, {useEffect, useContext, useState, useLayoutEffect} from 'react'
-import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Text, Platform} from 'react-native'
+import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native'
+import P from "components/ui/P"
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import HeaderLeft from "components/HeaderLeft"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
@@ -52,7 +53,7 @@ export default function Login({navigation, route}) {
       >
         <ScrollView style={{paddingHorizontal: 24, flex: 1}} contentContainerStyle={{paddingBottom: 20}}>
           <View style={{paddingVertical: 92}}>
-            <Text style={{fontSize: 48, fontWeight: 700}}>Login to your account</Text>
+            <P style={{fontSize: 48, fontWeight: 700}}>Login to your account</P>
           </View>
           <PhonePicker 
             code={code}
@@ -62,7 +63,7 @@ export default function Login({navigation, route}) {
         </ScrollView>
         <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
           <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
-            <Text style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</Text>
+            <P style={StyleSheet.flatten([styles.buttonText, !isDone && {color: "#D80D1D"}])}>Next</P>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
