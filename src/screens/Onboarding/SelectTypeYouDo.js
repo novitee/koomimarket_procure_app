@@ -6,18 +6,20 @@ import P from "components/ui/P"
 import HeaderLeft from "components/HeaderLeft"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 import { scale } from 'utils/scale'
-import TruckIcon from "assets/images/truck.svg"
+import ChefIcon from "assets/images/chef.svg"
+import SupplierIcon from "assets/images/supplier.svg"
 
 const types = [
   {
-    icon: <TruckIcon />,
-    label: "Create my business on Koomi",
-    description: "I want to get set up and start ordering."
+    icon: <ChefIcon />,
+    label: "Chef / Manager",
+    description: "I want to order stuff for my restaurant, bar or cafe."
+    
   },
   {
-    icon: <TruckIcon />,
-    label: "Join my team",
-    description: "My team is already ordering on Koomi."
+    icon: <SupplierIcon />,
+    label: "Supplier / Producer",
+    description: "I want to list and promote my items for ordering."
   }
 ]
 
@@ -48,7 +50,7 @@ export default function SelectTypeYouDo({navigation, route}) {
               <TouchableOpacity>
                 <View key={item.label} style={styles.item}>
                   {item.icon}
-                  <View style={{flex: 1, paddingLeft: 12, justifyContent: "center"}}>
+                  <View style={{flex: 1, paddingLeft: 24, justifyContent: "center"}}>
                     <P fontWeight={700}>{item.label}</P>
                     <P fontWeight={500} style={{marginTop: 8}}>{item.description}</P>
                   </View>

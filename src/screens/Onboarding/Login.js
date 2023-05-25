@@ -68,7 +68,7 @@ export default function Login({navigation, route}) {
         </ScrollView>
         <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
           <TouchableOpacity style={StyleSheet.flatten([styles.button, !isDone && {backgroundColor: "rgba(216, 13, 29, 0.08)"}])} onPress={onNext} disabled={!isDone}>
-            <P style={StyleSheet.flatten([styles.buttonText, !isDone && {color: color.primary}])}>Next</P>
+            <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText, !isDone && {color: color.primary}])}>Next</P>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -87,8 +87,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 600,
     color: "#fff"
   }
 })

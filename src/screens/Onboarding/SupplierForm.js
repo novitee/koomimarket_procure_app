@@ -6,7 +6,6 @@ import P from "components/ui/P"
 import HeaderLeft from "components/HeaderLeft"
 import ArrowBackIcon from "assets/images/arrow-back.svg"
 import { scale } from 'utils/scale'
-import TruckIcon from "assets/images/truck.svg"
 import color from 'utils/color'
 
 export default function SupplierForm({navigation, route}) {
@@ -60,7 +59,7 @@ export default function SupplierForm({navigation, route}) {
         </ScrollView>
         <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
           <TouchableOpacity style={StyleSheet.flatten([styles.button])}>
-            <P style={StyleSheet.flatten([styles.buttonText])}>Submit</P>
+            <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Submit</P>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -96,8 +95,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 600,
     color: "#fff"
   }
 })

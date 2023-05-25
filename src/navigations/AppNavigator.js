@@ -4,6 +4,7 @@ import UserProvider, { UserContext } from 'contexts/user'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Onboarding from 'navigations/Onboarding'
+import Home from 'navigations/Home'
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,7 @@ const RootStackScreen = ({}) => {
   return (
     <NavigationContainer theme={themeConfig}>
       <Stack.Navigator>
-        <Stack.Screen name="OnboardingStack" component={Onboarding} options={{ headerShown: false }} />
+        <Stack.Screen name="HomeStack" component={Home} options={{ headerShown: false }} />
         {/* {!!me ? (
           <Stack.Screen name="HomeStack" component={Home} options={{ headerShown: false }} />
         ) : (
