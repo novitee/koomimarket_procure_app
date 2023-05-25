@@ -40,7 +40,7 @@ export default function CreateOutlet({navigation, route}) {
             <View style={styles.bigCircle}>
               <HomeIcon />
               <View style={styles.smallCircle}>
-                <CameraIcon style={{fill: "#fff"}} />
+                <CameraIcon style={{color: "#fff"}} />
               </View>
             </View>
           </View>

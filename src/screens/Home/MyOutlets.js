@@ -42,7 +42,7 @@ export default function MyOutlets({navigation, route}) {
       <View style={{padding: 24, flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
         <H2 fontWeight={700}>My Outlets</H2>
         <TouchableOpacity style={styles.stockButton}>
-          <ClipboardListIcon />
+          <ClipboardListIcon style={{color: color.primary}} />
           <P fontWeight={600} numberOfLines={1} style={{marginLeft: 12, flex: 1, color: color.primary}}>Start Stock Take</P>
         </TouchableOpacity>
       </View>
@@ -75,7 +75,7 @@ export default function MyOutlets({navigation, route}) {
           <P fontWeight={200} style={{paddingTop: 12, textAlign: "center"}}>Tell us about your outlets!</P>
         </View>
         <TouchableOpacity style={StyleSheet.flatten([styles.button])}>
-          <PlusIcon style={{fill: "#FFF"}} />
+          <PlusIcon style={{color: "#FFF"}} />
           <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Create Outlet</P>
         </TouchableOpacity> */}
       </ScrollView>
