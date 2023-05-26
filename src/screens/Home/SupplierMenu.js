@@ -1,5 +1,5 @@
 import React, {useEffect, useContext, useState, useLayoutEffect, useRef} from 'react'
-import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native'
+import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, ImageBackground, SafeAreaView, Platform} from 'react-native'
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
 import H1 from "components/ui/H1"
 import H2 from "components/ui/H2"
@@ -14,7 +14,7 @@ import PlusIcon from "assets/images/plus.svg"
 import { scale } from 'utils/scale'
 import color from 'utils/color'
 
-export default function Suppliers({navigation, route}) {
+export default function SupplierMenu({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -25,34 +25,35 @@ export default function Suppliers({navigation, route}) {
             style={{}}
           />
         </HeaderLeft>
+      ),
+      headerTitle: () => (
+        <H3 fontWeight={700}>Add Supplier</H3>
       )
     })
   }, [navigation, route])
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={{paddingHorizontal: 24, paddingVertical: 24}}>
-        <H2 fontWeight={700} style={{color: color.primary}}>Zong Han's Bar</H2>
+      <View style={{paddingHorizontal: 24}}>
         <View style={styles.wrapSearch}>
           <View style={styles.wrapInput}>
             <SearchIcon style={{color: "rgba(113, 113, 122, 1)"}} />
             <TextInput style={styles.input} placeholder="Search by supplier or product" />
           </View>
-          <TouchableOpacity>
-            <FilterVariantIcon style={{color: "#000"}} />
-          </TouchableOpacity>
         </View>
       </View>
-      <ScrollView style={{flex: 1, paddingHorizontal: 24}} contentContainerStyle={{paddingVertical: 20, flexGrow: 1, justifyContent: "center", alignItems: "center"}}>
-        <View style={{paddingBottom: 24, flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-          <ShippingIcon />
-          <P fontWeight={700} style={{paddingTop: 12, textAlign: "center"}}>Welcome to Koomi!</P>
-          <P fontWeight={200} style={{paddingTop: 12, textAlign: "center"}}>Start by adding your suppliers.</P>
-        </View>
-        <TouchableOpacity style={StyleSheet.flatten([styles.button])} onPress={() => navigation.navigate("SupplierMenu")}>
-          <PlusIcon style={{color: "#FFF"}} />
-          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Add Suppliers</P>
-        </TouchableOpacity>
+      <ScrollView style={{flex: 1, paddingHorizontal: 24}} contentContainerStyle={{paddingVertical: 20}}>
+        {[...Array(10)].map((item, index) => {
+          return (
+            <TouchableOpacity onPress={() => navigation.navigate("ViewSupplier")}>
+              <ImageBackground source={{uri: "https://cdn.britannica.com/17/196817-050-6A15DAC3/vegetables.jpg"}}
+                style={{flex: 1, height: 96, justifyContent: "center", alignItems: "center", marginBottom: 8}}
+              >
+                <H2 fontWeight={700} style={styles.text}>FRUIT & VEG</H2>
+              </ImageBackground>
+            </TouchableOpacity>
+          )
+        })}
       </ScrollView>
     </SafeAreaView>
   )
@@ -62,7 +63,6 @@ const styles = StyleSheet.create({
   wrapSearch: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 24
   },
   wrapInput: {
     flexDirection: "row",
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(212, 212, 216, 1)",
     borderRadius: 4,
     paddingHorizontal: 10,
-    marginRight: 12,
     flex: 1
   },
   input: {
@@ -82,17 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexGrow: 1,
   },
-  button: {
-    backgroundColor: color.primary,
-    borderRadius: 100,
-    paddingVertical: 18,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  buttonText: {
-    color: "#fff",
-    marginLeft: 12
-  },
+  text: {
+    color: "#FFF", 
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
+  }
 })

@@ -1,7 +1,6 @@
 import React, {useEffect, useContext, useState, useLayoutEffect, useRef} from 'react'
 import {View, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native'
 import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
-import H1 from "components/ui/H1"
 import H2 from "components/ui/H2"
 import H3 from "components/ui/H3"
 import P from "components/ui/P"
@@ -40,7 +39,7 @@ export default function Settings({navigation, route}) {
           <View style={styles.item}>
             <View style={{flexDirection: "row", alignItems: "center"}}>
               <View style={styles.circle}>
-                <H1 fontWeight={700}>Z</H1>
+                <H2 fontWeight={700}>Z</H2>
               </View>
               <H2 fontWeight={500} style={{marginLeft: 12}}>Zong Han</H2>
             </View>

@@ -9,7 +9,7 @@ const H1 = props => {
   const defaultFontWeight = props.fontWeight || 400
 
   let baseStyle = {
-    fontSize: scale(36),
+    fontSize: scale(40),
     color: color.text,
     fontFamily: formatFontWeight(defaultFontWeight),
   }
