@@ -98,8 +98,8 @@ export default function ViewSupplierProfile({navigation, route}) {
         </View>
       </ScrollView>
       <View style={{paddingHorizontal: 24, paddingBottom: 24}}>
-        <TouchableOpacity style={styles.button}>
-          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Next</P>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SetSupplier")}>
+          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Add Supplier</P>
         </TouchableOpacity>
       </View>
     </>

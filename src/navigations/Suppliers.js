@@ -5,6 +5,8 @@ import Suppliers from "screens/Home/Suppliers";
 import SupplierMenu from "screens/Home/SupplierMenu";
 import ViewSupplier from "screens/Home/ViewSupplier";
 import ViewSupplierProfile from "screens/Home/ViewSupplierProfile";
+import SetSupplier from "screens/Home/SetSupplier";
+import AddSupplier from "screens/Home/AddSupplier";
 
 const Stack = createStackNavigator()
 
@@ -15,6 +17,8 @@ const Index = props => {
       <Stack.Screen name="SupplierMenu" component={SupplierMenu} options={{headerShown: true}} />
       <Stack.Screen name="ViewSupplier" component={ViewSupplier} options={{headerShown: true}} />
       <Stack.Screen name="ViewSupplierProfile" component={ViewSupplierProfile} options={{headerShown: true}} />
+      <Stack.Screen name="SetSupplier" component={SetSupplier} options={{headerShown: true}} />
+      <Stack.Screen name="AddSupplier" component={AddSupplier} options={{headerShown: true}} />
     </Stack.Navigator>
   )
 }

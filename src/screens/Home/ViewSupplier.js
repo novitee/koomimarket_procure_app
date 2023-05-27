@@ -11,6 +11,7 @@ import FilterVariantIcon from "assets/images/filter-variant.svg"
 import SearchIcon from "assets/images/search.svg"
 import ShippingIcon from "assets/images/shipping.svg"
 import PlusIcon from "assets/images/plus.svg"
+import IllustrationIcon from "assets/images/Illustration.svg"
 import { scale } from 'utils/scale'
 import color from 'utils/color'
 
@@ -42,8 +43,23 @@ export default function ViewSupplier({navigation, route}) {
           </View>
         </View>
       </View>
-      <ScrollView style={{flex: 1, paddingHorizontal: 24}} contentContainerStyle={{paddingVertical: 20}}>
-        {[...Array(10)].map((item, index) => {
+      <ScrollView style={{flex: 1, paddingHorizontal: 24}} 
+        // contentContainerStyle={{paddingVertical: 20}}
+        contentContainerStyle={{paddingVertical: 20, flexGrow: 1, justifyContent: "center", alignItems: "center"}}
+      >
+
+        {/* Empty State */}
+        <View style={{paddingBottom: 24, alignItems: "center"}}>
+          <IllustrationIcon />
+          <P fontWeight={700} style={{paddingTop: 12, textAlign: "center"}}>Can't find your supplier?</P>
+          <P fontWeight={200} style={{paddingTop: 12, textAlign: "center"}}>Submit a form and our team will create it for you.</P>
+        </View>
+        <TouchableOpacity style={StyleSheet.flatten([styles.button])} onPress={() => navigation.navigate("AddSupplier")}>
+          <PlusIcon style={{color: "#FFF"}} />
+          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText])}>Add any supplier</P>
+        </TouchableOpacity>
+
+        {/* {[...Array(10)].map((item, index) => {
           return (
             <TouchableOpacity style={{marginBottom: 24, borderWidth: 1, borderColor: color.border}}
               onPress={() => navigation.navigate("ViewSupplierProfile")}
@@ -62,7 +78,7 @@ export default function ViewSupplier({navigation, route}) {
               </View>
             </TouchableOpacity>
           )
-        })}
+        })} */}
       </ScrollView>
     </SafeAreaView>
   )
@@ -101,5 +117,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     top: 16,
     left: 16
-  }
+  },
+  button: {
+    backgroundColor: color.primary,
+    borderRadius: 100,
+    paddingVertical: 18,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  buttonText: {
+    color: "#fff",
+    marginLeft: 12
+  },
 })
