@@ -68,7 +68,8 @@ export default function OTP({navigation, route}) {
         otpToken: otpToken
       })
       if (token && refreshToken) {
-        navigation.navigate("Proceed")
+        // TODO
+        // navigation.navigate("AnyPage")
       }
     } catch (error) {
       console.warn(error.message)
