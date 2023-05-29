@@ -12,7 +12,7 @@ const Stack = createStackNavigator()
 
 const Index = props => {
   return (
-    <Stack.Navigator initialRouteName="OrderDashboard" screenOptions={TransitionScreenOptions}>
+    <Stack.Navigator initialRouteName="MyOutlets" screenOptions={TransitionScreenOptions}>
       <Stack.Screen name="MyOutlets" component={MyOutlets} options={{headerShown: true}} />
       <Stack.Screen name="CreateOutlet" component={CreateOutlet} options={{headerShown: true}} />
       <Stack.Screen name="Support" component={Support} options={{headerShown: true}} />

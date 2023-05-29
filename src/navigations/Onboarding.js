@@ -15,7 +15,7 @@ const Stack = createStackNavigator()
 
 const Index = props => {
   return (
-    <Stack.Navigator initialRouteName="Login" screenOptions={TransitionScreenOptions}>
+    <Stack.Navigator initialRouteName="Onboarding" screenOptions={TransitionScreenOptions}>
       <Stack.Screen name="Onboarding" component={Onboarding} options={{headerShown: true}} />
       <Stack.Screen name="Login" component={Login} options={{headerShown: true}} />
       <Stack.Screen name="OTP" component={OTP} options={{headerShown: true}} />
