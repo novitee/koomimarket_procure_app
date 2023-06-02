@@ -1,12 +1,12 @@
-import React, {useEffect, useContext, useState, useLayoutEffect} from 'react'
-import {View, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, ActivityIndicator, SafeAreaView, Text, Platform} from 'react-native'
-import {DEFAULT_HEADER_STYLE, PADDING_CONTENT} from "utils/header-style"
+import React, { useEffect, useContext, useState, useLayoutEffect } from 'react'
+import { View, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, ActivityIndicator, SafeAreaView, Text, Platform } from 'react-native'
+import { DEFAULT_HEADER_STYLE, PADDING_CONTENT } from "utils/header-style"
 import LogoIcon from "assets/images/logo.svg"
 import notifee from '@notifee/react-native';
 import color from "utils/color"
 import P from "components/ui/P"
 
-export default function Onboarding({navigation, route}) {
+export default function Onboarding({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,14 +42,14 @@ export default function Onboarding({navigation, route}) {
   }
 
   return (
-    <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+    <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <LogoIcon />
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={onRedirectTo.bind(this, "Login")}>
           <P style={styles.buttonText} fontWeight={600}>Login</P>
         </TouchableOpacity>
         <TouchableOpacity style={StyleSheet.flatten([styles.button, styles.customButton])} onPress={onRedirectTo.bind(this, "SignUp")}>
-          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText, {color: color.primary}])}>Sign Up</P>
+          <P fontWeight={600} style={StyleSheet.flatten([styles.buttonText, { color: color.primary }])}>Sign Up</P>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   customButton: {
-    marginTop: 24, 
+    marginTop: 24,
     backgroundColor: "rgba(238, 243, 253, 1)",
     borderWidth: 1,
     borderColor: "rgba(238, 243, 253, 1)"
