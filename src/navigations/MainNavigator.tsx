@@ -3,8 +3,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {customScreenOptions, myOutletsScreenOptions} from './common';
 
 import SupplerTabNavigator from './SupplerTabNavigator';
-import WelcomeScreen from 'screens/Auth/Welcome';
 import MyOutletsScreen from 'screens/Outlets/MyOutlets';
+import SettingsScreen from 'screens/Outlets/Settings';
+import SupportScreen from 'screens/Outlets/Support';
+import AddOutletScreen from 'screens/Outlets/AddOutlet';
+import EditProfileScreen from 'screens/Outlets/EditProfile';
+import EditOutletScreen from 'screens/Outlets/EditOutlet';
 const Stack = createNativeStackNavigator();
 
 export default function MainNavigator(): JSX.Element {
@@ -16,43 +20,15 @@ export default function MainNavigator(): JSX.Element {
           name="MyOutlets"
           component={MyOutletsScreen}
         />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="AddOutlet"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="KoomiSupport"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="KoomiSupportChat"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="Settings"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="EditProfile"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="EditOutlet"
-          component={WelcomeScreen}
-        />
+        <Stack.Screen name="AddOutlet" component={AddOutletScreen} />
+        <Stack.Screen name="KoomiSupport" component={SupportScreen} />
+        <Stack.Screen name="KoomiSupportChat" component={SupportScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="EditOutlet" component={EditOutletScreen} />
       </Stack.Group>
 
-      <Stack.Screen
-        options={{headerShown: false}}
-        name="SupplerTabs"
-        component={SupplerTabNavigator}
-      />
+      <Stack.Screen name="SupplerTabs" component={SupplerTabNavigator} />
     </Stack.Navigator>
   );
 }

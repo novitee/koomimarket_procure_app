@@ -1,19 +1,14 @@
-import {useStore} from 'zustand';
-import {createStore} from 'zustand/vanilla';
+import {create} from 'zustand';
 
 interface GlobalStore {
   loadingScreen?: boolean;
+  authMode?: string;
 }
-const globalStore = createStore<GlobalStore>(() => ({
+
+const useGlobalStore = create<GlobalStore>(set => ({
   loadingScreen: false,
+  authMode: '',
+  setLoadingScreen: (v: boolean) => set({loadingScreen: v}),
 }));
-
-const {getState, setState, subscribe} = globalStore;
-
-const useGlobalStore = (selector: (state: GlobalStore) => unknown) =>
-  useStore(globalStore, selector);
-export {getState, setState, useGlobalStore, subscribe};
-
-export function setLoadingScreen(value: boolean) {
-  setState({loadingScreen: value});
-}
+const setGlobal = useGlobalStore.setState;
+export {useGlobalStore, setGlobal};

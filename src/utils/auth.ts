@@ -11,5 +11,5 @@ export async function saveAuthData({
 }
 
 export async function resetAuthData() {
-  setState({authToken: '', authRefreshToken: ''});
+  setState({authToken: '', authRefreshToken: '', authStatus: 'NOT_AUTH'});
 }

@@ -4,11 +4,17 @@ import LogoIcon from 'assets/images/logo.svg';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {setGlobal} from 'stores/global';
 
 export default function WelcomeScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const {navigate} = navigation;
+
+  function navigateTo(mode: string) {
+    setGlobal({authMode: mode});
+    navigate('VerifyNumber');
+  }
 
   return (
     <Container>
@@ -16,11 +22,9 @@ export default function WelcomeScreen({
         <LogoIcon />
       </View>
       <View>
-        <Button onPress={() => navigate('VerifyNumber', {mode: 'login'})}>
-          Login
-        </Button>
+        <Button onPress={() => navigateTo('login')}>Login</Button>
         <Button
-          onPress={() => navigate('VerifyNumber', {mode: 'signUp'})}
+          onPress={() => navigateTo('signUp')}
           className="mt-4"
           variant="outline">
           Sign Up

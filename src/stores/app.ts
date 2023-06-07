@@ -17,17 +17,24 @@ const storage: StateStorage = {
     }
   },
 };
-interface AppStore {
+export interface IAppStore {
   authToken?: string;
   authRefreshToken?: string;
   isFirstLoad?: boolean;
+  authStatus:
+    | 'NOT_AUTH'
+    | 'AUTH_COMPLETED'
+    | 'REGISTERING'
+    | 'BUYER_COMPLETED'
+    | 'SUPPLIER_COMPLETED';
 }
-const appStore = createStore<AppStore>()(
+const appStore = createStore<IAppStore>()(
   persist(
     (_set, _get) => ({
       authToken: '',
       authRefreshToken: '',
       isFirstLoad: true,
+      authStatus: 'NOT_AUTH',
     }),
     {
       name: 'app-storage',

@@ -3,7 +3,13 @@ import {StatusBar, StyleSheet, View} from 'react-native';
 import Navigations from './navigations';
 
 function RootView(): JSX.Element {
-  const [isReady, setIsReady] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsReady(true);
+    }, 500);
+  }, []);
 
   return (
     <View style={styles.container}>

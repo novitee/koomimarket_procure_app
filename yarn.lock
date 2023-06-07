@@ -6658,6 +6658,11 @@ react-native-gradle-plugin@^0.71.17:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.17.tgz"
   integrity sha512-OXXYgpISEqERwjSlaCiaQY6cTY5CH6j73gdkWpK0hedxtiWMWgH+i5TOi4hIGYitm9kQBeyDu+wim9fA8ROFJA==
 
+react-native-image-picker@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-5.4.0.tgz#a693fbd3057d48667d87a340a3c6bdb599120983"
+  integrity sha512-qtLroIqpHADaR0/XJBD7E0boq+AAVT6wXvY4+pzrHjx12Lx2BhpFZH0rlWc/HIqeWBhZckAIpZ0ndapiGEMdYg==
+
 react-native-linear-gradient@^2.6.2:
   version "2.6.2"
   resolved "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz"
@@ -6680,6 +6685,11 @@ react-native-screens@^3.20.0:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-simple-toast@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-simple-toast/-/react-native-simple-toast-1.1.4.tgz#6a962beea87b86228a4f8c51bc93761108740b1c"
+  integrity sha512-7D8o8L445XDz7Rdh0pMgCIWuevv1FnGyuD7F8Nz/XhzMInmU4jL5VFJI25VVqQ2uGTaUSuo2ogXSgKnv6p9NJg==
 
 react-native-status-bar-height@^2.6.0:
   version "2.6.0"

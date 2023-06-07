@@ -1,7 +1,7 @@
-import {Text, ScrollView} from 'react-native';
+import {ScrollView} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
-import {Title} from 'components/Text';
+import {SubTitle, Title} from 'components/Text';
 import Label from 'components/Form/Label';
 import FormGroup from 'components/Form/FormGroup';
 import Input from 'components/Input';
@@ -41,11 +41,11 @@ export default function GetInTouchScreen() {
       <KeyboardAvoidingView>
         <ScrollView className="flex-1">
           <Title>Get in touch</Title>
-          <Text className="font-light mt-2 mb-6">
+          <SubTitle>
             Suppliers have much more complexed processes - so we would love to
             get to know you better. Leave your details via the form below and
             we’ll follow up as soon as we can.
-          </Text>
+          </SubTitle>
 
           <FormGroup>
             <Label required>Name</Label>

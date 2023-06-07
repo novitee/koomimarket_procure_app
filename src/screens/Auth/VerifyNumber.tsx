@@ -7,17 +7,17 @@ import PhonePicker from 'components/ui/PhonePicker';
 import useMutation from 'libs/swr/useMutation';
 import Text, {Title} from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useGlobalStore} from 'stores/global';
+import Toast from 'react-native-simple-toast';
 
 const urls: Record<string, string> = {
   signUp: 'registrations/verify-account',
   login: 'login',
 };
 
-export default function Login({
-  navigation,
-  route,
-}: NativeStackScreenProps<any>) {
-  const {mode} = route.params || {};
+export default function Login({navigation}: NativeStackScreenProps<any>) {
+  const mode = useGlobalStore(s => s.authMode) || '';
+
   const [{loading}, verifyPhoneNumber] = useMutation({
     url: urls[mode],
   });
@@ -61,7 +61,6 @@ export default function Login({
       mobileNumber: values.number,
     });
     if (success) {
-      console.log(`data.otpCode :>>`, data);
       navigation.navigate('VerifyOTP', {
         otpToken: data.otpToken,
         phoneNumber: `${values.code} ${values.number}`,
@@ -69,6 +68,7 @@ export default function Login({
       });
     } else {
       console.log(`error :>>`, error);
+      Toast.show(error?.message, Toast.LONG);
     }
   }
 

@@ -1,7 +1,7 @@
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
-import {Title} from 'components/Text';
+import {SubTitle, Title} from 'components/Text';
 import Label from 'components/Form/Label';
 import FormGroup from 'components/Form/FormGroup';
 import Input from 'components/Input';
@@ -35,9 +35,9 @@ export default function CreateProfile() {
     <Container>
       <View className="flex-1">
         <Title>Let’s create your profile</Title>
-        <Text className="font-light mt-2 mb-6">
+        <SubTitle>
           Your profile is how you’ll be recognised by others on Koomi.
-        </Text>
+        </SubTitle>
 
         <FormGroup>
           <Label required>Full name</Label>

@@ -6,6 +6,14 @@ import {FlatList, StyleSheet, View} from 'react-native';
 import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useIsFocused} from '@react-navigation/native';
+import {mutate} from 'swr';
+
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 export default function MyOutletsScreen({
   navigation,
@@ -13,6 +21,14 @@ export default function MyOutletsScreen({
   const {data} = useQuery(
     'me/outlets?include=photos(url,width,height,filename,contentType,signedKey)',
   );
+
+  useIsFocused();
+
+  const toAddOutlet = useCallback(() => {
+    navigation.navigate('AddOutlet', {
+      refreshOutlet: mutate,
+    });
+  }, [navigation]);
 
   const EmptyComponent = useCallback(() => {
     return (
@@ -22,14 +38,12 @@ export default function MyOutletsScreen({
         <Text className="font-light mt-4 text-center">
           Tell us about your outlets!
         </Text>
-        <Button
-          className="mt-4"
-          onPress={() => navigation.navigate('AddOutlet')}>
+        <Button className="mt-4" onPress={toAddOutlet}>
           + Create Outlet
         </Button>
       </View>
     );
-  }, [navigation]);
+  }, [toAddOutlet]);
 
   function _renderItem({item}: {item: any}) {
     return <View />;

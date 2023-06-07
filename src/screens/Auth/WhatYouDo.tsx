@@ -6,6 +6,8 @@ import SupplierIcon from 'assets/images/supplier.svg';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {SUPPLIER_DASHBOARD_URL} from 'configs/index';
 import {Title} from 'components/Text';
+import {useGlobalStore} from 'stores/global';
+import {setState} from 'stores/app';
 
 const types = [
   {
@@ -24,15 +26,14 @@ const types = [
 
 export default function WhatYouDoScreen({
   navigation,
-  route,
 }: NativeStackScreenProps<any>) {
   const {navigate} = navigation;
-  const {mode} = route.params || {};
+  const mode = useGlobalStore(s => s.authMode) || '';
 
   function navigateTo(code: string) {
     if (mode === 'login') {
       if (code === 'buyer') {
-        navigate('Outlets');
+        setState({authStatus: 'BUYER_COMPLETED'});
       } else if (code === 'supplier') {
         Linking.openURL(SUPPLIER_DASHBOARD_URL);
       }

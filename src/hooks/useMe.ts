@@ -1,3 +1,4 @@
+import {ROLE_BUYER} from './../configs/index';
 import useNavigation from 'hooks/useNavigation';
 import useQuery from 'libs/swr/useQuery';
 import {useCallback} from 'react';
@@ -33,6 +34,10 @@ export default function useMe() {
 
   return {
     isAuth: !!userInfo,
+    isBuyer:
+      !!userInfo &&
+      userInfo.me?.roleDepartments &&
+      userInfo.me?.roleDepartments.includes(ROLE_BUYER),
     refresh,
     user: userInfo,
     isUserLoading: isLoading,
