@@ -43,40 +43,34 @@ export default function ImagePicker({
   const [resp, setResp] = useState<ImagePickerResponse>();
   const [progress, setProgress] = useState(0);
 
-  const [{loading, error}, getSignS3] = useMutation({
+  const [{}, getSignS3] = useMutation({
     url: 's3/sign',
   });
 
-  console.log(`loading :>>`, loading);
-  console.log(`error111 :>>`, error);
   function getImageData(file: Asset) {
     return {
-      uri:
-        Platform.OS === 'android'
-          ? file.uri
-          : (file.uri || '').replace('file://', ''),
+      uri: file.uri,
       type: file.type,
       name: file.fileName,
     };
   }
 
   async function handleUpload(assets: Asset[]) {
-    const uploadedImages: Asset[] = [];
+    const uploadedImages: (Asset & {signedKey?: string})[] = [];
     await Promise.all(
       assets.map(async file => {
         const variables = {
-          filename: formatFilename(file.fileName, '', 'images'),
-          filetype: file.type,
+          filename: formatFilename(file.fileName),
         };
 
-        const {data} = await getSignS3({variables});
-        console.log(`data :>>`, data);
+        const {data} = await getSignS3(variables);
 
-        const signed = data?.signS3;
-
-        if (signed) {
+        if (data) {
           const axiosOptions: AxiosRequestConfig = {
-            headers: {'content-type': file.type},
+            headers: {
+              'Content-Type': file.type,
+              'x-amz-acl': 'public-read',
+            },
             onUploadProgress: progressEvent => {
               if (progressEvent.total) {
                 setProgress(
@@ -87,19 +81,24 @@ export default function ImagePicker({
               }
             },
           };
+
+          const formData = new FormData();
+          formData.append('file', getImageData(file));
           try {
             const res = await axios.put(
-              signed.signedRequestURL,
-              file,
+              data.signedRequestURL,
+              formData,
               axiosOptions,
             );
 
             if (res) {
               uploadedImages.push({
                 ...file,
-                uri: signed.url,
+                uri: data.url || '',
+                signedKey: data.signedKey,
               });
             } else {
+              console.log(`res :>>`, res);
               Toast.show('Storage provider error! Can not upload photo.');
             }
           } catch (error) {

@@ -18,18 +18,12 @@ export function formatFontWeight(value: number) {
   }
 }
 
-export const formatFilename = (
-  filename?: string,
-  appName?: string,
-  folderName?: string,
-) => {
-  const date = dayjs().format('YYYYMMDD');
+export const formatFilename = (filename?: string) => {
+  const date = dayjs().format('YYYYMMDD-HHmmss');
   const randomString = Math.random().toString(36).substring(2, 7);
   const cleanFileName = (filename || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '-');
-  const newFilename = `${appName}/${
-    folderName || 'images'
-  }/${date}-${randomString}-${cleanFileName}`;
-  return newFilename.substring(0, 60);
+    .substring((filename || '').length - 30)
+    .toLowerCase();
+  const newFilename = `${date}-${randomString}-${cleanFileName}`;
+  return newFilename;
 };

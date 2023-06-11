@@ -12,15 +12,26 @@ import Input from 'components/Input';
 import HomeIcon from 'assets/images/home.svg';
 import CameraIcon from 'assets/images/camera.svg';
 import ImagePicker from 'components/ImagePicker';
-
+import useMutation from 'libs/swr/useMutation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import Toast from 'react-native-simple-toast';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-export default function AddOutletScreen() {
+export default function AddOutletScreen({
+  navigation,
+  route,
+}: NativeStackScreenProps<any>) {
+  const {params} = route || {};
+  const {refreshOutlet} = params || {};
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
+  });
+
+  const [{loading}, addOutlet] = useMutation({
+    url: 'me/outlets/add',
   });
 
   function reducer(state: any, action: any) {
@@ -49,6 +60,21 @@ export default function AddOutletScreen() {
   function handleSelectImage(value) {
     console.log(`value :>>`, value);
   }
+
+  async function handleAddOutlet() {
+    const {success, message} = await addOutlet({
+      name: values.outletName,
+      deliveryAddress: values.deliveryAddress,
+    });
+
+    if (success) {
+      refreshOutlet?.();
+      navigation.goBack();
+    } else {
+      Toast.show(message, Toast.LONG);
+    }
+  }
+
   return (
     <Container>
       <KeyboardAvoidingView>
@@ -70,9 +96,9 @@ export default function AddOutletScreen() {
                   ) : (
                     <HomeIcon />
                   )}
-                  {!!progress && progress > 0 && (
+                  {!!progress && progress > 0 && progress < 100 && (
                     <View className="absolute w-full h-full rounded-full overflow-hidden items-center justify-center">
-                      <Text>{`Uploading ${progress}%`}</Text>
+                      <Text className="text-white font-medium">{`Uploading ${progress}%`}</Text>
                     </View>
                   )}
                   <TouchableOpacity
@@ -102,7 +128,9 @@ export default function AddOutletScreen() {
           </FormGroup>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Button>Create Outlet</Button>
+      <Button loading={loading} onPress={handleAddOutlet}>
+        Create Outlet
+      </Button>
     </Container>
   );
 }
