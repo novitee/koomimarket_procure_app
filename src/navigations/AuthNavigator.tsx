@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 
 export default function AuthNavigator() {
   const {authStatus} = useAppStore();
-
+  console.log('authStatus :>> ', authStatus);
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
@@ -29,7 +29,7 @@ export default function AuthNavigator() {
           <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
         </Stack.Group>
       )}
-      {['REGISTERING', 'AUTH_COMPLETED'].includes(authStatus) && (
+      {['AUTH_COMPLETED'].includes(authStatus) && (
         <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} />
       )}
 

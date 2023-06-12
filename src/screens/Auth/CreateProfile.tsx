@@ -6,11 +6,22 @@ import Label from 'components/Form/Label';
 import FormGroup from 'components/Form/FormGroup';
 import Input from 'components/Input';
 import Button from 'components/Button';
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {validateEmail} from 'utils/validate';
+const url: string = 'registrations/update-sign-up-profile';
 
-export default function CreateProfile() {
+export default function CreateProfile({
+  navigation,
+}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
+  });
+  const [{loading}, updateSignUpProfile] = useMutation({
+    method: 'PATCH',
+    url: url,
   });
 
   function reducer(state: any, action: any) {
@@ -31,6 +42,41 @@ export default function CreateProfile() {
   function onChangeText(text: string, field: string) {
     dispatch({[field]: text, render: true});
   }
+
+  function validateInputs() {
+    if (!fullName) {
+      Toast.show('Please enter your full name', Toast.LONG);
+      return false;
+    }
+    if (!emailAddress) {
+      Toast.show('Please enter your email address', Toast.LONG);
+      return false;
+    }
+    if (!validateEmail(emailAddress)) {
+      Toast.show('Please enter a valid email address', Toast.LONG);
+      return false;
+    }
+    return true;
+  }
+
+  async function handleUpdateProfile() {
+    if (!validateInputs()) return;
+
+    const {success, data, error, message} = await updateSignUpProfile({
+      entityRegistration: {
+        user: {
+          email: emailAddress,
+          fullName: fullName,
+        },
+      },
+    });
+    if (success) {
+      navigation.navigate('WhatYouLike');
+    } else {
+      Toast.show(message, Toast.LONG);
+    }
+  }
+
   return (
     <Container>
       <View className="flex-1">
@@ -56,7 +102,9 @@ export default function CreateProfile() {
         </FormGroup>
       </View>
 
-      <Button>Next</Button>
+      <Button loading={loading} onPress={handleUpdateProfile}>
+        Next
+      </Button>
     </Container>
   );
 }
