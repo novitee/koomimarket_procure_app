@@ -5,6 +5,8 @@ import {Title} from 'components/Text';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import useMe from 'hooks/useMe';
 import Avatar from 'components/Avatar';
+import Button from 'components/Button';
+import {resetAuthData} from 'utils/auth';
 
 const Divider = () => <View className="h-[1px] w-full bg-gray-D1D5DB my-2" />;
 
@@ -23,6 +25,7 @@ export default function SettingsScreen() {
         <ChevronRightIcon color="#9CA3AF" />
       </TouchableOpacity>
       <Divider />
+      <Button onPress={() => resetAuthData()}>Logout</Button>
     </Container>
   );
 }

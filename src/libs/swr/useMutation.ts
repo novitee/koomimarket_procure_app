@@ -109,21 +109,41 @@ function useMutation({
         ...resp,
       };
     } catch (error: any) {
+      const message = convertErrorMessage(error['errors'] || error);
       dispatch({
         type: REQUEST_FAIL,
         payload: error,
-        message: error?.message,
+        message: message,
       });
       if (typeof onError === 'function') {
-        onError({error: error, message: error?.message});
+        onError({error: error, message: message});
       }
       return {
         success: false,
         ...error,
+        message: message,
       };
     }
   }
   return [state, mutate];
+}
+
+function convertErrorMessage(error: any): string {
+  const errorDetails = error['details'];
+  if (errorDetails && typeof errorDetails !== 'string') {
+    if (Object.keys(errorDetails).length > 0) {
+      if (typeof Object.values(errorDetails)[0] == 'object') {
+        const value = Object.values(error['details'])[0] as object;
+        return Object.values(value)[0];
+      } else if (typeof Object.values(errorDetails)[0] == 'string') {
+        const value = Object.values(error['details'])[0] as string;
+        return value;
+      } else {
+        return 'Errors';
+      }
+    }
+    return error.message;
+  } else return error.message;
 }
 
 export default useMutation;
