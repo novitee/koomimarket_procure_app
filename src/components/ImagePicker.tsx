@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Platform, TouchableOpacity, TouchableOpacityProps} from 'react-native';
+import {TouchableOpacity, TouchableOpacityProps} from 'react-native';
 import Text from './Text';
 import axios, {AxiosRequestConfig} from 'axios';
 import {

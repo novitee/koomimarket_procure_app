@@ -6,8 +6,7 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack/lib/typescript/src/types';
 
-import {Platform, TouchableOpacity, View} from 'react-native';
-import Text from 'components/Text';
+import {Platform, TouchableOpacity} from 'react-native';
 import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
 import colors from 'configs/colors';
 
@@ -21,6 +20,7 @@ import UserGroupIcon from 'assets/images/user-group.svg';
 import ChatIconActive from 'assets/images/chat_active.svg';
 import ClipBoardListIconActive from 'assets/images/clipboard-list_active.svg';
 import UserGroupIconActive from 'assets/images/user-group_active.svg';
+import ChevronRight from 'assets/images/chevron-left.svg';
 
 export function BackButton({
   canGoBack,
@@ -30,8 +30,11 @@ export function BackButton({
     return null;
   }
   return (
-    <TouchableOpacity onPress={goBack}>
-      <Text>Back</Text>
+    <TouchableOpacity
+      hitSlop={10}
+      onPress={goBack}
+      className="w-10 h-10 items-center justify-center ">
+      <ChevronRight color={colors.primary.DEFAULT} />
     </TouchableOpacity>
   );
 }

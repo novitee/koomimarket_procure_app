@@ -7,6 +7,7 @@ module.exports = {
   error: '#F23030',
   success: '#54BD22',
   lightBlue: 'rgba(37, 99, 235, 0.08)',
+  chevron: '#9CA3AF',
   gray: {
     EEF3FD: '#EEF3FD',
     E0E0E4: '#E0E0E4',
