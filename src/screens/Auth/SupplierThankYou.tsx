@@ -16,7 +16,7 @@ export default function SupplierThankYouScreen({
         <Text className="text-48 text-primary-600 bold-bold">Thank you</Text>
       </View>
       <View>
-        <Button onPress={() => navigate('Login')}>Back to front page</Button>
+        <Button onPress={() => navigate('WhatYouDo')}>Back to home page</Button>
       </View>
     </Container>
   );
