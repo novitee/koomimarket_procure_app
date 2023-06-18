@@ -34,9 +34,9 @@ const configs: Record<string, any> = {
   secondary: {
     StyledButton: styled(
       TouchableOpacity,
-      'bg-lightBlue h-[56px] rounded-full justify-center items-center flex-row',
+      'bg-primary/10 h-[56px] rounded-full justify-center items-center flex-row',
     ),
-    StyledText: styled(Text, 'text-blue-400 font-semibold'),
+    StyledText: styled(Text, 'text-primary font-semibold'),
   },
 };
 

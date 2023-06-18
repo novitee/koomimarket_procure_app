@@ -17,10 +17,15 @@ export default function ModalContent({
   function renderConfirmButton() {
     return (
       <>
-        <Button variant="outline" onPress={onClose} className="flex-1">
+        <Button
+          size="md"
+          variant="outline"
+          onPress={onClose}
+          className="flex-1">
           {cancelTitle || 'Cancel'}
         </Button>
         <Button
+          size="md"
           className="flex-1 ml-4"
           loading={loading}
           onPress={() => {
@@ -35,7 +40,7 @@ export default function ModalContent({
 
   function renderInfoButton() {
     return (
-      <Button className="w-full" onPress={onConfirm || onClose}>
+      <Button size="md" className="w-full" onPress={onConfirm || onClose}>
         {confirmTitle || 'OK'}
       </Button>
     );
@@ -48,7 +53,7 @@ export default function ModalContent({
     }
   }
   return (
-    <View className="w-4/5 bg-white rounded-5 shadow-xl p-5">
+    <View className="w-4/5 bg-white rounded-lg shadow-xl p-5">
       {title && (
         <View className="">
           {typeof title === 'string' ? (
@@ -59,7 +64,7 @@ export default function ModalContent({
         </View>
       )}
       <View className="py-5">{renderMessage()}</View>
-      <View className="flex-row w-full">
+      <View className="flex-row w-full mt-4">
         {type === 'confirm' ? renderConfirmButton() : renderInfoButton()}
       </View>
     </View>

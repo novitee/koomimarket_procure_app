@@ -60,6 +60,14 @@ export const customScreenOptions:
   headerTitle: '',
 });
 
+export const mainHeaderTitleStyle: NativeStackNavigationOptions['headerTitleStyle'] =
+  {
+    fontSize: 32,
+    fontWeight: '700',
+    fontFamily: 'Inter',
+    color: colors.primary.DEFAULT,
+  };
+
 const barSources: Record<
   string,
   FunctionComponent<SVGAttributes<SVGElement>>
@@ -75,6 +83,7 @@ const barSources: Record<
 function BottomTabIcon({
   routeName,
   focused,
+  color,
 }: {
   routeName: string;
   color: string;
@@ -82,7 +91,7 @@ function BottomTabIcon({
 }) {
   const key = `${routeName.toLowerCase()}${focused ? '_active' : ''}`;
   const Icon = barSources[key];
-  return <Icon />;
+  return <Icon color={color} />;
 }
 
 export const customTabScreenOptions:
@@ -121,7 +130,7 @@ export const customTabScreenOptions:
   },
   headerTitleAlign: 'center',
   tabBarActiveTintColor: colors.primary.DEFAULT,
-  tabBarInactiveTintColor: '#6B7280',
+  tabBarInactiveTintColor: colors.gray['6B7280'],
 });
 
 export const myOutletsScreenOptions:

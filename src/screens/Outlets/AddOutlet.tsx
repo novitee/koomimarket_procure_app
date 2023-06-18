@@ -15,9 +15,12 @@ import ImagePicker from 'components/ImagePicker';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from 'react-native-simple-toast';
+import {styled} from 'nativewind';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
+
+const ErrorText = styled(Text, 'text-error mt-3');
 
 export default function AddOutletScreen({
   navigation,
@@ -30,7 +33,7 @@ export default function AddOutletScreen({
     render: false,
   });
 
-  const [{loading}, addOutlet] = useMutation({
+  const [{loading, error}, addOutlet] = useMutation({
     url: 'me/outlets/add',
   });
 
@@ -65,6 +68,14 @@ export default function AddOutletScreen({
     const {success, message} = await addOutlet({
       name: values.outletName,
       deliveryAddress: values.deliveryAddress,
+      billingPostal: '787878',
+      billingAddress: 'HTLE SSSSSS',
+      billingUnitNo: '1112',
+      postal: '757575',
+      unitNo: '8893',
+      mobileCode: '65',
+      mobileNumber: '12345678',
+      isSameBillingAddress: false,
     });
 
     if (success) {
@@ -74,6 +85,8 @@ export default function AddOutletScreen({
       Toast.show(message, Toast.LONG);
     }
   }
+
+  const {errors} = error || {};
 
   return (
     <Container>
@@ -122,9 +135,12 @@ export default function AddOutletScreen({
             <Label required>Delivery Address</Label>
             <Input
               value={deliveryAddress}
-              onChangeText={text => onChangeText(text, 'companyName')}
+              onChangeText={text => onChangeText(text, 'deliveryAddress')}
               placeholder="e.g. 13 Istana Road #01-10"
             />
+            {errors?.deliveryAddress && (
+              <ErrorText>Delivery Address {errors?.deliveryAddress}</ErrorText>
+            )}
           </FormGroup>
         </ScrollView>
       </KeyboardAvoidingView>

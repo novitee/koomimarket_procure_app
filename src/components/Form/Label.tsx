@@ -3,7 +3,7 @@ import {styled} from 'nativewind';
 import {TextProps} from 'react-native';
 import React from 'react';
 
-const StyledText = styled(Text, 'font-semibold mb-2');
+const StyledText = styled(Text, 'font-semibold mb-3');
 
 export default function Label({
   children,

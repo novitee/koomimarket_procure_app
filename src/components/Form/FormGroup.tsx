@@ -3,7 +3,7 @@ import React from 'react';
 import {styled} from 'nativewind';
 
 const StyledView = styled(View, 'mb-4');
-export default function Container({
+export default function FormGroup({
   children,
   ...props
 }: ViewProps & {containerClassName?: string}) {

@@ -41,7 +41,7 @@ export default function Input({
         {...props}
         onChangeText={onChangeText}
         placeholderTextColor={colors.gray.D1D5DB}
-        cursorColor={colors.dark}
+        selectionColor={colors.dark}
         className={clsx(
           {
             'text-gray-500': props.editable === false,

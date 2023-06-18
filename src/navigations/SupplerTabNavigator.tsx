@@ -1,5 +1,5 @@
 import React from 'react';
-import {customTabScreenOptions} from './common';
+import {customTabScreenOptions, mainHeaderTitleStyle} from './common';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import SupplierScreen from 'screens/SupplierTabs/Supplier';
 import OrderScreen from 'screens/SupplierTabs/Order';
@@ -9,9 +9,27 @@ const Tab = createBottomTabNavigator();
 export default function SupplerTabNavigator() {
   return (
     <Tab.Navigator screenOptions={customTabScreenOptions}>
-      <Tab.Screen name="Supplier" component={SupplierScreen} />
-      <Tab.Screen name="Order" component={OrderScreen} />
-      <Tab.Screen name="Team" component={TeamScreen} />
+      <Tab.Screen
+        name="Supplier"
+        options={{
+          headerTitleStyle: mainHeaderTitleStyle,
+        }}
+        component={SupplierScreen}
+      />
+      <Tab.Screen
+        name="Order"
+        options={{
+          headerTitleStyle: mainHeaderTitleStyle,
+        }}
+        component={OrderScreen}
+      />
+      <Tab.Screen
+        name="Team"
+        options={{
+          headerTitleStyle: mainHeaderTitleStyle,
+        }}
+        component={TeamScreen}
+      />
     </Tab.Navigator>
   );
 }

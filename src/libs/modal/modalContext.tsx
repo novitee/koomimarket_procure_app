@@ -6,7 +6,11 @@ export interface ModalInterface {
   isOpen?: boolean;
   title?: React.ReactNode | string;
   message?: React.ReactNode | string;
-  modifiers?: any;
+  modifiers?: {
+    type?: 'confirm' | 'info';
+    confirmTitle?: string;
+    cancelTitle?: string;
+  };
   ContentComponent?: React.ElementType | null;
   onConfirm?: (args?: any) => void | undefined | Promise<void>;
 }

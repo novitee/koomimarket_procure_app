@@ -5,10 +5,13 @@ import HomeIcon from 'assets/images/home.svg';
 import CameraIcon from 'assets/images/camera.svg';
 import ImagePicker from 'components/ImagePicker';
 import {Asset} from 'react-native-image-picker';
+
 export default function ImageUpload({
   onChange,
+  icon,
 }: {
-  onChange: ((value: Asset | Asset[]) => void) | undefined;
+  onChange?: ((value: Asset | Asset[]) => void) | undefined;
+  icon?: React.ReactNode;
 }) {
   return (
     <ImagePicker onChange={onChange}>
@@ -21,6 +24,8 @@ export default function ImageUpload({
               className="w-full h-full overflow-hidden rounded-full"
               source={{uri: selectedUri[0]}}
             />
+          ) : icon ? (
+            icon
           ) : (
             <HomeIcon />
           )}
