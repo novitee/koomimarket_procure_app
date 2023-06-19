@@ -121,6 +121,7 @@ function useMutation({
       }
       return {
         success: false,
+        error: {},
         ...error,
         message: message,
       };

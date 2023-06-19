@@ -116,14 +116,12 @@ export default function CreateBusiness({
   }
 
   async function handleUpdateProfile() {
-    if (
-      !validateInputs({
-        ...errors,
-        businessName: !businessName,
-        postalCode: !postalCode,
-      })
-    )
-      return;
+    const validFields = validateInputs({
+      ...errors,
+      businessName: !businessName,
+      postalCode: !postalCode,
+    });
+    if (!validFields) return;
 
     const {success, data, error, message} = await updateSignUpProfile({
       entityRegistration: {
@@ -152,7 +150,6 @@ export default function CreateBusiness({
             <Label required>Business Name</Label>
             <Input
               value={businessName}
-              // onChangeText={text => onChangeText(text, 'businessName')}
               onChangeText={(text: string) =>
                 onChangeFields({
                   businessName: text,
@@ -169,7 +166,6 @@ export default function CreateBusiness({
               value={postalCode}
               onChangeText={handleChangePostalCode}
               placeholder="Postal Code"
-              // className="mb-4"
               className={errors.postalCode ? 'border-red-500 mb-4' : 'mb-4'}
               keyboardType="numeric"
             />

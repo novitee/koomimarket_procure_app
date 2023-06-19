@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {View, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Container from 'components/Container';
@@ -12,6 +12,7 @@ import {ROLE_BUYER} from 'configs/index';
 import Toast from 'react-native-simple-toast';
 import useMe from 'hooks/useMe';
 import {IAppStore, setState} from 'stores/app';
+import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 
 const urls: Record<string, string> = {
   signUp: 'registrations/verify-otp-code',
@@ -40,7 +41,7 @@ export default function VerifyOTP({
   }, [navigation, user]);
 
   async function handleVerify() {
-    const {success, data, error} = await verifyOTP({
+    const {success, data, error, message} = await verifyOTP({
       otpToken,
       otpCode,
     });
@@ -58,30 +59,35 @@ export default function VerifyOTP({
       refresh();
     } else {
       console.log(`error :>>`, error);
-      Toast.show(error?.message, Toast.LONG);
+      Toast.show(error?.message || message, Toast.LONG);
     }
   }
 
   return (
     <Container>
-      <View className="flex-1">
-        <Text className="text-24 font-bold text-center">
-          We just text a code to:
-        </Text>
-        <Text className="text-24 font-bold text-center">{phoneNumber}</Text>
-        <Text className="text-24 font-bold text-center">
-          Enter the code below
-        </Text>
+      <KeyboardAvoidingView>
+        <ScrollView>
+          <View className="flex-1">
+            <Text className="text-24 font-bold text-center">
+              We just text a code to:
+            </Text>
+            <Text className="text-24 font-bold text-center">{phoneNumber}</Text>
+            <Text className="text-24 font-bold text-center">
+              Enter the code below
+            </Text>
 
-        <OtpInput
-          containerClassName="mt-10"
-          onChange={text => setOtpCode(text)}
-        />
-      </View>
-
-      <Button loading={loading || isUserLoading} onPress={handleVerify}>
-        Next
-      </Button>
+            <OtpInput
+              containerClassName="mt-10"
+              onChange={text => setOtpCode(text)}
+            />
+          </View>
+        </ScrollView>
+        <View>
+          <Button loading={loading || isUserLoading} onPress={handleVerify}>
+            Next
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

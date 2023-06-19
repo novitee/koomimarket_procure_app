@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Linking} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Container from 'components/Container';
 import ChefIcon from 'assets/images/chef.svg';
 import SupplierIcon from 'assets/images/supplier.svg';
@@ -7,7 +7,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {SUPPLIER_DASHBOARD_URL} from 'configs/index';
 import {Title} from 'components/Text';
 import {useGlobalStore} from 'stores/global';
-import {setState} from 'stores/app';
+import {setState, useAppStore, IAppStore} from 'stores/app';
 
 const types = [
   {
@@ -29,6 +29,23 @@ export default function WhatYouDoScreen({
 }: NativeStackScreenProps<any>) {
   const {navigate} = navigation;
   const mode = useGlobalStore(s => s.authMode) || '';
+  const {authRegisterType} = useAppStore();
+
+  useEffect(() => {
+    triggerNavigate(authRegisterType);
+  }, [navigation, authRegisterType]);
+
+  function triggerNavigate(registerType: IAppStore['authRegisterType']) {
+    if (registerType === 'BUYER') {
+      authRegisterType === 'BUYER'
+        ? navigate('CreateProfile')
+        : setState({authRegisterType: 'BUYER'});
+    } else if (registerType === 'SUPPLIER') {
+      authRegisterType === 'SUPPLIER'
+        ? navigate('GetInTouch')
+        : setState({authRegisterType: 'SUPPLIER'});
+    }
+  }
 
   function navigateTo(code: string) {
     if (mode === 'login') {
@@ -39,9 +56,9 @@ export default function WhatYouDoScreen({
       }
     } else if (mode === 'signUp') {
       if (code === 'buyer') {
-        navigate('CreateProfile');
+        triggerNavigate('BUYER');
       } else if (code === 'supplier') {
-        navigate('GetInTouch');
+        triggerNavigate('SUPPLIER');
       }
     }
   }

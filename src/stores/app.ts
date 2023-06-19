@@ -21,6 +21,7 @@ export interface IAppStore {
   authToken?: string;
   authRefreshToken?: string;
   isFirstLoad?: boolean;
+  authRegisterType?: 'BUYER' | 'SUPPLIER' | '';
   authStatus:
     | 'NOT_AUTH'
     | 'AUTH_COMPLETED'
@@ -35,6 +36,7 @@ const appStore = createStore<IAppStore>()(
       authRefreshToken: '',
       isFirstLoad: true,
       authStatus: 'NOT_AUTH',
+      authRegisterType: '',
     }),
     {
       name: 'app-storage',

@@ -56,10 +56,11 @@ export default function Login({navigation}: NativeStackScreenProps<any>) {
     });
   }
   async function onNext() {
-    const {success, data, error} = await verifyPhoneNumber({
+    const {success, data, error, message} = await verifyPhoneNumber({
       mobileCode: values.code.toString(),
       mobileNumber: values.number,
     });
+    console.log('message :>> ', message);
     if (success) {
       navigation.navigate('VerifyOTP', {
         otpToken: data.otpToken,
@@ -68,7 +69,7 @@ export default function Login({navigation}: NativeStackScreenProps<any>) {
       });
     } else {
       console.log(`error :>>`, error);
-      Toast.show(error?.message, Toast.LONG);
+      Toast.show(error.message || message, Toast.LONG);
     }
   }
 

@@ -12,12 +12,14 @@ import CreateBusinessScreen from 'screens/Auth/CreateBusiness';
 import JoinMyTeamScreen from 'screens/Auth/JoinMyTeam';
 import {useAppStore} from 'stores/app';
 import SupplierThankYouScreen from 'screens/Auth/SupplierThankYou';
-
+import {resetAuthData} from 'utils/auth';
 const Stack = createNativeStackNavigator();
 
 export default function AuthNavigator() {
-  const {authStatus} = useAppStore();
+  const {authStatus, authRegisterType} = useAppStore();
+  // resetAuthData();
   console.log('authStatus :>> ', authStatus);
+  console.log('authRegisterType :>> ', authRegisterType);
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
@@ -35,14 +37,23 @@ export default function AuthNavigator() {
 
       {authStatus === 'REGISTERING' && (
         <Stack.Group>
-          <Stack.Screen name="CreateProfile" component={CreateProfile} />
-          <Stack.Screen name="GetInTouch" component={GetInTouchScreen} />
-          <Stack.Screen name="WhatYouLike" component={WhatYouLikeScreen} />
-          <Stack.Screen
-            name="CreateBusiness"
-            component={CreateBusinessScreen}
-          />
-          <Stack.Screen name="JoinMyTeam" component={JoinMyTeamScreen} />
+          <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} />
+          {authRegisterType === 'BUYER' && (
+            <>
+              <Stack.Screen name="CreateProfile" component={CreateProfile} />
+              <Stack.Screen name="WhatYouLike" component={WhatYouLikeScreen} />
+              <Stack.Screen
+                name="CreateBusiness"
+                component={CreateBusinessScreen}
+              />
+              <Stack.Screen name="JoinMyTeam" component={JoinMyTeamScreen} />
+            </>
+          )}
+          {authRegisterType === 'SUPPLIER' && (
+            <>
+              <Stack.Screen name="GetInTouch" component={GetInTouchScreen} />
+            </>
+          )}
           <Stack.Screen
             name="SupplierThankYou"
             component={SupplierThankYouScreen}
