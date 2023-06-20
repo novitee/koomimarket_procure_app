@@ -40,7 +40,7 @@ export default function GetInTouchScreen({
     };
   }
 
-  const {name, companyName, position, email, howYouHeard, errors} = values;
+  const {name, companyName, position, email, howHeardAboutUs, errors} = values;
 
   function onChangeText(text: string, field: string) {
     dispatch({[field]: text, render: true});
@@ -71,7 +71,7 @@ export default function GetInTouchScreen({
       name: !name,
       companyName: !companyName,
       email: !email || !validateEmail(email),
-      howYouHeard: !howYouHeard,
+      howHeardAboutUs: !howHeardAboutUs,
     });
 
     if (!validFields) return;
@@ -91,7 +91,7 @@ export default function GetInTouchScreen({
           fullName: name,
           email: email,
           jobPosition: position,
-          howYouHeard: howYouHeard,
+          howHeardAboutUs: howHeardAboutUs,
         },
       },
     });
@@ -149,8 +149,8 @@ export default function GetInTouchScreen({
           <FormGroup>
             <Label required>How did you hear about Koomi?</Label>
             <Input
-              value={howYouHeard}
-              onChangeText={text => onChangeText(text, 'howYouHeard')}
+              value={howHeardAboutUs}
+              onChangeText={text => onChangeText(text, 'howHeardAboutUs')}
               placeholder="I heard about it from a friend!"
             />
           </FormGroup>

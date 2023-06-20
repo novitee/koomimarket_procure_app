@@ -1,26 +1,26 @@
-import {Image, ScrollView, TouchableOpacity, View} from 'react-native';
-import React, {useReducer, useState} from 'react';
+import {Image, ScrollView, View} from 'react-native';
+import React, {useReducer, useState, useEffect} from 'react';
 import Container from 'components/Container';
 import Text, {SubTitle, Title} from 'components/Text';
-
+import CheckBox from 'components/CheckBox';
 import {LogBox} from 'react-native';
 import Button from 'components/Button';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import FormGroup from 'components/Form/FormGroup';
 import Label from 'components/Form/Label';
 import Input from 'components/Input';
-import HomeIcon from 'assets/images/home.svg';
-import CameraIcon from 'assets/images/camera.svg';
-import ImagePicker from 'components/ImagePicker';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from 'react-native-simple-toast';
 import {styled} from 'nativewind';
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-]);
+import ImageUpload from 'components/ImageUpload';
+import usePostalCode from 'hooks/usePostalCode';
+import clsx from 'libs/clsx';
+// LogBox.ignoreLogs([
+//   'Non-serializable values were found in the navigation state',
+// ]);
 
-const ErrorText = styled(Text, 'text-error mt-3');
+// const ErrorText = styled(Text, 'text-error mt-3');
 
 export default function AddOutletScreen({
   navigation,
@@ -37,46 +37,144 @@ export default function AddOutletScreen({
     url: 'me/outlets/add',
   });
 
+  const {handlePostalCodeChange} = usePostalCode();
+
   function reducer(state: any, action: any) {
     const updatedValues = state;
-
-    if ('outletName' in action) {
-      updatedValues.outletName = action.outletName;
-    }
-
-    if ('deliveryAddress' in action) {
-      updatedValues.deliveryAddress = action.deliveryAddress;
-    }
 
     if (action.render) {
       setCurrentState(1 - currentState);
     }
 
-    return updatedValues;
+    return {...updatedValues, ...action};
   }
 
-  const {outletName, deliveryAddress} = values;
+  const {
+    outletName,
+    postalCode,
+    billingAddress,
+    unitNo,
+    deliveryAddress,
+    deliveryPostalCode,
+    deliveryUnitNo,
+    sameAsBillingAddress,
+    photo,
+    errors = {},
+  } = values;
+
   function onChangeText(text: string, field: string) {
     dispatch({[field]: text, render: true});
   }
+  function onChangeFields(fields: {[key: string]: string | boolean | object}) {
+    dispatch({...fields, render: true});
+  }
 
-  function handleSelectImage(value) {
-    console.log(`value :>>`, value);
+  function handleChangeUnitNo(text: string) {
+    if (sameAsBillingAddress) {
+      onChangeFields({unitNo: text, deliveryUnitNo: text});
+    } else {
+      onChangeFields({unitNo: text});
+    }
+  }
+
+  async function handleChangePostalCode(text: string) {
+    const address = await handlePostalCodeChange(text);
+    let changeFields = {
+      postalCode: text,
+      billingAddress: address,
+      errors: {
+        ...errors,
+        postalCode: !text,
+        billingAddress: !address,
+      },
+    } as any;
+
+    if (sameAsBillingAddress) {
+      changeFields = {
+        ...changeFields,
+        deliveryPostalCode: text,
+        deliveryAddress: address,
+        errors: {
+          ...errors,
+          ...changeFields.errors,
+          deliveryPostalCode: !text,
+          deliveryAddress: !address,
+        },
+      };
+    }
+    onChangeFields(changeFields);
+  }
+
+  async function handleChangeDeliveryPostalCode(text: string) {
+    const address = await handlePostalCodeChange(text);
+    onChangeFields({
+      deliveryPostalCode: text,
+      deliveryAddress: address,
+      errors: {
+        ...errors,
+        deliveryPostalCode: !text,
+        deliveryAddress: !address,
+      },
+    });
+  }
+
+  function handleSetSameAsBillingAddress(value: boolean) {
+    let changeFields = {
+      sameAsBillingAddress: value,
+    } as any;
+    if (value) {
+      changeFields = {
+        ...changeFields,
+        deliveryAddress: billingAddress,
+        deliveryUnitNo: unitNo,
+        deliveryPostalCode: postalCode,
+      };
+    }
+    onChangeFields(changeFields);
+  }
+
+  function validateInputs(errors: {[key: string]: boolean}) {
+    onChangeFields({errors});
+    return Object.keys(errors).reduce((acc: boolean, key: string) => {
+      if (errors[key]) {
+        Toast.show('Please fill in all required fields', Toast.SHORT);
+        return false;
+      }
+      return acc;
+    }, true);
+  }
+
+  function handleChangePhoto(photo: any) {
+    if (!photo || !Array.isArray(photo)) return;
+    const {uri, signedKey} = photo[0] || {};
+    onChangeFields({photo: {url: uri, signedKey}});
   }
 
   async function handleAddOutlet() {
-    const {success, message} = await addOutlet({
-      name: values.outletName,
-      deliveryAddress: values.deliveryAddress,
-      billingPostal: '787878',
-      billingAddress: 'HTLE SSSSSS',
-      billingUnitNo: '1112',
-      postal: '757575',
-      unitNo: '8893',
-      mobileCode: '65',
-      mobileNumber: '12345678',
-      isSameBillingAddress: false,
+    const validFields = validateInputs({
+      ...errors,
+      outletName: !outletName,
+      postalCode: !postalCode,
+      billingAddress: !billingAddress,
+      deliveryPostalCode: !deliveryPostalCode,
+      deliveryAddress: !deliveryAddress,
     });
+
+    if (!validFields) return;
+
+    const params = {
+      name: outletName,
+      billingPostal: postalCode,
+      billingAddress: billingAddress,
+      deliveryAddress: deliveryAddress,
+      deliveryPostal: deliveryPostalCode,
+      isSameBillingAddress: sameAsBillingAddress,
+      unitNo: unitNo,
+      deliveryUnitNo: deliveryUnitNo,
+      photo: photo,
+    };
+    console.log('params  :>> ', params);
+    const {success, message} = await addOutlet(params);
 
     if (success) {
       refreshOutlet?.();
@@ -86,67 +184,106 @@ export default function AddOutletScreen({
     }
   }
 
-  const {errors} = error || {};
-
   return (
-    <Container>
+    <Container className="px-0">
       <KeyboardAvoidingView>
-        <ScrollView className="flex-1">
+        <ScrollView className="flex-1 px-5">
           <Title>Add Outlets</Title>
           <SubTitle>This is what suppliers will see your outlet as.</SubTitle>
 
           <View className="items-center mb-8">
-            <ImagePicker onChange={handleSelectImage}>
-              {({onPick, selectedUri, progress}) => (
-                <View className="w-[164px] h-[164px] rounded-full bg-gray-E0E0E4 items-center justify-center ">
-                  {selectedUri ? (
-                    <Image
-                      resizeMode="cover"
-                      resizeMethod="scale"
-                      className="w-full h-full overflow-hidden rounded-full"
-                      source={{uri: selectedUri[0]}}
-                    />
-                  ) : (
-                    <HomeIcon />
-                  )}
-                  {!!progress && progress > 0 && progress < 100 && (
-                    <View className="absolute w-full h-full rounded-full overflow-hidden items-center justify-center">
-                      <Text className="text-white font-medium">{`Uploading ${progress}%`}</Text>
-                    </View>
-                  )}
-                  <TouchableOpacity
-                    onPress={onPick}
-                    className="w-12 h-12 rounded-full items-center justify-center bg-primary absolute -bottom-2 right-3 z-20">
-                    <CameraIcon color="#ffffff" />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </ImagePicker>
+            <ImageUpload onChange={handleChangePhoto} />
           </View>
           <FormGroup>
             <Label required>Outlet Name</Label>
             <Input
               value={outletName}
-              onChangeText={text => onChangeText(text, 'fullName')}
+              onChangeText={text =>
+                onChangeFields({
+                  outletName: text,
+                  errors: {...errors, outletName: !text},
+                })
+              }
+              className={clsx({
+                'border-red-500': errors.outletName,
+              })}
               placeholder="e.g. Ah Gao’s Cafe"
             />
           </FormGroup>
           <FormGroup>
+            <Label required>Business Address</Label>
+            <Input
+              value={postalCode}
+              onChangeText={handleChangePostalCode}
+              placeholder="e.g. 645678"
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.postalCode,
+              })}
+              keyboardType="numeric"
+            />
+            <Input
+              value={billingAddress}
+              placeholder="Billing Address"
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.billingAddress,
+              })}
+              editable={false}
+            />
+            <Input
+              value={unitNo}
+              onChangeText={handleChangeUnitNo}
+              placeholder="Unit Number"
+            />
+          </FormGroup>
+          <FormGroup>
             <Label required>Delivery Address</Label>
+            <CheckBox
+              label="Same as billing address"
+              containerClassName="my-4"
+              defaultValue={sameAsBillingAddress}
+              onChange={handleSetSameAsBillingAddress}
+            />
+            <Input
+              value={deliveryPostalCode}
+              onChangeText={text => handleChangeDeliveryPostalCode(text)}
+              placeholder="e.g. 645678"
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.deliveryPostalCode,
+              })}
+              keyboardType="numeric"
+              editable={!sameAsBillingAddress}
+            />
             <Input
               value={deliveryAddress}
-              onChangeText={text => onChangeText(text, 'deliveryAddress')}
-              placeholder="e.g. 13 Istana Road #01-10"
+              placeholder="Delivery Address"
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.deliveryAddress,
+              })}
+              editable={false}
             />
-            {errors?.deliveryAddress && (
-              <ErrorText>Delivery Address {errors?.deliveryAddress}</ErrorText>
-            )}
+            <Input
+              value={deliveryUnitNo}
+              onChangeText={text => onChangeText(text, 'deliveryUnitNo')}
+              placeholder="Unit Number"
+              editable={!sameAsBillingAddress}
+            />
           </FormGroup>
         </ScrollView>
+        <View className=" pt-4 px-5">
+          <Button
+            loading={loading}
+            onPress={handleAddOutlet}
+            className={clsx({
+              'bg-gray-400 cursor-not-allowed': loading,
+            })}>
+            Create Outlet
+          </Button>
+        </View>
       </KeyboardAvoidingView>
-      <Button loading={loading} onPress={handleAddOutlet}>
-        Create Outlet
-      </Button>
     </Container>
   );
 }

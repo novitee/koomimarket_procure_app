@@ -9,7 +9,6 @@ import Button from 'components/Button';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import CheckBox from 'components/CheckBox';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
@@ -35,8 +34,8 @@ export default function CreateBusiness({
       onChangeFields({
         postalCode: postalCode,
         billingAddress: address,
-        deliveryPostalCode: postalCode,
-        deliveryAddress: address,
+        // deliveryPostalCode: postalCode,
+        // deliveryAddress: address,
         errors: {...errors, postalCode: !address},
       });
     } else {
@@ -59,13 +58,13 @@ export default function CreateBusiness({
 
   const {
     businessName,
-    deliveryAddress,
+    // deliveryAddress,
     postalCode,
     billingAddress,
     unitNo,
     sameAsBillingAddress,
-    deliveryPostalCode,
-    deliveryUnitNo,
+    // deliveryPostalCode,
+    // deliveryUnitNo,
     errors = {},
   } = values;
 

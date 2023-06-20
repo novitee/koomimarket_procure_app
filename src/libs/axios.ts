@@ -1,6 +1,6 @@
 import axios from 'axios';
-const REACT_APP_API_URI = 'https://api-procure-dev.koomimarket.com';
-// const REACT_APP_API_URI = 'http://localhost:36001';
+// const REACT_APP_API_URI = 'https://api-procure-dev.koomimarket.com';
+const REACT_APP_API_URI = 'http://localhost:36001';
 const BASE_URL = `${REACT_APP_API_URI}/api/v1/procure-storefront/`;
 
 export default function createAxios(
