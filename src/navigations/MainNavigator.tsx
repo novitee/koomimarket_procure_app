@@ -1,5 +1,8 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 import KoomiLogo from 'assets/images/koomi-logo.svg';
 import {customScreenOptions, myOutletsScreenOptions} from './common';
 
@@ -10,15 +13,40 @@ import SupportScreen from 'screens/Outlets/Support';
 import AddOutletScreen from 'screens/Outlets/AddOutlet';
 import EditProfileScreen from 'screens/Outlets/EditProfile';
 import EditOutletScreen from 'screens/Outlets/EditOutlet';
-import AddSupplierName from 'screens/AddingSupplier/AddSupplierName';
-import AddSupplierPurpose from 'screens/AddingSupplier/AddSupplierPurpose';
-import AddSupplierContact from 'screens/AddingSupplier/AddSupplierContact';
-import UploadOrderList from 'screens/AddingSupplier/UploadOrderList';
-import CompleteAdding from 'screens/AddingSupplier/CompleteAdding';
-import SendInfo from 'screens/AddingSupplier/SendInfo';
+import AddSupplierName from 'screens/AddingSupplierManually/AddSupplierName';
+import AddSupplierPurpose from 'screens/AddingSupplierManually/AddSupplierPurpose';
+import AddSupplierContact from 'screens/AddingSupplierManually/AddSupplierContact';
+import UploadOrderList from 'screens/AddingSupplierManually/UploadOrderList';
+import CompleteAdding from 'screens/AddingSupplierManually/CompleteAdding';
+import SendInfo from 'screens/AddingSupplierManually/SendInfo';
+import AddTeamMemberScreen from 'screens/SupplierTabs/AddTeamMember';
+import {TouchableOpacity} from 'react-native';
+import Text from 'components/Text';
+import {ParamListBase, RouteProp} from '@react-navigation/native';
+import SupplierListScreen from 'screens/AddingSupplier/SupplierList';
+import SupplierGroupScreen from 'screens/AddingSupplier/SupplierGroup';
+import SupplierProfileScreen from 'screens/AddingSupplier/SupplierProfile';
+import AreCurrentCustomerScreen from 'screens/AddingSupplier/AreCurrentCustomer';
+
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
+
+export const customScreenMemberOptions:
+  | NativeStackNavigationOptions
+  | ((props: {
+      route: RouteProp<ParamListBase, string>;
+      navigation: any;
+    }) => NativeStackNavigationOptions)
+  | undefined = ({navigation}) => ({
+  headerBackVisible: false,
+  headerLeft: () => (
+    <TouchableOpacity onPress={navigation.goBack}>
+      <Text className="text-primary">Cancel</Text>
+    </TouchableOpacity>
+  ),
+  headerTitle: 'Add Team Member',
+});
 
 export default function MainNavigator(): JSX.Element {
   return (
@@ -58,8 +86,44 @@ export default function MainNavigator(): JSX.Element {
         }}
         component={SupplerTabNavigator}
       />
+      <Stack.Screen
+        name="AddTeamMember"
+        options={customScreenMemberOptions}
+        component={AddTeamMemberScreen}
+      />
 
       {/* AddingSupplier */}
+      <Stack.Group>
+        <Stack.Screen
+          name="SupplierList"
+          options={{
+            headerTitle: 'Add Suppliers',
+          }}
+          component={SupplierListScreen}
+        />
+        <Stack.Screen
+          name="SupplierGroup"
+          options={{
+            headerTitle: '',
+          }}
+          component={SupplierGroupScreen}
+        />
+        <Stack.Screen
+          name="SupplierProfile"
+          options={{
+            headerShown: false,
+          }}
+          component={SupplierProfileScreen}
+        />
+        <Stack.Screen
+          name="AreCurrentCustomer"
+          options={{
+            headerTitle: 'Add Suppliers',
+          }}
+          component={AreCurrentCustomerScreen}
+        />
+      </Stack.Group>
+      {/* AddingSupplierManually */}
       <Stack.Group>
         <Stack.Screen
           name="AddSupplierName"

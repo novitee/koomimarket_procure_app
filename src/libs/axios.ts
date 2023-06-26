@@ -1,6 +1,6 @@
 import axios from 'axios';
-// const REACT_APP_API_URI = 'https://api-procure-dev.koomimarket.com';
-const REACT_APP_API_URI = 'http://localhost:36001';
+const REACT_APP_API_URI = 'https://api-procure-dev.koomimarket.com';
+// const REACT_APP_API_URI = 'http://localhost:36001';
 const BASE_URL = `${REACT_APP_API_URI}/api/v1/procure-storefront/`;
 
 export default function createAxios(
@@ -12,6 +12,7 @@ export default function createAxios(
     'x-role-department': 'BUYER',
     'Content-Type': 'application/json',
   };
+
   if (authToken) {
     headers['x-token'] = authToken;
     headers['x-sign-up-token'] = authToken;
@@ -44,13 +45,10 @@ export default function createAxios(
     response => response.data,
     error => {
       if (error.response && error.response.data) {
-        // redirect to home page when unauthorized
-        // if (error.response.data.code === 401 && cookieAuthToken) {
-        //   cookieStorage.clearAuth();
-        //   window.location.href = '/';
-        // }
-
-        return Promise.reject({...error.response.data});
+        return Promise.reject({
+          ...error.response.data,
+          statusCode: error.response.status,
+        });
       } else {
         return Promise.reject({
           success: false,

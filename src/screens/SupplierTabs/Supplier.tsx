@@ -60,13 +60,17 @@ export default function SupplierScreen({
   useLayoutEffect(() => {
     if (currentOutlet) {
       navigation.setOptions({
-        headerTitle: currentOutlet?.name || 'TEst Outlet',
+        headerTitle: currentOutlet?.name || 'Test Outlet',
       });
     }
   }, [currentOutlet, navigation]);
 
   const toAddSupplier = useCallback(() => {
     navigation.navigate('AddSupplierName');
+  }, [navigation]);
+
+  const toSupplierList = useCallback(() => {
+    navigation.navigate('SupplierList');
   }, [navigation]);
 
   const handleSelectOutlet = useCallback(
@@ -86,12 +90,15 @@ export default function SupplierScreen({
           Start by adding your suppliers.
         </Text>
 
-        <Button className="mt-4" onPress={toAddSupplier}>
+        <Button className="mt-4" onPress={toSupplierList}>
           + Add Supplier
+        </Button>
+        <Button className="mt-4" onPress={toAddSupplier}>
+          + Add Supplier Manually
         </Button>
       </View>
     );
-  }, [toAddSupplier]);
+  }, [toAddSupplier, toSupplierList]);
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {

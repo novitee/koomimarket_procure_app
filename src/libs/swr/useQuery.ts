@@ -9,9 +9,11 @@ async function fetcher(
 ) {
   const authToken = getState().authToken || '';
   const authRefreshToken = getState().authRefreshToken || '';
+
   const result = await axios({authToken, authRefreshToken}).get(request, {
     params,
   });
+
   if (returnOriginalData) {
     return result;
   }

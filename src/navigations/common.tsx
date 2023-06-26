@@ -114,7 +114,7 @@ export const customTabScreenOptions:
         }
       : {
           paddingTop: 16,
-          height: 95,
+          height: 90,
         }),
   },
   tabBarLabelStyle: {

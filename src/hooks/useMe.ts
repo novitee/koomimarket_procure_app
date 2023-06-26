@@ -15,9 +15,9 @@ export default function useMe() {
     immutable: true,
     onError(err) {
       const authToken = getState().authToken || '';
-      const {code} = err;
+      const {statusCode} = err;
 
-      if (code === 401 && authToken) {
+      if (statusCode === 401 && authToken) {
         resetAuthData();
         navigation.reset({
           index: 0,
