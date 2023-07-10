@@ -70,7 +70,8 @@ export default function SupplierScreen({
   }, [navigation]);
 
   const toSupplierList = useCallback(() => {
-    navigation.navigate('SupplierList');
+    navigation.navigate('ProductCatalogue');
+    // navigation.navigate('SupplierList');
   }, [navigation]);
 
   const handleSelectOutlet = useCallback(

@@ -27,6 +27,7 @@ import SupplierListScreen from 'screens/AddingSupplier/SupplierList';
 import SupplierGroupScreen from 'screens/AddingSupplier/SupplierGroup';
 import SupplierProfileScreen from 'screens/AddingSupplier/SupplierProfile';
 import AreCurrentCustomerScreen from 'screens/AddingSupplier/AreCurrentCustomer';
+import ProductCatalogueScreen from 'screens/AddingProduct/ProductCatalogue';
 
 const Stack = createNativeStackNavigator();
 
@@ -161,6 +162,15 @@ export default function MainNavigator(): JSX.Element {
             headerLeft: () => null,
           }}
           component={CompleteAdding}
+        />
+      </Stack.Group>
+
+      {/* Adding Product */}
+
+      <Stack.Group>
+        <Stack.Screen
+          name="ProductCatalogue"
+          component={ProductCatalogueScreen}
         />
       </Stack.Group>
     </Stack.Navigator>
