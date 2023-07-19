@@ -1,12 +1,14 @@
 import {TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
-import Text, {Title} from 'components/Text';
+import Text from 'components/Text';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import SearchBar from 'components/SearchBar';
 import ProductCategories from './ProductCategories';
 import ProductList from './ProductList';
+import {toggleValueInArray} from 'utils/common';
+import Button from 'components/Button';
 
 function LineButton({
   children,
@@ -64,15 +66,16 @@ export default function ProductCatalogueScreen() {
 
   function handleSelectProduct(product: any) {
     dispatch({
-      selectedProductIds: [...selectedProductIds, product.id],
+      selectedProductIds: toggleValueInArray(product.id, selectedProductIds),
       render: true,
     });
   }
 
+  function handleSave() {}
+
   return (
-    <Container className="pt-0 px-0">
+    <Container className="pt-2 pb-0 px-0">
       <View className="px-5 mb-4">
-        <Title className="text-primary mb-4">Browse Catalogue</Title>
         <SearchBar
           onSearch={() => {}}
           placeholder="Search by supplier or product"
@@ -81,7 +84,6 @@ export default function ProductCatalogueScreen() {
       <LineButton className="border-t border-gray-D4D4D8">
         Add Products Manually
       </LineButton>
-      <LineButton>Upload Invoice</LineButton>
       <View className="flex-1 flex-row">
         <ProductCategories
           selectedCategory={selectedCategory}
@@ -92,6 +94,13 @@ export default function ProductCatalogueScreen() {
           selectedProductIds={selectedProductIds}
           selectedCategory={selectedCategory}
         />
+      </View>
+      <View className="bg-white px-5 pt-2">
+        <Button
+          disabled={selectedProductIds.length === 0}
+          onPress={handleSave}>{`Save Product ${
+          selectedProductIds.length > 0 ? `(${selectedProductIds.length})` : ''
+        }`}</Button>
       </View>
     </Container>
   );

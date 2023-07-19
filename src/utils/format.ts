@@ -27,3 +27,28 @@ export const formatFilename = (filename?: string) => {
   const newFilename = `${date}-${randomString}-${cleanFileName}`;
   return newFilename;
 };
+
+/**
+ * Converts a number to a formatted currency string.
+ *
+ * @param value The value to convert.
+ * @param currency The currency code.
+ * @param maximumFractionDigits The maximum number of fraction digits to display. Default is 8.
+ * @returns The formatted currency string.
+ */
+export function toCurrency(
+  value: number | undefined,
+  currency: string,
+  maximumFractionDigits: number = 8,
+): string {
+  if (typeof value === 'undefined') {
+    return '';
+  }
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits,
+  })
+    .format(value)
+    .replace('SGD', 'S$');
+}

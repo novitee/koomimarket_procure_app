@@ -16,8 +16,36 @@ export const PRODUCT_CATEGORIES = [
 ];
 
 export const PRODUCTS = [
-  {id: 1, name: 'Angled Gourd', price: '$4.00', unit: 'KG (S)', categoryId: 1},
-  {id: 2, name: 'Arrow Root', price: '$5.00', unit: 'KG (S)', categoryId: 1},
-  {id: 3, name: 'Asparagus Green', price: '$30.00', unit: 'KG', categoryId: 1},
-  {id: 4, name: 'Baby Corn', price: '$7.00', unit: 'Kilos (S)', categoryId: 1},
+  {
+    id: 1,
+    name: 'Angled Gourd',
+    image: require('assets/images/dummy.png'),
+    price: 4.0,
+    unit: 'KG (S)',
+    categoryId: 1,
+  },
+  {
+    id: 2,
+    name: 'Arrow Root',
+    image: require('assets/images/dummy.png'),
+    price: 5.0,
+    unit: 'KG (S)',
+    categoryId: 1,
+  },
+  {
+    id: 3,
+    name: 'Asparagus Green',
+    image: require('assets/images/dummy.png'),
+    price: 30.0,
+    unit: 'KG',
+    categoryId: 1,
+  },
+  {
+    id: 4,
+    name: 'Baby Corn',
+    price: 7.0,
+    image: require('assets/images/dummy.png'),
+    unit: 'Kilos (S)',
+    categoryId: 1,
+  },
 ];

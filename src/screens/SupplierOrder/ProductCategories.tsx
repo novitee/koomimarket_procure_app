@@ -30,10 +30,18 @@ export default function ProductCategories({
         <TouchableOpacity
           className={clsx({
             'pl-3 pr-2 min-h-[64px] items-center flex-row': true,
-            'bg-gray-300/20': isSelected,
+            'bg-gray-300/20': !isSelected,
+            'bg-primary': !!isSelected,
           })}
           onPress={() => onChange(item)}>
-          <Text className=" font-bold">{item.name}</Text>
+          <Text
+            className={clsx({
+              'font-bold': true,
+              'text-gray-500': !isSelected,
+              'text-white': !!isSelected,
+            })}>
+            {item.name}
+          </Text>
           {isSelected && (
             <View className="absolute left-0 top-1/2 -translate-y-[10px] bg-primary w-[5px] h-[20px] rounded-full" />
           )}

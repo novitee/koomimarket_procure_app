@@ -27,7 +27,8 @@ import SupplierListScreen from 'screens/AddingSupplier/SupplierList';
 import SupplierGroupScreen from 'screens/AddingSupplier/SupplierGroup';
 import SupplierProfileScreen from 'screens/AddingSupplier/SupplierProfile';
 import AreCurrentCustomerScreen from 'screens/AddingSupplier/AreCurrentCustomer';
-import ProductCatalogueScreen from 'screens/AddingProduct/ProductCatalogue';
+import ProductCatalogueScreen from 'screens/SupplierOrder/ProductCatalogue';
+import NewOrderScreen from 'screens/SupplierOrder/NewOrder';
 
 const Stack = createNativeStackNavigator();
 
@@ -169,8 +170,19 @@ export default function MainNavigator(): JSX.Element {
 
       <Stack.Group>
         <Stack.Screen
+          name="NewOrder"
+          options={{
+            headerTitle: 'New Order',
+          }}
+          component={NewOrderScreen}
+        />
+
+        <Stack.Screen
           name="ProductCatalogue"
           component={ProductCatalogueScreen}
+          options={{
+            headerTitle: 'Browse Catalogue',
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>

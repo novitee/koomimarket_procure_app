@@ -16,6 +16,7 @@
     "axios": "^1.4.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "dayjs": "^1.11.7",
+    "lodash.debounce": "^4.0.8",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.71.8",

@@ -1,7 +1,8 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ShippingIcon from 'assets/images/shipping.svg';
+import IllustrationIcon from 'assets/images/Illustration.svg';
 import {
   FlatList,
   StyleSheet,
@@ -12,42 +13,76 @@ import {
 import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {Image} from 'react-native';
+import SearchBar from 'components/SearchBar';
+import AddIcon from 'assets/images/plus.svg';
 
 import {LogBox} from 'react-native';
 import {setGlobal, useGlobalStore} from 'stores/global';
+import Avatar from 'components/Avatar';
+import dayjs from 'dayjs';
+import colors from 'configs/colors';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-function OutletItem({
+const dummySupplierData = [
+  {
+    image: null,
+    name: 'Vegetable Farm',
+    status: 'added',
+    createdAt: '2023-07-04',
+  },
+  {
+    image: null,
+    name: 'Glife Technologies Pte Ld',
+    status: 'pending',
+    createdAt: '2023-07-04',
+  },
+];
+
+function SupplierItem({
   item,
   onPress,
 }: {
   item?: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {avatar, name, deliveryAddress} = item || {};
+  const {image, name, status, createdAt} = item || {};
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      className="flex-row rounded-lg bg-gray-E0E0E4/20 p-5 mb-4">
-      <Image
-        className="w-[72px] h-[72px] bg-gray-400 rounded-lg overflow-hidden"
-        source={avatar}
-      />
-      <View className="flex-1 ml-4">
+    <View className="flex-row items-center rounded-lg  p-5">
+      <Avatar url={image} size={64} name={name} />
+      <View className="flex-1 justify-center ml-4">
         <Text className="font-bold text-18">{name || 'Test Outlet 1'}</Text>
-        <Text className="font-light mt-2">{deliveryAddress}</Text>
+        {status === 'added' && (
+          <Text className="font-light text-xs mt-2">{`Added at ${dayjs(
+            createdAt,
+          ).format('MM/DD/YYYY')}`}</Text>
+        )}
+        {status === 'pending' && (
+          <Text className="font-light  text-xs mt-2">
+            Pending Setup by Koomi Team
+          </Text>
+        )}
       </View>
-    </TouchableOpacity>
+      {status === 'added' && (
+        <TouchableOpacity hitSlop={10} onPress={onPress} className="p-5">
+          <View className="w-8 h-8 items-center justify-center rounded-full border-[3px] border-primary">
+            <AddIcon color={colors.primary.DEFAULT} strokeWidth="3" />
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }
 
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
+
+const _renderItemSeparator = () => (
+  <View className="w-full h-[1px] bg-gray-D1D5DB" />
+);
 
 export default function SupplierScreen({
   navigation,
@@ -56,6 +91,8 @@ export default function SupplierScreen({
   const {data} = useQuery(
     currentOutlet ? `me/outlets/${currentOutlet?.id}` : undefined,
   );
+
+  const [searchText, setSearchText] = useState('');
 
   useLayoutEffect(() => {
     if (currentOutlet) {
@@ -70,14 +107,13 @@ export default function SupplierScreen({
   }, [navigation]);
 
   const toSupplierList = useCallback(() => {
-    navigation.navigate('ProductCatalogue');
-    // navigation.navigate('SupplierList');
+    navigation.navigate('SupplierList');
   }, [navigation]);
 
-  const handleSelectOutlet = useCallback(
+  const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
-      setGlobal({currentOutlet: item});
-      navigation.navigate('SupplierTabs');
+      setGlobal({currentSupplier: item});
+      navigation.navigate('NewOrder');
     },
     [navigation],
   );
@@ -94,26 +130,52 @@ export default function SupplierScreen({
         <Button className="mt-4" onPress={toSupplierList}>
           + Add Supplier
         </Button>
+      </View>
+    );
+  }, [toSupplierList]);
+
+  const EmptySearchComponent = useCallback(() => {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <IllustrationIcon />
+        <Text className="font-bold mt-4 text-center">
+          Can’t find your supplier?
+        </Text>
+        <Text className="font-light mt-4 text-center">
+          Submit a form and our team will create it for you.
+        </Text>
+
         <Button className="mt-4" onPress={toAddSupplier}>
           + Add Supplier Manually
         </Button>
       </View>
     );
-  }, [toAddSupplier, toSupplierList]);
+  }, [toAddSupplier]);
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       return (
-        <OutletItem item={item} onPress={() => handleSelectOutlet({item})} />
+        <SupplierItem
+          item={item}
+          onPress={() => handleSelectSupplier({item})}
+        />
       );
     },
-    [handleSelectOutlet],
+    [handleSelectSupplier],
   );
 
-  const {records} = data || {};
+  // const {records} = data || {};
+  const records = dummySupplierData;
 
   return (
-    <Container>
+    <Container className="pt-4 px-0">
+      <SearchBar className="px-5" onSearch={setSearchText} />
+
+      {records.length > 0 && (
+        <Text className="px-3 mt-5 font-semibold">
+          Select any supplier to start order
+        </Text>
+      )}
       <FlatList
         keyExtractor={_keyExtractor}
         className="mt-6"
@@ -121,7 +183,8 @@ export default function SupplierScreen({
         renderItem={_renderItem}
         data={records || []}
         extraData={records}
-        ListEmptyComponent={EmptyComponent}
+        ListEmptyComponent={searchText ? EmptySearchComponent : EmptyComponent}
+        ItemSeparatorComponent={_renderItemSeparator}
       />
     </Container>
   );
