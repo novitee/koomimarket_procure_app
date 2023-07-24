@@ -11,7 +11,7 @@ const StyledTextInput = styled(
 
 const StyledContainerView = styled(
   View,
-  'h-[50px] bg-white flex-row rounded-5 relative border border-gray-300 rounded',
+  'h-[50px] bg-white flex-row relative border border-gray-300 rounded',
 );
 
 export interface RNTextInputProps extends TextInputProps {
