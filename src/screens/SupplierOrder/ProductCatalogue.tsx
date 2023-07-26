@@ -9,6 +9,7 @@ import ProductCategories from './ProductCategories';
 import ProductList from './ProductList';
 import {toggleValueInArray} from 'utils/common';
 import Button from 'components/Button';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 function LineButton({
   children,
@@ -37,7 +38,9 @@ function LineButton({
   );
 }
 
-export default function ProductCatalogueScreen() {
+export default function ProductCatalogueScreen({
+  navigation,
+}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -81,7 +84,9 @@ export default function ProductCatalogueScreen() {
           placeholder="Search by supplier or product"
         />
       </View>
-      <LineButton className="border-t border-gray-D4D4D8">
+      <LineButton
+        onPress={() => navigation.navigate('AddingProductType')}
+        className="border-t border-gray-D4D4D8">
         Add Products Manually
       </LineButton>
       <View className="flex-1 flex-row">

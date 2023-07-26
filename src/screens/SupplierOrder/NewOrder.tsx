@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useReducer, useState} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import IllustrationIcon from 'assets/images/Illustration.svg';
@@ -57,7 +57,27 @@ const _renderItemSeparator = () => (
 );
 
 function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
-  const [selectedItem, setSelectedItem] = useState<any>({});
+  const [currentState, setCurrentState] = useState(0);
+  const [values, dispatch] = useReducer(reducer, {
+    render: false,
+    selectedItem: {},
+  });
+
+  function reducer(state: any, action: any) {
+    const updatedValues = state;
+
+    if (action.render) {
+      setCurrentState(1 - currentState);
+    }
+
+    return {
+      ...updatedValues,
+      ...action,
+    };
+  }
+
+  const {selectedItem} = values;
+
   const toAddProduct = useCallback(() => {
     navigation.navigate('ProductCatalogue');
   }, [navigation]);
@@ -78,7 +98,10 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   }, [toAddProduct]);
 
   const handleEdit = useCallback((item: any) => {
-    setSelectedItem(item);
+    dispatch({
+      selectedItem: item,
+      render: true,
+    });
   }, []);
 
   const _renderItem = useCallback(
@@ -94,8 +117,8 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     [handleEdit],
   );
 
-  // const records: any = [];
-  const records = dummyData;
+  const records: any = [];
+  // const records = dummyData;
   return (
     <>
       <Container className="pt-4 px-0">
@@ -133,11 +156,23 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           <View className="flex-row">
             <Button
               variant="outline"
-              onPress={() => setSelectedItem({})}
+              onPress={() =>
+                dispatch({
+                  selectedItem: {},
+                  render: true,
+                })
+              }
               className="flex-1">
               Cancel
             </Button>
-            <Button onPress={() => setSelectedItem({})} className="flex-1 ml-2">
+            <Button
+              onPress={() =>
+                dispatch({
+                  selectedItem: {},
+                  render: true,
+                })
+              }
+              className="flex-1 ml-2">
               Save
             </Button>
           </View>

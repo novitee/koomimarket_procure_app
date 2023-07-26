@@ -29,6 +29,9 @@ import SupplierProfileScreen from 'screens/AddingSupplier/SupplierProfile';
 import AreCurrentCustomerScreen from 'screens/AddingSupplier/AreCurrentCustomer';
 import ProductCatalogueScreen from 'screens/SupplierOrder/ProductCatalogue';
 import NewOrderScreen from 'screens/SupplierOrder/NewOrder';
+import AddingProductTypeScreen from 'screens/AddingProductMannually/AddingProductType';
+import UploadInvoiceScreen from 'screens/AddingProductMannually/UploadInvoice';
+import AddingProductFormScreen from 'screens/AddingProductMannually/AddingProductForm';
 
 const Stack = createNativeStackNavigator();
 
@@ -182,6 +185,30 @@ export default function MainNavigator(): JSX.Element {
           component={ProductCatalogueScreen}
           options={{
             headerTitle: 'Browse Catalogue',
+          }}
+        />
+
+        <Stack.Screen
+          name="AddingProductType"
+          component={AddingProductTypeScreen}
+          options={{
+            headerTitle: 'Add Products Manually',
+          }}
+        />
+
+        <Stack.Screen
+          name="UploadInvoice"
+          component={UploadInvoiceScreen}
+          options={{
+            headerTitle: 'Upload a Past Invoice',
+          }}
+        />
+
+        <Stack.Screen
+          name="AddProductsManuallyForm"
+          component={AddingProductFormScreen}
+          options={{
+            headerTitle: 'Add Products Manually',
           }}
         />
       </Stack.Group>
