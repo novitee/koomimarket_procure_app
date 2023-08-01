@@ -37,7 +37,7 @@ function OrderItem({
 }) {
   return (
     <View className="flex-row items-center justify-between rounded-lg p-5">
-      <View className="ml-4">
+      <View>
         <Text className="text-sm ">{item.name}</Text>
         <TouchableOpacity
           className="p-2 bg-primary rounded mt-2"
@@ -62,6 +62,8 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     render: false,
     selectedItem: {},
   });
+
+  const minOrderAmount = 150;
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -117,16 +119,37 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     [handleEdit],
   );
 
-  const records: any = [];
-  // const records = dummyData;
+  // const records: any = [];
+  const records = dummyData;
   return (
     <>
       <Container className="pt-4 px-0">
         <SearchBar className="px-5" onSearch={() => {}} />
-
+        {records.length > 0 && (
+          <View className="mt-5">
+            <View className="flex-row justify-between items-center px-5">
+              <Text className="text-primary font-bold text-2xl">
+                My Order List
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ManageOrderList')}>
+                <Text className="text-primary">Manage List</Text>
+              </TouchableOpacity>
+            </View>
+            <View className="bg-gray-100 px-5 py-4 mt-4">
+              <Text className="font-medium">{`Minimum Order Amount: ${toCurrency(
+                minOrderAmount,
+                'USD',
+              )}`}</Text>
+              <Text className="text-sm text-gray-500 leading-none mt-2">
+                This supplier has a minimum order value. Additional costs may
+                occur if orders are placed under this amount.
+              </Text>
+            </View>
+          </View>
+        )}
         <FlatList
           keyExtractor={_keyExtractor}
-          className="mt-6"
           contentContainerStyle={styles.flatListContentStyle}
           renderItem={_renderItem}
           data={records || []}

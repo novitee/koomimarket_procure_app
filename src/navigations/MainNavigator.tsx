@@ -32,6 +32,8 @@ import NewOrderScreen from 'screens/SupplierOrder/NewOrder';
 import AddingProductTypeScreen from 'screens/AddingProductMannually/AddingProductType';
 import UploadInvoiceScreen from 'screens/AddingProductMannually/UploadInvoice';
 import AddingProductFormScreen from 'screens/AddingProductMannually/AddingProductForm';
+import ProductDetailScreen from 'screens/SupplierOrder/ProductDetail';
+import ManageOrderListScreen from 'screens/ManageOrderList';
 
 const Stack = createNativeStackNavigator();
 
@@ -209,6 +211,15 @@ export default function MainNavigator(): JSX.Element {
           component={AddingProductFormScreen}
           options={{
             headerTitle: 'Add Products Manually',
+          }}
+        />
+
+        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+        <Stack.Screen
+          name="ManageOrderList"
+          component={ManageOrderListScreen}
+          options={{
+            headerTitle: 'Manage Order List',
           }}
         />
       </Stack.Group>

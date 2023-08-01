@@ -1,10 +1,12 @@
-import {Text, FlatList, TouchableOpacity, View, Image} from 'react-native';
+import {Text, FlatList, TouchableOpacity, View} from 'react-native';
 import React, {useCallback, useMemo} from 'react';
 import {PRODUCTS} from 'configs/data';
 import {toCurrency} from 'utils/format';
 import AddIcon from 'assets/images/plus.svg';
 import CheckIcon from 'assets/images/check.svg';
 import colors from 'configs/colors';
+import Animated from 'react-native-reanimated';
+import useNavigation from 'hooks/useNavigation';
 
 interface ProductListProps {
   onSelect: (category: any) => void;
@@ -40,7 +42,11 @@ function ProductItem({
           <Text className="text-primary font-semibold">See Details</Text>
         </TouchableOpacity>
       </View>
-      <Image source={image} className="w-[72px] h-[72px]" />
+      <Animated.Image
+        sharedTransitionTag={`product-${name}`}
+        source={image}
+        className="w-[72px] h-[72px]"
+      />
       <TouchableOpacity
         hitSlop={10}
         onPress={() => onSelect?.(item)}
@@ -68,6 +74,7 @@ export default function ProductList({
   selectedProductIds,
   onSelect,
 }: ProductListProps) {
+  const {navigate} = useNavigation();
   const productsData = useMemo(() => {
     return PRODUCTS.filter(
       product => product.categoryId === selectedCategory?.id,
@@ -77,11 +84,26 @@ export default function ProductList({
     }));
   }, [selectedCategory?.id, selectedProductIds]);
 
+  const toProductDetail = useCallback(
+    (item: any) => {
+      navigate('ProductDetail', {
+        product: item,
+      });
+    },
+    [navigate],
+  );
+
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
-      return <ProductItem item={item} onSelect={onSelect} />;
+      return (
+        <ProductItem
+          item={item}
+          onSelect={onSelect}
+          onViewDetail={toProductDetail}
+        />
+      );
     },
-    [onSelect],
+    [onSelect, toProductDetail],
   );
   return (
     <FlatList

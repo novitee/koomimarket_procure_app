@@ -186,6 +186,16 @@ export default function SupplierScreen({
         ListEmptyComponent={searchText ? EmptySearchComponent : EmptyComponent}
         ItemSeparatorComponent={_renderItemSeparator}
       />
+      <View className="flex-row justify-end px-5">
+        <Button
+          fullWidth={false}
+          className="px-4"
+          size="md"
+          onPress={toSupplierList}
+          variant="outline">
+          + Add Supplier
+        </Button>
+      </View>
     </Container>
   );
 }
