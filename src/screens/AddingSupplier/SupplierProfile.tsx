@@ -8,7 +8,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import Container from 'components/Container';
 import Animated from 'react-native-reanimated';
 import dummyCover from 'assets/images/dummy_cover.png';
@@ -20,7 +20,8 @@ import TruckIcon from 'assets/images/truck.svg';
 import CalendarIcon from 'assets/images/calendar.svg';
 import ClockIcon from 'assets/images/clock.svg';
 import colors from 'configs/colors';
-
+import _ from 'lodash';
+import useQuery from 'libs/swr/useQuery';
 const Icons = [
   () => <CurrencyIcon color={colors.primary.DEFAULT} />,
   () => <TruckIcon color={colors.primary.DEFAULT} />,
@@ -28,13 +29,81 @@ const Icons = [
   () => <ClockIcon color={colors.primary.DEFAULT} />,
 ];
 
+function querySupplier(slug: string) {
+  const url = `suppliers/${slug}`;
+  const params = {
+    fields: 'id,name,slug,description,minOrder,deliveryFee,cutOffTiming',
+    include:
+      'photo(id,url,width,height,signedKey,filename,contentType),deliveryDays(weekday,active)',
+  };
+  return useQuery([url, params]);
+}
+
+function queryProducts(slug: string) {
+  const url = `products`;
+  const params = {
+    first: 20,
+    skip: 0,
+    orderBy: {
+      soldOut: 'asc',
+      createdAt: 'desc',
+    },
+    supplierFilter: {
+      slug_in: [slug],
+    },
+    include:
+      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode)',
+    fields: 'id,slug,name',
+  };
+  return useQuery([url, params]);
+}
+
 export default function SupplierProfileScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const {supplier} = route.params || {};
-  const {name, description, properties, catalogues} = supplier || {};
+  const {slug} = route.params || {};
+  const {data} = querySupplier(slug);
+  const {data: productsData} = queryProducts(slug);
+  const {company: supplier} = data || {};
+  const {
+    name,
+    description,
+    photo,
+    minOrder,
+    deliveryFee,
+    cutOffTiming,
+    deliveryDays,
+  } = supplier || {};
+  const {records: products} = productsData || {};
 
+  const showDeliveryDays = deliveryDays?.reduce((acc: any, curr: any) => {
+    if (curr.active) {
+      acc += _.capitalize(curr.weekday.slice(0, 3)) + ', ';
+    }
+    return acc;
+  }, '');
+
+  const properties = [
+    {
+      label: 'Minimum Order Value',
+      value: `${minOrder} SGD`,
+    },
+    {
+      label: 'Delivery fee',
+      value: `${deliveryFee} SGD`,
+    },
+    {
+      label: 'Delivery days',
+      value: showDeliveryDays,
+    },
+    {
+      label: 'Cut-off time ',
+      // value: '1 day before, 1.00am',
+      value: cutOffTiming,
+    },
+  ];
+  const imageUrl = photo ? {uri: photo?.url} : dummyCover;
   const _renderAboutItem = useCallback(
     ({item, index}: {item?: any; index: number}) => {
       return (
@@ -52,15 +121,21 @@ export default function SupplierProfileScreen({
 
   const _renderCatalogueItem = useCallback(
     ({item}: {item?: any; index: number}) => {
+      const {photos, finalPricing} = item || {};
+      const photo = photos?.[0];
+      const {currencyCode, pricing, unit} = finalPricing || {};
+      const showPricing = `${currencyCode} ${pricing} ${unit}`;
+      const imageUrl = photo ? {uri: photo?.url} : dummyCover;
       return (
         <View className="p-4 flex-row justify-between">
-          <View>
-            <Text className="text-sm font-medium">{item.label}</Text>
+          <View className="mr-4 flex-1">
+            <Text className="text-sm font-medium">{item.name}</Text>
             <Text className="text-sm font-light text-gray-400">
-              {item.price}
+              {showPricing}
             </Text>
+            <Text className="text-red-500">See details</Text>
           </View>
-          <Image source={item.image} className="w-[72px] h-[72px]" />
+          <Image source={imageUrl} className="w-[72px] h-[72px] flex-0" />
         </View>
       );
     },
@@ -71,12 +146,17 @@ export default function SupplierProfileScreen({
     <View className="w-full h-[1px] bg-gray-D1D5DB" />
   );
 
+  const [isShowMore, setIsShowMore] = useState(false);
+  const showMore = useCallback(() => {
+    setIsShowMore(!isShowMore);
+  }, [isShowMore]);
+
   return (
     <View className="flex-1">
       <StatusBar translucent barStyle={'light-content'} />
 
       <Animated.Image
-        source={dummyCover}
+        source={imageUrl}
         className="w-screen h-[240px]"
         sharedTransitionTag={`supplier-${name}`}
       />
@@ -89,7 +169,14 @@ export default function SupplierProfileScreen({
           contentContainerStyle={styles.scrollView}
           className="flex-1 p-5">
           <Text className="text-36 font-extrabold">{name}</Text>
-          <Text className="mt-5">{description}</Text>
+          <Text className="mt-5">
+            {isShowMore ? description : description?.substring(0, 80)}
+          </Text>
+          {description && description.length > 80 && (
+            <Text onPress={showMore} className="text-red-500">
+              {isShowMore ? 'See Less' : 'See More'}
+            </Text>
+          )}
           <Text className="font-bold my-4">About</Text>
           <FlatList
             className="border border-gray-D1D5DB px-4"
@@ -104,8 +191,8 @@ export default function SupplierProfileScreen({
             className="border border-gray-D1D5DB"
             scrollEnabled={false}
             renderItem={_renderCatalogueItem}
-            data={catalogues}
-            keyExtractor={item => item.label}
+            data={products}
+            keyExtractor={item => item.slug}
             ItemSeparatorComponent={_renderItemSeparator}
           />
         </ScrollView>

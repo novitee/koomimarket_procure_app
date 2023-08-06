@@ -164,6 +164,7 @@ export default function AddOutletScreen({
 
     const params = {
       name: outletName,
+      postal: postalCode,
       billingPostal: postalCode,
       billingAddress: billingAddress,
       deliveryAddress: deliveryAddress,
@@ -172,8 +173,10 @@ export default function AddOutletScreen({
       unitNo: unitNo,
       deliveryUnitNo: deliveryUnitNo,
       photo: photo,
+      mobileCode: 'none',
+      mobileNumber: 'none',
     };
-    console.log('params  :>> ', params);
+
     const {success, message} = await addOutlet(params);
 
     if (success) {

@@ -55,6 +55,13 @@ export default function ImagePicker({
     };
   }
 
+  const getBlob = async (fileUri: string) => {
+    const resp = await fetch(fileUri);
+    const imageBody = await resp.blob();
+    console.log('imageBody :>> ', imageBody);
+    return imageBody;
+  };
+
   async function handleUpload(assets: Asset[]) {
     const uploadedImages: (Asset & {signedKey?: string})[] = [];
     await Promise.all(
@@ -82,15 +89,13 @@ export default function ImagePicker({
             },
           };
 
-          const formData = new FormData();
-          formData.append('file', getImageData(file));
+          const imageBlob = await getBlob(file?.uri || '');
           try {
             const res = await axios.put(
               data.signedRequestURL,
-              formData,
+              imageBlob,
               axiosOptions,
             );
-
             if (res) {
               uploadedImages.push({
                 ...file,

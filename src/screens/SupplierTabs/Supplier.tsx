@@ -26,21 +26,6 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-const dummySupplierData = [
-  {
-    image: null,
-    name: 'Vegetable Farm',
-    status: 'added',
-    createdAt: '2023-07-04',
-  },
-  {
-    image: null,
-    name: 'Glife Technologies Pte Ld',
-    status: 'pending',
-    createdAt: '2023-07-04',
-  },
-];
-
 function SupplierItem({
   item,
   onPress,
@@ -84,21 +69,35 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
+function listSupplier() {
+  const url = `/channels`;
+  const params = {
+    first: 100,
+    skip: 0,
+    orderby: {
+      updatedAt: 'desc',
+    },
+    filter: {
+      status_nin: ['INACTIVE'],
+    },
+    searchString: '',
+    include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
+  };
+  return useQuery([url, params]);
+}
+
 export default function SupplierScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
-  const {data} = useQuery(
-    currentOutlet ? `me/outlets/${currentOutlet?.id}` : undefined,
-  );
+
+  const {data} = listSupplier();
 
   const [searchText, setSearchText] = useState('');
 
   useLayoutEffect(() => {
     if (currentOutlet) {
-      navigation.setOptions({
-        headerTitle: currentOutlet?.name || 'Test Outlet',
-      });
+      navigation.setOptions({headerTitle: currentOutlet?.name});
     }
   }, [currentOutlet, navigation]);
 
@@ -164,14 +163,13 @@ export default function SupplierScreen({
     [handleSelectSupplier],
   );
 
-  // const {records} = data || {};
-  const records = dummySupplierData;
+  const {records} = data || {};
 
   return (
     <Container className="pt-4 px-0">
       <SearchBar className="px-5" onSearch={setSearchText} />
 
-      {records.length > 0 && (
+      {!!records && records.length > 0 && (
         <Text className="px-3 mt-5 font-semibold">
           Select any supplier to start order
         </Text>

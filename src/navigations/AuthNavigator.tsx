@@ -31,7 +31,7 @@ export default function AuthNavigator() {
           <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
         </Stack.Group>
       )}
-      {['AUTH_COMPLETED'].includes(authStatus) && (
+      {authStatus === 'AUTH_COMPLETED' && (
         <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} />
       )}
 
