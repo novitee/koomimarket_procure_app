@@ -6,7 +6,7 @@ const REQUEST_START = 'REQUEST_START';
 const REQUEST_SUCCESS = 'REQUEST_SUCCESS';
 const REQUEST_FAIL = 'REQUEST_FAIL';
 
-interface MutationProps {
+export interface MutationProps {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   url: string;
   onSuccess?: (response: any) => void;

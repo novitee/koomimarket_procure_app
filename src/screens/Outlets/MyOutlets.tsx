@@ -14,9 +14,10 @@ import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useIsFocused} from '@react-navigation/native';
 import {Image} from 'react-native';
-
 import {LogBox} from 'react-native';
 import {setGlobal} from 'stores/global';
+import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import {saveAuthData} from 'utils/auth';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -29,14 +30,15 @@ function OutletItem({
   item?: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {avatar, name, deliveryAddress} = item || {};
+  const {photo, name, deliveryAddress} = item || {};
+
   return (
     <TouchableOpacity
       onPress={onPress}
       className="flex-row rounded-lg bg-gray-E0E0E4/20 p-5 mb-4">
       <Image
         className="w-[72px] h-[72px] bg-gray-400 rounded-lg overflow-hidden"
-        source={avatar}
+        source={photo?.url}
       />
       <View className="flex-1 ml-4">
         <Text className="font-bold text-18">{name || 'Test Outlet 1'}</Text>
@@ -50,14 +52,27 @@ function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
+function queryOutlets() {
+  const url = 'me/outlets';
+  const params = {
+    include: 'photos(url,width,height,filename,contentType,signedKey)',
+  };
+  return useQuery([url, params]);
+}
+
+function switchOutlet() {
+  const optMutation = {method: 'PATCH', url: `me/switchOutlet`};
+  const [{loading}, setOutlet] = useMutation(optMutation as MutationProps);
+  return {loading, setOutlet};
+}
+
 export default function MyOutletsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {data, mutate} = useQuery(
-    'me/outlets?include=photos(url,width,height,filename,contentType,signedKey)',
-  );
-
+  const {data, mutate} = queryOutlets();
   useIsFocused();
+
+  const {loading, setOutlet} = switchOutlet();
 
   const toAddOutlet = useCallback(() => {
     navigation.navigate('AddOutlet', {
@@ -66,9 +81,14 @@ export default function MyOutletsScreen({
   }, [mutate, navigation]);
 
   const handleSelectOutlet = useCallback(
-    ({item}: {item?: any}) => {
+    async ({item}: {item?: any}) => {
       setGlobal({currentOutlet: item});
-      navigation.navigate('SupplierTabs');
+      const {data, success} = await setOutlet({outletId: item.id});
+      if (success) {
+        const {token, refreshToken} = data;
+        saveAuthData({token, refreshToken});
+        navigation.navigate('SupplierTabs');
+      }
     },
     [navigation],
   );

@@ -1,8 +1,10 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import Container from 'components/Container';
 import SearchBar from 'components/SearchBar';
+import useQuery from 'libs/swr/useQuery';
+import {useDebounce} from 'hooks/useDebounce';
 import dummy from 'assets/images/dummy.png';
-
+// const dummy = 'assets/images/dummy.png';
 import {
   FlatList,
   ImageBackground,
@@ -12,44 +14,7 @@ import {
 } from 'react-native';
 import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-const records = [
-  {
-    title: 'Local Farm',
-    image: dummy,
-  },
-  {
-    title: 'MEAT AND POULTRY',
-    image: dummy,
-  },
-  {
-    title: 'SEAFOOD',
-    image: dummy,
-  },
-  {
-    title: 'BEVERAGES',
-    image: dummy,
-  },
-  {
-    title: 'DAIRY',
-    image: dummy,
-  },
-  {
-    title: 'DRIED GOODS',
-    image: dummy,
-  },
-  {
-    title: 'BAKED GOODS',
-    image: dummy,
-  },
-  {
-    title: 'SPECIALTY',
-    image: dummy,
-  },
-  {
-    title: 'COFFEE & TEA',
-    image: dummy,
-  },
-];
+import CompleteAdding from 'screens/AddingSupplierManually/CompleteAdding';
 
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
@@ -62,22 +27,41 @@ function SupplierItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
+  const imageUrl = item?.photo ? {uri: item?.photo?.url} : dummy;
   return (
     <TouchableOpacity className="h-[96px] mt-2" onPress={onPress}>
       <ImageBackground
-        source={item.image}
+        source={imageUrl}
         className="item-center justify-center w-full h-full">
         <Text className="text-32 font-bold text-white text-center">
-          {item.title.toUpperCase()}
+          {item.name?.toUpperCase()}
         </Text>
       </ImageBackground>
     </TouchableOpacity>
   );
 }
 
+function queryCategories(searchString: string) {
+  const url = 'supplier-categories';
+  const params = {
+    first: 100,
+    searchString,
+    fields: 'id,name,depth,parent,position,slug,tags',
+    include: 'photo(url)',
+    orderBy: {position: 'asc'},
+    filter: {depth: 0},
+  };
+  return useQuery([url, params]);
+}
+
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
+  const [searchString, setSearchString] = useState('');
+
+  const {data, mutate} = queryCategories(searchString);
+  mutate();
+  const {records} = data || {};
   const EmptyComponent = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center">
@@ -107,9 +91,29 @@ export default function SupplierListScreen({
     [handleSelectSupplier],
   );
 
+  const onSearch = useCallback(
+    (value: string) => {
+      setSearchString(value);
+      mutate();
+    },
+    [mutate],
+  );
+
+  const debounceSearch = useCallback(
+    useDebounce({callback: onSearch, delay: 500}),
+    [onSearch],
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      debounceSearch(value);
+    },
+    [debounceSearch],
+  );
+
   return (
     <Container className="pt-0">
-      <SearchBar onSearch={() => {}} />
+      <SearchBar onSearch={handleSearch} />
 
       <FlatList
         className="flex-1"

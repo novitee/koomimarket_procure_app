@@ -14,10 +14,10 @@ export default function useMe() {
   } = useQuery('me', {
     immutable: true,
     onError(err) {
-      const authToken = getState().authToken || '';
+      const {authStatus, authToken} = getState();
       const {statusCode} = err;
 
-      if (statusCode === 401 && authToken) {
+      if (statusCode === 401 && authToken && authStatus !== 'REGISTERING') {
         resetAuthData();
         navigation.reset({
           index: 0,

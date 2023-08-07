@@ -1,9 +1,9 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
 import Container from 'components/Container';
 import SearchBar from 'components/SearchBar';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import dummyCover from 'assets/images/dummy_cover.png';
-import dummyCatalogue from 'assets/images/dummy_catalogue.png';
+import {useDebounce} from 'hooks/useDebounce';
 import {
   FlatList,
   Text,
@@ -13,76 +13,7 @@ import {
 } from 'react-native';
 
 import Animated from 'react-native-reanimated';
-
-const records = [
-  {
-    image: dummyCover,
-    name: 'Vegetable Farm Pte Ltd',
-    noOfProduct: 128,
-    description:
-      'We specialize in growing fresh, organic produce using sustainable farming practices. ',
-    properties: [
-      {
-        label: 'Minimum Order Value',
-        value: '0 SGD',
-      },
-      {
-        label: 'Delivery fee',
-        value: '0 SGD',
-      },
-      {
-        label: 'Delivery days',
-        value: 'Mon, Tue, Wed, Thus, Fri, Sat',
-      },
-      {
-        label: 'Cut-off time ',
-        value: '1 day before, 1.00am',
-      },
-    ],
-    catalogues: [
-      {
-        label: 'Cabbage Mini (Wa Wa Chye)',
-        price: '$0.00 Kilos (S)',
-        image: dummyCatalogue,
-      },
-      {
-        label: 'Dragonfruit Red',
-        price: '$0.00 Kilos (S)',
-        image: dummyCatalogue,
-      },
-      {
-        label: 'Honeydew',
-        price: '$0.00 Kilos (S)',
-        image: dummyCatalogue,
-      },
-      {
-        label: 'Lettuce Oak Red',
-        price: '$0.00 Kilos (S)',
-        image: dummyCatalogue,
-      },
-      {
-        label: 'Lime Seedless',
-        price: '$0.00 Kilos (S)',
-        image: dummyCatalogue,
-      },
-    ],
-  },
-  {
-    image: dummyCover,
-    name: 'Organic Farm Pte Ltd',
-    noOfProduct: 57,
-  },
-  {
-    image: dummyCover,
-    name: 'ABC Organic Farm',
-    noOfProduct: 46,
-  },
-  {
-    image: dummyCover,
-    name: 'ABC Vegetable Farm',
-    noOfProduct: 28,
-  },
-];
+import useQuery from 'libs/swr/useQuery';
 
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
@@ -95,10 +26,15 @@ function SupplierItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
+  const imageUrl = item?.photo ? {uri: item?.photo?.url} : dummyCover;
+  const discoverText =
+    item.productCountByCategory > 1
+      ? `${item.productCountByCategory} products`
+      : `${item.productCountByCategory} product`;
   return (
     <TouchableOpacity className=" mt-5 w-full " onPress={onPress}>
       <Animated.Image
-        source={dummyCover}
+        source={imageUrl}
         className="w-full h-[112px]"
         sharedTransitionTag={`supplier-${item.name}`}
       />
@@ -110,12 +46,26 @@ function SupplierItem({
       </View>
       <View className="px-4 py-3 border border-t-0 border-gray-D4D4D8">
         <Text className="font-semibold">{item.name}</Text>
-        <Text className="text-chevron">
-          Discover {item.noOfProduct} products
-        </Text>
+        <Text className=" text-blue-500">Discover {discoverText}</Text>
       </View>
     </TouchableOpacity>
   );
+}
+
+function querySuppliers(searchString: string, extraParams = {} as any) {
+  const categorySlug = extraParams?.categorySlug || {};
+  const url = 'suppliers';
+  const params = {
+    first: 100,
+    skip: 0,
+    searchString,
+    fields: 'id,name,slug,productCountByCategory',
+    include: 'photo(id,url,width,height,signedKey,filename,contentType)',
+    orderBy: {createdAt: 'desc'},
+    filter: {status: 'ACTIVE'},
+    categoryFilter: {slug: categorySlug},
+  };
+  return useQuery([url, params]);
 }
 
 export default function SupplierGroupScreen({
@@ -123,6 +73,10 @@ export default function SupplierGroupScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {group} = route.params || {};
+  const {slug} = group || {};
+  const [searchString, setSearchString] = useState('');
+  const {data, mutate} = querySuppliers(searchString, {categorySlug: slug});
+  const {records} = data || {};
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: group.title,
@@ -141,7 +95,7 @@ export default function SupplierGroupScreen({
 
   const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
-      navigation.navigate('SupplierProfile', {supplier: item});
+      navigation.navigate('SupplierProfile', {slug: item.slug});
     },
     [navigation],
   );
@@ -158,9 +112,29 @@ export default function SupplierGroupScreen({
     [handleSelectSupplier],
   );
 
+  const onSearch = useCallback(
+    (value: string) => {
+      setSearchString(value);
+      mutate();
+    },
+    [mutate],
+  );
+
+  const debounceSearch = useCallback(
+    useDebounce({callback: onSearch, delay: 500}),
+    [onSearch],
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      debounceSearch(value);
+    },
+    [debounceSearch],
+  );
+
   return (
     <Container className="pt-0">
-      <SearchBar onSearch={() => {}} />
+      <SearchBar onSearch={handleSearch} />
       <FlatList
         className="flex-1"
         keyExtractor={_keyExtractor}

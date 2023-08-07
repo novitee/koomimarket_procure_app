@@ -1,5 +1,5 @@
 import axios from 'libs/axios';
-import {getState} from 'stores/global';
+import {getState} from 'stores/app';
 import {BareFetcher} from 'swr';
 import useSWRInfinite, {
   SWRInfiniteConfiguration,
@@ -8,8 +8,11 @@ import useSWRInfinite, {
 
 const fetcher = async (request: string, params: any) => {
   const authToken = getState().authToken || '';
+  const authRefreshToken = getState().authRefreshToken || '';
 
-  const result = await axios({authToken}).get(request, {params});
+  const result = await axios({authToken, authRefreshToken}).get(request, {
+    params,
+  });
 
   const {data} = result || {};
   return data?.data;
