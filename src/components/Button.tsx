@@ -20,21 +20,21 @@ const configs: Record<string, any> = {
   primary: {
     StyledButton: styled(
       TouchableOpacity,
-      'bg-primary h-[56px] rounded-full justify-center items-center flex-row',
+      'bg-primary h-[56px] rounded-full justify-center items-center flex-row  px-5',
     ),
     StyledText: styled(Text, 'text-white font-semibold'),
   },
   outline: {
     StyledButton: styled(
       TouchableOpacity,
-      'bg-white border-2 border-primary h-[56px] rounded-full justify-center items-center flex-row',
+      'bg-white border-2 border-primary h-[56px] rounded-full justify-center items-center flex-row  px-5',
     ),
     StyledText: styled(Text, 'text-primary font-semibold'),
   },
   secondary: {
     StyledButton: styled(
       TouchableOpacity,
-      'bg-primary/10 h-[56px] rounded-full justify-center items-center flex-row',
+      'bg-primary/10 h-[56px] rounded-full justify-center items-center flex-row  px-5',
     ),
     StyledText: styled(Text, 'text-primary font-semibold'),
   },

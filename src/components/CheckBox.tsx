@@ -26,6 +26,7 @@ export default function CheckBox({
     if (defaultValue !== checked) {
       setChecked(defaultValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
 
   function handleChange() {

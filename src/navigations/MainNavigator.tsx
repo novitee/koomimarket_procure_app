@@ -34,6 +34,7 @@ import UploadInvoiceScreen from 'screens/AddingProductMannually/UploadInvoice';
 import AddingProductFormScreen from 'screens/AddingProductMannually/AddingProductForm';
 import ProductDetailScreen from 'screens/SupplierOrder/ProductDetail';
 import ManageOrderListScreen from 'screens/ManageOrderList';
+import SelectScreen from 'screens/SelectScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -222,6 +223,13 @@ export default function MainNavigator(): JSX.Element {
             headerTitle: 'Manage Order List',
           }}
         />
+      </Stack.Group>
+
+      <Stack.Group
+        screenOptions={{
+          presentation: 'modal',
+        }}>
+        <Stack.Screen name="SelectScreen" component={SelectScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

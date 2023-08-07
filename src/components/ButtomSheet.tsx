@@ -1,4 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {
+  ForwardedRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {
   Dimensions,
   Modal,
@@ -21,16 +26,24 @@ type BottomSheetProps = {
   isOpen?: boolean;
   onClose?: () => void;
   contentHeight?: number;
+  ref?: any;
 };
 
-export default function BottomSheet({
-  children,
-  isOpen,
-  onClose,
-  contentHeight = 500,
-}: BottomSheetProps) {
+function BottomSheet(
+  {children, isOpen, onClose, contentHeight = 500}: BottomSheetProps,
+  ref: ForwardedRef<any>,
+) {
   const translateY = useSharedValue(0);
   const [openModal, setOpenModal] = useState(isOpen);
+
+  useImperativeHandle(ref, () => ({
+    close() {
+      setOpenModal(false);
+    },
+    open() {
+      setOpenModal(true);
+    },
+  }));
 
   useEffect(() => {
     if (isOpen && isOpen !== openModal) {
@@ -80,6 +93,8 @@ export default function BottomSheet({
     </Modal>
   );
 }
+
+export default React.forwardRef(BottomSheet);
 
 const styles = StyleSheet.create({
   bottomSheetContainer: {
