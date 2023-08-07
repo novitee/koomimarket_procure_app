@@ -136,7 +136,7 @@ export default function MainNavigator(): JSX.Element {
         <Stack.Screen
           name="AddSupplierName"
           options={{
-            headerTitle: 'Add Supplier',
+            headerTitle: 'Add Supplier Manually',
           }}
           component={AddSupplierName}
         />
@@ -144,14 +144,14 @@ export default function MainNavigator(): JSX.Element {
           name="AddSupplierPurpose"
           component={AddSupplierPurpose}
           options={{
-            headerTitle: 'Add Supplier',
+            headerTitle: 'Add Supplier Manually',
           }}
         />
         <Stack.Screen
           name="AddSupplierContact"
           component={AddSupplierContact}
           options={{
-            headerTitle: 'Add Supplier',
+            headerTitle: 'Add Supplier Manually',
           }}
         />
         <Stack.Screen

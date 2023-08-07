@@ -39,11 +39,11 @@ function querySupplier(slug: string) {
   return useQuery([url, params]);
 }
 
-function queryProducts(slug: string) {
-  const url = `products`;
+function queryProducts(slug: string, skip = 0) {
+  const url = 'products';
   const params = {
-    first: 20,
-    skip: 0,
+    first: 5,
+    skip: skip,
     orderBy: {
       soldOut: 'asc',
       createdAt: 'desc',
@@ -195,6 +195,7 @@ export default function SupplierProfileScreen({
             keyExtractor={item => item.slug}
             ItemSeparatorComponent={_renderItemSeparator}
           />
+          <Text className="text-red-500 mt-2">See More</Text>
         </ScrollView>
         <View className="px-5">
           <Button

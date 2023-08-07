@@ -12,7 +12,8 @@ import Text from 'components/Text';
 import colors from 'configs/colors';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-
+import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 const WHATSAPP = 'Whatsapp';
 const EMAIL = 'Email';
 const BOTH = 'BOTH';
@@ -32,8 +33,18 @@ const options = [
   },
 ];
 
+function addSupplierContact() {
+  const url = 'suppliers/add-manually';
+  const optMutation = {method: 'POST', url};
+  const [{loading}, newSupplierContact] = useMutation(
+    optMutation as MutationProps,
+  );
+  return {loading, newSupplierContact};
+}
+
 export default function AddSupplierContact({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
@@ -45,6 +56,9 @@ export default function AddSupplierContact({
     keyItem: new Date().getTime(),
     emails: [''],
   });
+
+  const {supplierName, isCustomerPurchased, linkedAccountNumber} =
+    route?.params || {};
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -59,11 +73,35 @@ export default function AddSupplierContact({
     };
   }
 
-  const {orderCreationMethod, phoneCode, phoneNumber, emails} = values;
+  const {name, orderCreationMethod, phoneCode, phoneNumber, emails} = values;
 
-  function handleNext() {
-    console.log(`values :>>`, values);
-    navigation.navigate('UploadOrderList');
+  const {loading, newSupplierContact} = addSupplierContact();
+
+  async function handleSubmit() {
+    const opts = {
+      supplierName,
+      isCustomerPurchased,
+      linkedAccountNumber,
+      fullName: name,
+      mobileCode: phoneCode,
+      mobileNumber: phoneNumber,
+      emails,
+      orderCreationMethod: orderCreationMethod.toUpperCase(),
+    };
+    const response = await newSupplierContact(opts);
+    const {data, success, error} = response;
+    if (!success) {
+      Toast.show('Create Supplier Manually Failed', Toast.LONG);
+      return null;
+    }
+    return data.supplier;
+  }
+
+  async function handleNext() {
+    const supplier = await handleSubmit();
+    if (supplier) {
+      navigation.navigate('UploadOrderList', {supplier});
+    }
   }
 
   const isDisabled = orderCreationMethod === null;

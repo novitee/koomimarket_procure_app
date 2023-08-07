@@ -21,7 +21,7 @@ import {setGlobal, useGlobalStore} from 'stores/global';
 import Avatar from 'components/Avatar';
 import dayjs from 'dayjs';
 import colors from 'configs/colors';
-
+import useSearch from 'hooks/useSearch';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -33,24 +33,32 @@ function SupplierItem({
   item?: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {image, name, status, createdAt} = item || {};
+  const {name, createdAt, lastMessage, channelMembers} = item || {};
+  const supplierChannelMember = channelMembers.find(
+    (channelMember: any) => channelMember.objectType === 'SUPPLIER',
+  );
+  const imageUrl = supplierChannelMember?.photo?.url;
+  const {type, text} = lastMessage || {};
+  const isPendingSetup =
+    type === 'group_notification' && text === 'Pending Setup';
+
   return (
     <View className="flex-row items-center rounded-lg  p-5">
-      <Avatar url={image} size={64} name={name} />
+      <Avatar url={imageUrl} size={64} name={name} />
       <View className="flex-1 justify-center ml-4">
-        <Text className="font-bold text-18">{name || 'Test Outlet 1'}</Text>
-        {status === 'added' && (
+        <Text className="font-bold text-18">{name}</Text>
+        {!isPendingSetup && (
           <Text className="font-light text-xs mt-2">{`Added at ${dayjs(
             createdAt,
           ).format('MM/DD/YYYY')}`}</Text>
         )}
-        {status === 'pending' && (
+        {isPendingSetup && (
           <Text className="font-light  text-xs mt-2">
             Pending Setup by Koomi Team
           </Text>
         )}
       </View>
-      {status === 'added' && (
+      {!isPendingSetup && (
         <TouchableOpacity hitSlop={10} onPress={onPress} className="p-5">
           <View className="w-8 h-8 items-center justify-center rounded-full border-[3px] border-primary">
             <AddIcon color={colors.primary.DEFAULT} strokeWidth="3" />
@@ -69,7 +77,7 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
-function listSupplier() {
+function queryChannels(searchString: string = '') {
   const url = `/channels`;
   const params = {
     first: 100,
@@ -80,7 +88,7 @@ function listSupplier() {
     filter: {
       status_nin: ['INACTIVE'],
     },
-    searchString: '',
+    searchString,
     include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
   };
   return useQuery([url, params]);
@@ -89,11 +97,9 @@ function listSupplier() {
 export default function SupplierScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
+  const {searchString, handleSearch} = useSearch();
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
-
-  const {data} = listSupplier();
-
-  const [searchText, setSearchText] = useState('');
+  const {data} = queryChannels(searchString);
 
   useLayoutEffect(() => {
     if (currentOutlet) {
@@ -138,7 +144,7 @@ export default function SupplierScreen({
       <View className="flex-1 justify-center items-center">
         <IllustrationIcon />
         <Text className="font-bold mt-4 text-center">
-          Can’t find your supplier?
+          Can't find your supplier?
         </Text>
         <Text className="font-light mt-4 text-center">
           Submit a form and our team will create it for you.
@@ -167,7 +173,7 @@ export default function SupplierScreen({
 
   return (
     <Container className="pt-4 px-0">
-      <SearchBar className="px-5" onSearch={setSearchText} />
+      <SearchBar className="px-5" onSearch={handleSearch} />
 
       {!!records && records.length > 0 && (
         <Text className="px-3 mt-5 font-semibold">
@@ -181,7 +187,9 @@ export default function SupplierScreen({
         renderItem={_renderItem}
         data={records || []}
         extraData={records}
-        ListEmptyComponent={searchText ? EmptySearchComponent : EmptyComponent}
+        ListEmptyComponent={
+          searchString ? EmptySearchComponent : EmptyComponent
+        }
         ItemSeparatorComponent={_renderItemSeparator}
       />
       <View className="flex-row justify-end px-5">

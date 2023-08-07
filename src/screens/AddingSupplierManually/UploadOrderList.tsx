@@ -21,12 +21,14 @@ const options = [
 
 export default function UploadOrderList({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const [type, setType] = useState();
-
+  const {supplier} = route?.params || {};
   function toSendInfo() {
     navigation.navigate('SendInfo', {
       type,
+      supplierId: supplier?.id,
     });
   }
   return (
@@ -45,16 +47,11 @@ export default function UploadOrderList({
             <Text className="text-center mt-2">{option.description}</Text>
           </TouchableOpacity>
         ))}
-        {type === 'photo' ? (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CompletedAdding')}>
-            <Text className="text-center text-primary text-lg">
-              I will do it later
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <View className="h-6" />
-        )}
+        <TouchableOpacity onPress={() => navigation.navigate('CompleteAdding')}>
+          <Text className="text-center text-primary text-lg">
+            I will do it later
+          </Text>
+        </TouchableOpacity>
       </View>
       <Button disabled={!type} onPress={toSendInfo}>
         Next
