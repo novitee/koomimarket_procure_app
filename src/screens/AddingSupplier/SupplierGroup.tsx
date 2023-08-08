@@ -52,22 +52,6 @@ function SupplierItem({
   );
 }
 
-function querySuppliers(searchString: string, extraParams = {} as any) {
-  const categorySlug = extraParams?.categorySlug || {};
-  const url = 'suppliers';
-  const params = {
-    first: 100,
-    skip: 0,
-    searchString,
-    fields: 'id,name,slug,productCountByCategory',
-    include: 'photo(id,url,width,height,signedKey,filename,contentType)',
-    orderBy: {createdAt: 'desc'},
-    filter: {status: 'ACTIVE'},
-    categoryFilter: {slug: categorySlug},
-  };
-  return useQuery([url, params]);
-}
-
 export default function SupplierGroupScreen({
   navigation,
   route,
@@ -75,8 +59,21 @@ export default function SupplierGroupScreen({
   const {group} = route.params || {};
   const {slug} = group || {};
   const [searchString, setSearchString] = useState('');
-  const {data, mutate} = querySuppliers(searchString, {categorySlug: slug});
+  const {data, mutate} = useQuery([
+    'suppliers',
+    {
+      first: 100,
+      skip: 0,
+      searchString,
+      fields: 'id,name,slug,productCountByCategory',
+      include: 'photo(id,url,width,height,signedKey,filename,contentType)',
+      orderBy: {createdAt: 'desc'},
+      filter: {status: 'ACTIVE'},
+      categoryFilter: {slug: slug},
+    },
+  ]);
   const {records} = data || {};
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: group.title,
@@ -120,10 +117,7 @@ export default function SupplierGroupScreen({
     [mutate],
   );
 
-  const debounceSearch = useCallback(
-    useDebounce({callback: onSearch, delay: 500}),
-    [onSearch],
-  );
+  const debounceSearch = useDebounce({callback: onSearch, delay: 500});
 
   const handleSearch = useCallback(
     (value: string) => {

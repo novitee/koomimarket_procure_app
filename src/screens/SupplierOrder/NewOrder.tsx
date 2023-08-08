@@ -14,7 +14,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import SearchBar from 'components/SearchBar';
 import Counter from 'components/Counter';
 import {toCurrency} from 'utils/format';
-import BottomSheet from 'components/ButtomSheet';
+import BottomSheet from 'components/BottomSheet';
 import Input from 'components/Input';
 
 const dummyData = [

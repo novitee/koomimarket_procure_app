@@ -16,7 +16,7 @@ import Input from 'components/Input';
 import clsx from 'libs/clsx';
 import AddIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
-import BottomSheet from 'components/ButtomSheet';
+import BottomSheet from 'components/BottomSheet';
 import ImagePicker from 'components/ImagePicker';
 
 const units = [

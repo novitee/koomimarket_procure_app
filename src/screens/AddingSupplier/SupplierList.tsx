@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import CompleteAdding from 'screens/AddingSupplierManually/CompleteAdding';
 
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
@@ -41,30 +40,27 @@ function SupplierItem({
   );
 }
 
-function queryCategories(searchString: string) {
-  const url = 'supplier-categories';
-  const params = {
-    first: 100,
-    searchString,
-    fields: 'id,name,depth,parent,position,slug,tags',
-    include: 'photo(url)',
-    orderBy: {position: 'asc'},
-    filter: {depth: 0},
-  };
-  return useQuery([url, params]);
-}
-
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const [searchString, setSearchString] = useState('');
+  const url = 'supplier-categories';
 
-  const {data, mutate} = queryCategories(searchString);
-  mutate();
+  const {data, mutate} = useQuery([
+    url,
+    {
+      first: 100,
+      searchString,
+      fields: 'id,name,depth,parent,position,slug,tags',
+      include: 'photo(url)',
+      orderBy: {position: 'asc'},
+      filter: {depth: 0},
+    },
+  ]);
   const {records} = data || {};
   const EmptyComponent = useCallback(() => {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center px-5">
         <Text className="font-bold mt-4 text-center">
           No supplier available
         </Text>
@@ -99,10 +95,7 @@ export default function SupplierListScreen({
     [mutate],
   );
 
-  const debounceSearch = useCallback(
-    useDebounce({callback: onSearch, delay: 500}),
-    [onSearch],
-  );
+  const debounceSearch = useDebounce({callback: onSearch, delay: 500});
 
   const handleSearch = useCallback(
     (value: string) => {

@@ -1,6 +1,6 @@
 import {View, Text} from 'react-native';
 import React, {useState} from 'react';
-import BottomSheet from 'components/ButtomSheet';
+import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
 import Input from 'components/Input';
 import Label from 'components/Form/Label';

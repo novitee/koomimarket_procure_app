@@ -69,29 +69,26 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
-function listSupplier() {
-  const url = `/channels`;
-  const params = {
-    first: 100,
-    skip: 0,
-    orderby: {
-      updatedAt: 'desc',
-    },
-    filter: {
-      status_nin: ['INACTIVE'],
-    },
-    searchString: '',
-    include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
-  };
-  return useQuery([url, params]);
-}
-
 export default function SupplierScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
 
-  const {data} = listSupplier();
+  const {data} = useQuery([
+    '/channels',
+    {
+      first: 100,
+      skip: 0,
+      orderby: {
+        updatedAt: 'desc',
+      },
+      filter: {
+        status_nin: ['INACTIVE'],
+      },
+      searchString: '',
+      include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
+    },
+  ]);
 
   const [searchText, setSearchText] = useState('');
 
@@ -119,7 +116,7 @@ export default function SupplierScreen({
 
   const EmptyComponent = useCallback(() => {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center px-5">
         <ShippingIcon />
         <Text className="font-bold mt-4 text-center">Welcome to Koomi!</Text>
         <Text className="font-light mt-4 text-center">
