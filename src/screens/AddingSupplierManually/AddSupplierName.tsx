@@ -11,8 +11,7 @@ export default function AddSupplierName({
   const [name, setName] = useState('');
 
   function handleNext() {
-    console.log(`name :>>`, name);
-    navigation.navigate('AddSupplierPurpose');
+    navigation.navigate('AddSupplierPurpose', {supplierName: name});
   }
   return (
     <Container>

@@ -9,7 +9,7 @@ export default function CompleteAdding({
   navigation,
 }: NativeStackScreenProps<any>) {
   function handleBack() {
-    navigation.pop(6);
+    navigation.navigate('SupplierTabs');
   }
 
   useLayoutEffect(() => {

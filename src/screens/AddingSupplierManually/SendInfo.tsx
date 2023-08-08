@@ -12,6 +12,14 @@ import DocIcon from 'assets/images/clipboard-list.svg';
 import PlusIcon from 'assets/images/plus-circle.svg';
 import ImagePicker from 'components/ImagePicker';
 import colors from 'configs/colors';
+import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
+
+type ManualOrderOptions = {
+  method: string;
+  comment?: string;
+  photos?: any[];
+};
 
 const titles: Record<string, string> = {
   photo: 'Send a Photo',
@@ -22,13 +30,20 @@ const buttonText: Record<string, string> = {
   email: 'I have sent the email',
 };
 
+function addManualOrder(supplierId: string) {
+  const url = `suppliers/${supplierId}/add-manual-order`;
+  const optMutation = {method: 'POST', url};
+  const [{loading}, newManualOrder] = useMutation(optMutation as MutationProps);
+  return {loading, newManualOrder};
+}
+
 export default function SendInfo({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
   const {params} = route || {};
-  const {type} = params || {};
-
+  const {type, supplierId} = params || {};
+  const {loading, newManualOrder} = addManualOrder(supplierId);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: titles[type],
@@ -55,13 +70,33 @@ export default function SendInfo({
     };
   }
 
-  const {photos} = values;
+  const {photos, comment} = values;
 
-  function onDone() {
-    if (type === 'email') {
-      navigation.navigate('CompleteAdding');
-    } else {
-      //TODO: handle logic
+  async function handleSubmit() {
+    let opts = {method: 'SEND_EMAIL'} as ManualOrderOptions;
+    if (type === 'photo') {
+      opts = {
+        method: 'SEND_PHOTO',
+        photos: photos.map((photo: any) => ({
+          ...photo,
+          filename: photos.fileName,
+          url: photo.uri,
+        })),
+        comment,
+      };
+    }
+    const {data, success, error} = await newManualOrder(opts);
+    if (!success) {
+      Toast.show(error?.message);
+      return false;
+    }
+
+    return true;
+  }
+
+  async function onDone() {
+    const success = await handleSubmit();
+    if (success) {
       navigation.navigate('CompleteAdding');
     }
   }
@@ -129,7 +164,10 @@ export default function SendInfo({
             </FormGroup>
             <FormGroup>
               <Label>Comment</Label>
-              <Input onChangeText={text => dispatch({comment: text})} />
+              <Input
+                placeholder="Enter your message"
+                onChangeText={text => dispatch({comment: text})}
+              />
             </FormGroup>
           </View>
         )}

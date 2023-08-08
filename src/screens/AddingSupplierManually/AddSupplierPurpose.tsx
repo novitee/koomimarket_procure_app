@@ -9,17 +9,18 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const options = [
   {
-    id: false,
-    label: 'No',
-  },
-  {
     id: true,
     label: 'Yes',
+  },
+  {
+    id: false,
+    label: 'No',
   },
 ];
 
 export default function AddSupplierPurpose({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
@@ -27,7 +28,7 @@ export default function AddSupplierPurpose({
     purchasedSupplier: null,
     accountNumber: '',
   });
-
+  const {supplierName} = route?.params || {};
   function reducer(state: any, action: any) {
     const updatedValues = state;
 
@@ -41,11 +42,15 @@ export default function AddSupplierPurpose({
     };
   }
 
-  const {purchasedSupplier} = values;
+  const {purchasedSupplier, accountNumber} = values;
 
   function handleNext() {
-    console.log(`values :>>`, values);
-    navigation.navigate('AddSupplierContact');
+    const params = {
+      isCustomerPurchased: !purchasedSupplier,
+      linkedAccountNumber: accountNumber,
+      supplierName,
+    };
+    navigation.navigate('AddSupplierContact', params);
   }
 
   const isDisabled = purchasedSupplier === null;

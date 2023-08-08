@@ -1,9 +1,9 @@
-import React, {useCallback, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useLayoutEffect} from 'react';
 import Container from 'components/Container';
 import SearchBar from 'components/SearchBar';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import dummyCover from 'assets/images/dummy_cover.png';
-import {useDebounce} from 'hooks/useDebounce';
+import useSearch from 'hooks/useSearch';
 import {
   FlatList,
   Text,
@@ -58,8 +58,9 @@ export default function SupplierGroupScreen({
 }: NativeStackScreenProps<any>) {
   const {group} = route.params || {};
   const {slug} = group || {};
-  const [searchString, setSearchString] = useState('');
-  const {data, mutate} = useQuery([
+  const {searchString, handleSearch} = useSearch();
+
+  const {data} = useQuery([
     'suppliers',
     {
       first: 100,
@@ -107,23 +108,6 @@ export default function SupplierGroupScreen({
       );
     },
     [handleSelectSupplier],
-  );
-
-  const onSearch = useCallback(
-    (value: string) => {
-      setSearchString(value);
-      mutate();
-    },
-    [mutate],
-  );
-
-  const debounceSearch = useDebounce({callback: onSearch, delay: 500});
-
-  const handleSearch = useCallback(
-    (value: string) => {
-      debounceSearch(value);
-    },
-    [debounceSearch],
   );
 
   return (

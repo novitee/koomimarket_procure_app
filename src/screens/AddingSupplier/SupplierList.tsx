@@ -1,8 +1,8 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import Container from 'components/Container';
 import SearchBar from 'components/SearchBar';
 import useQuery from 'libs/swr/useQuery';
-import {useDebounce} from 'hooks/useDebounce';
+import useSearch from 'hooks/useSearch';
 import dummy from 'assets/images/dummy.png';
 // const dummy = 'assets/images/dummy.png';
 import {
@@ -43,10 +43,11 @@ function SupplierItem({
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const [searchString, setSearchString] = useState('');
+  const {searchString, handleSearch} = useSearch();
+
   const url = 'supplier-categories';
 
-  const {data, mutate} = useQuery([
+  const {data} = useQuery([
     url,
     {
       first: 100,
@@ -85,23 +86,6 @@ export default function SupplierListScreen({
       );
     },
     [handleSelectSupplier],
-  );
-
-  const onSearch = useCallback(
-    (value: string) => {
-      setSearchString(value);
-      mutate();
-    },
-    [mutate],
-  );
-
-  const debounceSearch = useDebounce({callback: onSearch, delay: 500});
-
-  const handleSearch = useCallback(
-    (value: string) => {
-      debounceSearch(value);
-    },
-    [debounceSearch],
   );
 
   return (

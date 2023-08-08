@@ -6,6 +6,8 @@ import Input from 'components/Input';
 import Label from 'components/Form/Label';
 import FormGroup from 'components/Form/FormGroup';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 
 const options = [
   {
@@ -18,12 +20,20 @@ const options = [
   },
 ];
 
+function addSupplier() {
+  const optMutation = {method: 'POST', url: 'channels'};
+  const [{loading}, newSupplier] = useMutation(optMutation as MutationProps);
+  return {loading, newSupplier};
+}
+
 export default function AreCurrentCustomerScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
   const {supplier} = route?.params || {};
   const [currentState, setCurrentState] = useState(0);
+  const {loading, newSupplier} = addSupplier();
+
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     purchasedSupplier: null,
@@ -45,8 +55,17 @@ export default function AreCurrentCustomerScreen({
 
   const {purchasedSupplier} = values;
 
-  function handleNext() {
-    console.log(`values :>>`, values);
+  async function handleNext() {
+    const response = await newSupplier({
+      supplierIds: [supplier.id],
+    });
+    const {data, success, error} = response;
+    console.log('response :>> ', response);
+    if (success) {
+      navigation.navigate('AddSupplierContact', {supplier: data});
+    } else {
+      Toast.show(error?.message, Toast.LONG);
+    }
     // navigation.navigate('AddSupplierContact');
   }
 
