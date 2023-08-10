@@ -20,7 +20,6 @@ import TruckIcon from 'assets/images/truck.svg';
 import CalendarIcon from 'assets/images/calendar.svg';
 import ClockIcon from 'assets/images/clock.svg';
 import colors from 'configs/colors';
-import _ from 'lodash';
 import useQuery from 'libs/swr/useQuery';
 const Icons = [
   () => <CurrencyIcon color={colors.primary.DEFAULT} />,
@@ -39,7 +38,7 @@ function querySupplier(slug: string) {
   return useQuery([url, params]);
 }
 
-function queryProducts(slug: string, skip = 0) {
+function useQueryProducts(slug: string, skip = 0) {
   const url = 'products';
   const params = {
     first: 5,
@@ -64,7 +63,7 @@ export default function SupplierProfileScreen({
 }: NativeStackScreenProps<any>) {
   const {slug} = route.params || {};
   const {data} = querySupplier(slug);
-  const {data: productsData} = queryProducts(slug);
+  const {data: productsData} = useQueryProducts(slug);
   const {company: supplier} = data || {};
   const {
     name,
@@ -79,7 +78,9 @@ export default function SupplierProfileScreen({
 
   const showDeliveryDays = deliveryDays?.reduce((acc: any, curr: any) => {
     if (curr.active) {
-      acc += _.capitalize(curr.weekday.slice(0, 3)) + ', ';
+      const weekday =
+        curr.weekday.charAt(0).toUpperCase() + curr.weekday.slice(1, 3);
+      acc += `${weekday}, `;
     }
     return acc;
   }, '');

@@ -1,27 +1,48 @@
 import {Text, FlatList, TouchableOpacity, View} from 'react-native';
 import React, {useCallback, useEffect} from 'react';
-import {PRODUCT_CATEGORIES} from 'configs/data';
+// import {PRODUCT_CATEGORIES} from 'configs/data';
 import clsx from 'libs/clsx';
-
+import useQuery from 'libs/swr/useQuery';
 interface ProductCategoriesProps {
   onChange: (category: any) => void;
   selectedCategory: any;
+  supplierId: string;
 }
 
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
+function useQueryCategories(supplierId: string) {
+  const url = 'app/supplier-categories';
+  const params = {
+    first: 100,
+    fields: 'id,name,position,slug',
+    orderBy: {
+      position: 'asc',
+    },
+    supplierFilter: {
+      id: supplierId,
+    },
+    filter: {
+      depth: 0,
+    },
+  };
+  return useQuery([url, params]);
+}
 export default function ProductCategories({
   selectedCategory,
   onChange,
+  supplierId,
 }: ProductCategoriesProps) {
+  const {data} = useQueryCategories(supplierId);
+  const {records: categories} = data || {};
+
   useEffect(() => {
-    if (!selectedCategory) {
-      onChange(selectedCategory);
+    if (!selectedCategory && categories && categories.length > 0) {
+      onChange(categories[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedCategory, categories]);
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
@@ -55,7 +76,7 @@ export default function ProductCategories({
       className="max-w-[130px] "
       renderItem={_renderItem}
       keyExtractor={_keyExtractor}
-      data={PRODUCT_CATEGORIES}
+      data={categories?.sort((a: any, b: any) => a.position - b.position)}
     />
   );
 }

@@ -45,7 +45,7 @@ export default function SupplierListScreen({
 }: NativeStackScreenProps<any>) {
   const {searchString, handleSearch} = useSearch();
 
-  const url = 'supplier-categories';
+  const url = 'app/categories';
 
   const {data} = useQuery([
     url,

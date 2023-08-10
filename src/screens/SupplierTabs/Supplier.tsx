@@ -1,4 +1,4 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useEffect} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ShippingIcon from 'assets/images/shipping.svg';
@@ -79,9 +79,17 @@ const _renderItemSeparator = () => (
 
 export default function SupplierScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const {searchString, handleSearch} = useSearch();
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
+  const {params} = route || {};
+
+  useEffect(() => {
+    if (params?.searchString) {
+      handleSearch(params?.searchString);
+    }
+  }, [params?.searchString]);
 
   const {data} = useQuery([
     '/channels',
@@ -116,7 +124,7 @@ export default function SupplierScreen({
   const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
       setGlobal({currentSupplier: item});
-      navigation.navigate('NewOrder');
+      navigation.navigate('NewOrder', {channel: item});
     },
     [navigation],
   );

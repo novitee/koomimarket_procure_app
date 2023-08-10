@@ -7,11 +7,12 @@ import CheckIcon from 'assets/images/check.svg';
 import colors from 'configs/colors';
 import Animated from 'react-native-reanimated';
 import useNavigation from 'hooks/useNavigation';
-
+import useQuery from 'libs/swr/useQuery';
 interface ProductListProps {
   onSelect: (category: any) => void;
   selectedCategory?: any;
   selectedProductIds?: any[];
+  supplierId: string;
 }
 
 function _keyExtractor(item: any, index: number) {
@@ -69,21 +70,46 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
+function useQueryProducts(supplierId: string, categoryId: string) {
+  const url = 'products';
+  const params = {
+    first: 100,
+    skip: 0,
+    orderBy: {
+      soldOut: 'asc',
+      createdAt: 'desc',
+    },
+    categoryFilter: {
+      _id: categoryId,
+    },
+    filter: {supplierId},
+    include:
+      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode)',
+    fields: 'id,slug,name',
+  };
+  return useQuery([url, params], {skip: !supplierId || !categoryId});
+}
+
 export default function ProductList({
   selectedCategory,
   selectedProductIds,
+  supplierId,
   onSelect,
 }: ProductListProps) {
+  console.log('selectedProductIds :>> ', selectedProductIds);
   const {navigate} = useNavigation();
-  const productsData = useMemo(() => {
-    return PRODUCTS.filter(
-      product => product.categoryId === selectedCategory?.id,
-    ).map(product => ({
+  const {data} = useQueryProducts(supplierId, selectedCategory?.id);
+  const {records: products} = data || {};
+  const productData = useMemo(() => {
+    if (!products) return [];
+
+    return products.map((product: any) => ({
       ...product,
       isSelected: (selectedProductIds || []).includes(product.id),
     }));
-  }, [selectedCategory?.id, selectedProductIds]);
+  }, [products, selectedProductIds]);
 
+  console.log('productData :>> ', productData);
   const toProductDetail = useCallback(
     (item: any) => {
       navigate('ProductDetail', {
@@ -109,7 +135,7 @@ export default function ProductList({
     <FlatList
       renderItem={_renderItem}
       keyExtractor={_keyExtractor}
-      data={productsData}
+      data={productData}
       ItemSeparatorComponent={_renderItemSeparator}
     />
   );

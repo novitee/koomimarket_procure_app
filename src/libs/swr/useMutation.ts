@@ -109,6 +109,7 @@ function useMutation({
         ...resp,
       };
     } catch (error: any) {
+      console.log('url :>> ', url);
       console.log('error :>> ', error);
       const message = convertErrorMessage(error['errors'] || error);
       dispatch({

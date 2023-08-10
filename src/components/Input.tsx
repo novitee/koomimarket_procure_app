@@ -18,6 +18,7 @@ export interface RNTextInputProps extends TextInputProps {
   EndComponent?: () => JSX.Element | JSX.Element;
   StartComponent?: () => JSX.Element | JSX.Element;
   inputClassName?: string;
+  containerClassName?: string;
   inputType?: 'text' | 'amount';
   decimalPlaces?: number;
 }
@@ -26,6 +27,7 @@ export default function Input({
   EndComponent,
   StartComponent,
   inputClassName,
+  containerClassName,
   style,
   onChangeText,
   ...props
@@ -33,9 +35,12 @@ export default function Input({
   return (
     <StyledContainerView
       style={style}
-      className={clsx({
-        'bg-gray-EEF3FD/50': props.editable === false,
-      })}>
+      className={clsx(
+        {
+          'bg-gray-EEF3FD/50': props.editable === false,
+        },
+        containerClassName,
+      )}>
       {StartComponent && <StartComponent />}
       <StyledTextInput
         {...props}

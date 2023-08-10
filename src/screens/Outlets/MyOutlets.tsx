@@ -52,7 +52,7 @@ function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
-function queryOutlets() {
+function useQueryOutlets() {
   const url = 'me/outlets';
   const params = {
     include: 'photos(url,width,height,filename,contentType,signedKey)',
@@ -60,7 +60,7 @@ function queryOutlets() {
   return useQuery([url, params]);
 }
 
-function switchOutlet() {
+function useMutationSwitchOutlet() {
   const optMutation = {method: 'PATCH', url: `me/switchOutlet`};
   const [{loading}, setOutlet] = useMutation(optMutation as MutationProps);
   return {loading, setOutlet};
@@ -69,10 +69,10 @@ function switchOutlet() {
 export default function MyOutletsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {data, mutate} = queryOutlets();
+  const {data, mutate} = useQueryOutlets();
   useIsFocused();
 
-  const {loading, setOutlet} = switchOutlet();
+  const {loading, setOutlet} = useMutationSwitchOutlet();
 
   const toAddOutlet = useCallback(() => {
     navigation.navigate('AddOutlet', {

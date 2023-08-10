@@ -25,9 +25,7 @@ function LineButton({
     <TouchableOpacity
       onPress={onPress}
       style={style}
-      className={
-        'flex-row items-center justify-between px-5 py-2 border-b border-gray-D4D4D8'
-      }>
+      className="flex-row items-center justify-between px-5 py-2 border-b border-gray-D4D4D8">
       {typeof children === 'string' ? (
         <Text className="text-primary text-lg font-bold">{children}</Text>
       ) : (
@@ -40,7 +38,10 @@ function LineButton({
 
 export default function ProductCatalogueScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
+  const {params} = route;
+  const {supplierId} = params || {};
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -93,11 +94,13 @@ export default function ProductCatalogueScreen({
         <ProductCategories
           selectedCategory={selectedCategory}
           onChange={handleChangeCategory}
+          supplierId={supplierId}
         />
         <ProductList
           onSelect={handleSelectProduct}
           selectedProductIds={selectedProductIds}
           selectedCategory={selectedCategory}
+          supplierId={supplierId}
         />
       </View>
       <View className="bg-white px-5 pt-2">

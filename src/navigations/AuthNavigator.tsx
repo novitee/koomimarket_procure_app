@@ -18,8 +18,6 @@ const Stack = createNativeStackNavigator();
 export default function AuthNavigator() {
   const {authStatus, authRegisterType} = useAppStore();
   // resetAuthData();
-  console.log('authStatus :>> ', authStatus);
-  console.log('authRegisterType :>> ', authRegisterType);
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
