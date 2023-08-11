@@ -6,12 +6,7 @@ async function fetcher(
   request: string,
   params: any,
   returnOriginalData: boolean,
-  skip: boolean,
 ) {
-  if (skip) {
-    return;
-  }
-
   const authToken = getState().authToken || '';
   const authRefreshToken = getState().authRefreshToken || '';
 
@@ -30,7 +25,6 @@ interface QueryConfig extends SWRConfiguration {
   fallbackData?: any;
   returnOriginalData?: boolean;
   immutable?: boolean;
-  skip?: boolean;
 }
 
 export default function useQuery(
@@ -39,7 +33,6 @@ export default function useQuery(
     fallbackData,
     immutable = false,
     returnOriginalData = false,
-    skip,
     ...config
   }: QueryConfig = {},
 ) {
@@ -48,9 +41,9 @@ export default function useQuery(
     (request: Key) => {
       if (Array.isArray(request)) {
         const [requestStr, params] = request;
-        return fetcher(requestStr, params, returnOriginalData, skip);
+        return fetcher(requestStr, params, returnOriginalData);
       } else {
-        return fetcher(request as string, {}, returnOriginalData, skip);
+        return fetcher(request as string, {}, returnOriginalData);
       }
     },
     {

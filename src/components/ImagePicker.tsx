@@ -58,7 +58,6 @@ export default function ImagePicker({
   const getBlob = async (fileUri: string) => {
     const resp = await fetch(fileUri);
     const imageBody = await resp.blob();
-    console.log('imageBody :>> ', imageBody);
     return imageBody;
   };
 
@@ -103,11 +102,9 @@ export default function ImagePicker({
                 signedKey: data.signedKey,
               });
             } else {
-              console.log(`res :>>`, res);
               Toast.show('Storage provider error! Can not upload photo.');
             }
           } catch (error) {
-            console.log(`error :>>`, error);
             Toast.show('Storage provider error! Can not upload photo.');
           }
         } else {

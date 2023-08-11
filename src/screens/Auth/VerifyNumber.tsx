@@ -60,7 +60,6 @@ export default function Login({navigation}: NativeStackScreenProps<any>) {
       mobileCode: values.code.toString(),
       mobileNumber: values.number,
     });
-    console.log('message :>> ', message);
     if (success) {
       navigation.navigate('VerifyOTP', {
         otpToken: data.otpToken,
@@ -68,7 +67,6 @@ export default function Login({navigation}: NativeStackScreenProps<any>) {
         mode,
       });
     } else {
-      console.log(`error :>>`, error);
       Toast.show(error.message || message, Toast.LONG);
     }
   }

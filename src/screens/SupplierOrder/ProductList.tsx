@@ -13,10 +13,22 @@ interface ProductListProps {
   selectedCategory?: any;
   selectedProductIds?: any[];
   supplierId: string;
+  searchString: string;
 }
 
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
+}
+
+function useQueryProductCategories(supplierId: string, categoryId: string) {
+  const url = 'product-categories/selected-product-ids';
+  const params = {
+    filter: {
+      supplierId,
+      categoryId,
+    },
+  };
+  return useQuery([url, params]);
 }
 
 function ProductItem({
@@ -28,13 +40,14 @@ function ProductItem({
   onSelect?: (item: any) => void;
   onViewDetail?: (item: any) => void;
 }) {
-  const {price, name, unit, image, isSelected} = item;
+  const {name, finalPricing, photos, isSelected, isAdded} = item;
+  const {currencyCode, pricing, unit} = finalPricing || {};
   return (
     <View className="p-5 flex-row items-center justify-between">
       <View className="flex-1">
         <Text className="font-semibold text-gray-900">{name}</Text>
         <Text className="mt-3 text-sm text-gray-500">
-          {toCurrency(price, 'USD')} {unit}
+          {toCurrency(pricing, currencyCode)} {unit}
         </Text>
         <TouchableOpacity
           className="mt-3"
@@ -45,14 +58,18 @@ function ProductItem({
       </View>
       <Animated.Image
         sharedTransitionTag={`product-${name}`}
-        source={image}
+        source={{uri: photos?.[0]?.url}}
         className="w-[72px] h-[72px]"
       />
       <TouchableOpacity
         hitSlop={10}
         onPress={() => onSelect?.(item)}
-        className="ml-3">
-        {isSelected ? (
+        className="ml-3 flex-shrink-1">
+        {isAdded ? (
+          <View className=" h-8 items-center justify-center rounded-full ">
+            <Text className="text-primary">Added</Text>
+          </View>
+        ) : isSelected ? (
           <View className="w-8 h-8 items-center justify-center rounded-full bg-primary">
             <CheckIcon color="#FFFFFF" width={18} height={13} />
           </View>
@@ -70,8 +87,13 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
-function useQueryProducts(supplierId: string, categoryId: string) {
-  const url = 'products';
+function useQueryProducts(
+  supplierId: string,
+  categoryId: string,
+  searchString: string = '',
+) {
+  const url = !supplierId || !categoryId ? undefined : 'products';
+  console.log('searchString :>> ', searchString);
   const params = {
     first: 100,
     skip: 0,
@@ -82,12 +104,13 @@ function useQueryProducts(supplierId: string, categoryId: string) {
     categoryFilter: {
       _id: categoryId,
     },
+    searchString,
     filter: {supplierId},
     include:
       'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode)',
-    fields: 'id,slug,name',
+    fields: 'id,slug,name,productNo',
   };
-  return useQuery([url, params], {skip: !supplierId || !categoryId});
+  return useQuery([url, params]);
 }
 
 export default function ProductList({
@@ -95,25 +118,36 @@ export default function ProductList({
   selectedProductIds,
   supplierId,
   onSelect,
+  searchString,
 }: ProductListProps) {
-  console.log('selectedProductIds :>> ', selectedProductIds);
   const {navigate} = useNavigation();
-  const {data} = useQueryProducts(supplierId, selectedCategory?.id);
+  const {data: dataProductCategories} = useQueryProductCategories(
+    supplierId,
+    selectedCategory?.id,
+  );
+  const {records: addedProductIds} = dataProductCategories || {};
+
+  const {data} = useQueryProducts(
+    supplierId,
+    selectedCategory?.id,
+    searchString,
+  );
   const {records: products} = data || {};
+
   const productData = useMemo(() => {
     if (!products) return [];
 
     return products.map((product: any) => ({
       ...product,
       isSelected: (selectedProductIds || []).includes(product.id),
+      isAdded: (addedProductIds || []).includes(product.id),
     }));
-  }, [products, selectedProductIds]);
+  }, [products, selectedProductIds, addedProductIds]);
 
-  console.log('productData :>> ', productData);
   const toProductDetail = useCallback(
     (item: any) => {
       navigate('ProductDetail', {
-        product: item,
+        product: {...item, categoryName: selectedCategory?.name},
       });
     },
     [navigate],

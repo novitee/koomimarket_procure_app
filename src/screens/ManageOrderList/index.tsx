@@ -160,7 +160,6 @@ export default function ManageOrderListScreen() {
       selectedEditItem: null,
       render: true,
     });
-    console.log(`item :>>`, item);
   }
 
   const categories = productSections.map((i: any) => i.category);

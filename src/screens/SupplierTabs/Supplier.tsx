@@ -1,4 +1,5 @@
 import React, {useCallback, useLayoutEffect, useEffect} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ShippingIcon from 'assets/images/shipping.svg';
@@ -84,6 +85,7 @@ export default function SupplierScreen({
   const {searchString, handleSearch} = useSearch();
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
   const {params} = route || {};
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (params?.searchString) {
@@ -91,7 +93,7 @@ export default function SupplierScreen({
     }
   }, [params?.searchString]);
 
-  const {data} = useQuery([
+  const {data, mutate: refreshChannels} = useQuery([
     '/channels',
     {
       first: 100,
@@ -102,10 +104,20 @@ export default function SupplierScreen({
       filter: {
         status_nin: ['INACTIVE'],
       },
-      searchString: '',
+      searchString: searchString,
       include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
     },
   ]);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (!searchString) {
+        refreshChannels();
+      } else {
+        handleSearch('');
+      }
+    }
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     if (currentOutlet) {
@@ -123,8 +135,8 @@ export default function SupplierScreen({
 
   const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
-      setGlobal({currentSupplier: item});
-      navigation.navigate('NewOrder', {channel: item});
+      setGlobal({currentChannel: item});
+      navigation.navigate('NewOrder');
     },
     [navigation],
   );
@@ -179,7 +191,11 @@ export default function SupplierScreen({
 
   return (
     <Container className="pt-4 px-0">
-      <SearchBar className="px-5" onSearch={handleSearch} />
+      <SearchBar
+        className="px-5"
+        onSearch={handleSearch}
+        defaultValue={searchString}
+      />
 
       {!!records && records.length > 0 && (
         <Text className="px-3 mt-5 font-semibold">

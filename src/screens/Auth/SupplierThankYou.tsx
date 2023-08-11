@@ -21,7 +21,6 @@ export default function SupplierThankYouScreen({
   const {isUserLoading, user, refresh} = useMe();
   const {authRegisterType} = useAppStore();
   const [{loading: loadingComplete}, completeSignUp] = useMutation({
-    method: 'POST',
     url: completeSignUpUrl,
   });
 
@@ -32,12 +31,10 @@ export default function SupplierThankYouScreen({
   }, [navigation, user]);
 
   async function handleComplete() {
-    console.log('completeSignUp :>> ');
     const {data, success, error, message} = await completeSignUp();
 
     if (success) {
       const {authData} = data;
-      console.log('data :>> ', data);
       setGlobal({authMode: 'login'});
       saveAuthData({
         token: authData.token,

@@ -28,8 +28,6 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
     }
   }, [currentOutlet, navigation]);
 
-  console.log(`currentOutlet :>>`, currentOutlet);
-
   const {data} = useQuery(
     currentOutlet?.id ? `me/outlets/${currentOutlet.id}/members` : undefined,
   );

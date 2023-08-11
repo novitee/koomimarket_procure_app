@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Input from './Input';
 import SearchIcon from 'assets/images/search.svg';
 import colors from 'configs/colors';
@@ -18,11 +18,13 @@ const Wrapper = styled(View, 'w-full');
 interface SearchBarProps extends ViewProps {
   placeholder?: string;
   onSearch: (text: string) => void;
+  defaultValue?: string;
 }
 
 export default function SearchBar({
   placeholder = 'Search',
   onSearch,
+  defaultValue,
   ...props
 }: SearchBarProps) {
   const debounce = useDebounce({callback: onChange});
@@ -42,6 +44,7 @@ export default function SearchBar({
         placeholder={placeholder}
         StartComponent={MagnifyingIcon}
         onChangeText={handleOnInput}
+        defaultValue={defaultValue}
       />
     </Wrapper>
   );

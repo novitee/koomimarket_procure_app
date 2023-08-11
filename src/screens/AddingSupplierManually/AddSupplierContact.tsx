@@ -33,15 +33,6 @@ const options = [
   },
 ];
 
-function addSupplierContact() {
-  const url = 'suppliers/add-manually';
-  const optMutation = {method: 'POST', url};
-  const [{loading}, newSupplierContact] = useMutation(
-    optMutation as MutationProps,
-  );
-  return {loading, newSupplierContact};
-}
-
 export default function AddSupplierContact({
   navigation,
   route,
@@ -75,7 +66,9 @@ export default function AddSupplierContact({
 
   const {name, orderCreationMethod, phoneCode, phoneNumber, emails} = values;
 
-  const {loading, newSupplierContact} = addSupplierContact();
+  const [{loading}, newSupplierContact] = useMutation({
+    url: 'suppliers/add-manually',
+  });
 
   async function handleSubmit() {
     const opts = {

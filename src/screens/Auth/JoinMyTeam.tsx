@@ -25,7 +25,7 @@ export default function JoinMyTeamScreen({
     method: 'PATCH',
     url: url,
   });
-  const {values: pValues, handlePostalCodeChange} = usePostalCode();
+  const {handlePostalCodeChange} = usePostalCode();
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -47,14 +47,6 @@ export default function JoinMyTeamScreen({
     deliveryAddress,
     errors = {},
   } = values;
-
-  useEffect(() => {
-    const {address, postalCode} = pValues;
-    onChangeFields({
-      postalCode: postalCode,
-      deliveryAddress: address,
-    });
-  }, [pValues]);
 
   function onChangeText(text: string, field: string) {
     dispatch({[field]: text, render: true});

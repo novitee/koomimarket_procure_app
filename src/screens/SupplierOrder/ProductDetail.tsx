@@ -10,8 +10,8 @@ export default function ProductDetailScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {product} = route.params || {};
-  const {name, image, unit, price} = product;
-
+  const {name, photos, productNo, finalPricing, categoryName} = product;
+  const {currencyCode, pricing, unit} = finalPricing || {};
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: name,
@@ -20,15 +20,15 @@ export default function ProductDetailScreen({
 
   const data = [
     ['Unit', unit],
-    ['Product ID', 'AG001'],
-    ['Price', toCurrency(price, 'USD')],
-    ['Category', 'Asian & Local VEg'],
+    ['Product ID', productNo],
+    ['Price', toCurrency(pricing, currencyCode)],
+    ['Category', categoryName],
   ];
 
   return (
     <Container>
       <Animated.Image
-        source={image}
+        source={{uri: photos?.[0]?.url}}
         className="w-full h-[240px]"
         sharedTransitionTag={`product-${name}`}
       />

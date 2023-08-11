@@ -58,7 +58,6 @@ export default function VerifyOTP({
       }
       refresh();
     } else {
-      console.log(`error :>>`, error);
       Toast.show(error?.message || message, Toast.LONG);
     }
   }

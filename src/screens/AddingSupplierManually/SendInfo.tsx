@@ -30,20 +30,17 @@ const buttonText: Record<string, string> = {
   email: 'I have sent the email',
 };
 
-function addManualOrder(supplierId: string) {
-  const url = `suppliers/${supplierId}/add-manual-order`;
-  const optMutation = {method: 'POST', url};
-  const [{loading}, newManualOrder] = useMutation(optMutation as MutationProps);
-  return {loading, newManualOrder};
-}
-
 export default function SendInfo({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
   const {params} = route || {};
   const {type, supplierId} = params || {};
-  const {loading, newManualOrder} = addManualOrder(supplierId);
+
+  const [{loading}, newManualOrder] = useMutation({
+    url: `suppliers/${supplierId}/add-manual-order`,
+  });
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: titles[type],

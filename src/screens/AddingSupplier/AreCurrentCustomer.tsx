@@ -20,19 +20,13 @@ const options = [
   },
 ];
 
-function addSupplier() {
-  const optMutation = {method: 'POST', url: 'channels'};
-  const [{loading}, newSupplier] = useMutation(optMutation as MutationProps);
-  return {loading, newSupplier};
-}
-
 export default function AreCurrentCustomerScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
   const {supplier} = route?.params || {};
   const [currentState, setCurrentState] = useState(0);
-  const {loading, newSupplier} = addSupplier();
+  const [{loading}, newSupplier] = useMutation({url: 'channels'});
 
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -60,7 +54,6 @@ export default function AreCurrentCustomerScreen({
       supplierIds: [supplier.id],
     });
     const {data, success, error} = response;
-    console.log('response :>> ', response);
     if (success) {
       navigation.navigate('AddSupplierContact', {supplier: data});
     } else {

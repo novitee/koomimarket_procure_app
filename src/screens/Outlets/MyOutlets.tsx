@@ -60,19 +60,16 @@ function useQueryOutlets() {
   return useQuery([url, params]);
 }
 
-function useMutationSwitchOutlet() {
-  const optMutation = {method: 'PATCH', url: `me/switchOutlet`};
-  const [{loading}, setOutlet] = useMutation(optMutation as MutationProps);
-  return {loading, setOutlet};
-}
-
 export default function MyOutletsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const {data, mutate} = useQueryOutlets();
   useIsFocused();
 
-  const {loading, setOutlet} = useMutationSwitchOutlet();
+  const [{loading}, setOutlet] = useMutation({
+    method: 'PATCH',
+    url: 'me/switchOutlet',
+  });
 
   const toAddOutlet = useCallback(() => {
     navigation.navigate('AddOutlet', {

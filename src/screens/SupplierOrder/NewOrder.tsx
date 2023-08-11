@@ -1,4 +1,5 @@
-import React, {useCallback, useReducer, useState} from 'react';
+import React, {useCallback, useReducer, useState, useEffect} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import IllustrationIcon from 'assets/images/Illustration.svg';
@@ -21,6 +22,7 @@ import useSearch from 'hooks/useSearch';
 import useMutation from 'libs/swr/useMutation';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
+import {useGlobalStore} from 'stores/global';
 function useQueryCartItems({
   supplierId = '',
   searchString = '',
@@ -92,7 +94,7 @@ function ToggleUpdateProduct({
               <Text className="font-semibold mb-3">Update to</Text>
               <Input
                 keyboardType="decimal-pad"
-                containerClassName="rounded-lg"
+                className="rounded-lg"
                 StartComponent={() => (
                   <View className="flex-row items-center ml-2">
                     <Text className="text-gray-500 text-center ">$</Text>
@@ -151,13 +153,14 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
-function NewOrderScreen({navigation, route}: NativeStackScreenProps<any>) {
+function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     selectedItem: {},
   });
-  const {channel} = route.params || {};
+
+  const channel = useGlobalStore(state => state.currentChannel);
   const {supplierId} = channel || {};
 
   const minOrderAmount = 150;
@@ -177,6 +180,14 @@ function NewOrderScreen({navigation, route}: NativeStackScreenProps<any>) {
 
   const {selectedItem} = values;
   const {searchString, handleSearch} = useSearch();
+
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      handleSearch('');
+    }
+  }, [isFocused]);
+
   const {data, mutate: refreshCartItems} = useQueryCartItems({
     supplierId,
     searchString,
@@ -250,7 +261,11 @@ function NewOrderScreen({navigation, route}: NativeStackScreenProps<any>) {
   return (
     <>
       <Container className="pt-4 px-0">
-        <SearchBar className="px-5" onSearch={handleSearch} />
+        <SearchBar
+          className="px-5"
+          onSearch={handleSearch}
+          defaultValue={searchString}
+        />
         {!!records && records.length > 0 && (
           <View className="mt-5">
             {/* <TouchableOpacity
