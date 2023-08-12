@@ -27,7 +27,9 @@ export default function Avatar({
           className="w-full h-full"
         />
       ) : (
-        <Text className="text-36 font-bold">{firstChar}</Text>
+        <Text className="font-bold" style={{fontSize: Math.max(12, size / 2)}}>
+          {firstChar}
+        </Text>
       )}
     </View>
   );

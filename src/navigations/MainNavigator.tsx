@@ -37,6 +37,7 @@ import ManageOrderListScreen from 'screens/ManageOrderList';
 import SelectScreen from 'screens/SelectScreen';
 import FinalizeOrderScreen from 'screens/SupplierOrder/FinalizeOrder';
 import DoneOrderScreen from 'screens/SupplierOrder/DoneOrder';
+import OrderDetailScreen from 'screens/Order/OrderDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -239,6 +240,10 @@ export default function MainNavigator(): JSX.Element {
             headerShown: false,
           }}
         />
+      </Stack.Group>
+
+      <Stack.Group>
+        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
       </Stack.Group>
 
       <Stack.Group

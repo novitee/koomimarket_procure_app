@@ -2,7 +2,7 @@
 
 const colors = require('./src/configs/colors');
 
-const scaledFontSizes = [10, 12, 16, 18, 20, 24, 32, 30, 36, 48].reduce(
+const scaledFontSizes = [10, 12, 14, 16, 18, 20, 24, 32, 30, 36, 48].reduce(
   (prev, s) => {
     return {
       ...prev,

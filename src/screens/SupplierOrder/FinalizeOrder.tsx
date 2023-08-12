@@ -2,7 +2,7 @@ import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import Label from 'components/Form/Label';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import Button from 'components/Button';
 import FormGroup from 'components/Form/FormGroup';
 import Input from 'components/Input';
@@ -69,7 +69,7 @@ export default function FinalizeOrderScreen({
 
       <ScrollView
         className="flex-1 mt-2"
-        contentContainerStyle={{paddingBottom: 40}}>
+        contentContainerStyle={styles.scrollViewContent}>
         <FormGroup>
           <Label required>Requested Delivery Date</Label>
           <DateInput
@@ -121,3 +121,9 @@ export default function FinalizeOrderScreen({
     </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    paddingBottom: 40,
+  },
+});

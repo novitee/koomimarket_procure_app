@@ -1,9 +1,7 @@
-import {TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
+import {View} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
-import Text from 'components/Text';
-import ChevronRightIcon from 'assets/images/chevron-right.svg';
-import colors from 'configs/colors';
+
 import SearchBar from 'components/SearchBar';
 import ProductCategories from './ProductCategories';
 import ProductList from './ProductList';
@@ -13,31 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import useSearch from 'hooks/useSearch';
-
-function LineButton({
-  children,
-  onPress,
-  style,
-}: {
-  children: React.ReactNode | string;
-  onPress?: TouchableOpacityProps['onPress'];
-  style?: TouchableOpacityProps['style'];
-  className?: TouchableOpacityProps['className'];
-}) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={style}
-      className="flex-row items-center justify-between px-5 py-2 border-b border-gray-D4D4D8">
-      {typeof children === 'string' ? (
-        <Text className="text-primary text-lg font-bold">{children}</Text>
-      ) : (
-        children
-      )}
-      <ChevronRightIcon color={colors.primary.DEFAULT} />
-    </TouchableOpacity>
-  );
-}
+import LineButton from 'components/LineButton';
 
 export default function ProductCatalogueScreen({
   navigation,
