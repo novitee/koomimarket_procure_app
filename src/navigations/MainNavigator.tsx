@@ -38,6 +38,9 @@ import SelectScreen from 'screens/SelectScreen';
 import FinalizeOrderScreen from 'screens/SupplierOrder/FinalizeOrder';
 import DoneOrderScreen from 'screens/SupplierOrder/DoneOrder';
 import OrderDetailScreen from 'screens/Order/OrderDetail';
+import GoodsReceivingScreen from 'screens/Order/GoodsReceiving';
+import GoodsReceivingIssue from 'screens/Order/GoodsReceivingIssue';
+import GoodsReceivingDone from 'screens/Order/GoodsReceivingDone';
 
 const Stack = createNativeStackNavigator();
 
@@ -242,8 +245,31 @@ export default function MainNavigator(): JSX.Element {
         />
       </Stack.Group>
 
+      {/* Order */}
+
       <Stack.Group>
         <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+        <Stack.Screen
+          name="GoodsReceiving"
+          component={GoodsReceivingScreen}
+          options={{
+            headerTitle: 'Check Goods Received',
+          }}
+        />
+        <Stack.Screen
+          name="GoodsReceivingIssue"
+          component={GoodsReceivingIssue}
+          options={{
+            headerTitle: 'Tell Us The Issue',
+          }}
+        />
+        <Stack.Screen
+          name="GoodsReceivingDone"
+          component={GoodsReceivingDone}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Group>
 
       <Stack.Group

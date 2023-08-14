@@ -1,10 +1,4 @@
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacityProps,
-} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import React, {createRef, useLayoutEffect, useState} from 'react';
 import PagerView, {
   PagerViewOnPageSelectedEventData,
