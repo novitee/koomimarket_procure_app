@@ -21,12 +21,13 @@ function _keyExtractor(item: any, index: number) {
 }
 
 function useQueryProductCategories(supplierId: string, categoryId: string) {
-  const url = 'product-categories/selected-product-ids';
+  const url =
+    supplierId && categoryId
+      ? 'supplier-customer-products/selected-product-ids'
+      : undefined;
   const params = {
-    filter: {
-      supplierId,
-      categoryId,
-    },
+    filter: {supplierId},
+    productCategoryFilter: {categoryId, supplierId},
   };
   return useQuery([url, params]);
 }
@@ -93,17 +94,11 @@ function useQueryProducts(
   searchString: string = '',
 ) {
   const url = !supplierId || !categoryId ? undefined : 'products';
-  console.log('searchString :>> ', searchString);
   const params = {
     first: 100,
     skip: 0,
-    orderBy: {
-      soldOut: 'asc',
-      createdAt: 'desc',
-    },
-    categoryFilter: {
-      _id: categoryId,
-    },
+    orderBy: {soldOut: 'asc', createdAt: 'desc'},
+    categoryFilter: {_id: categoryId},
     searchString,
     filter: {supplierId},
     include:

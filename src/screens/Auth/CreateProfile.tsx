@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useReducer, useState, useCallback} from 'react';
 import Container from 'components/Container';
 import {SubTitle, Title} from 'components/Text';
 import Label from 'components/Form/Label';
@@ -39,11 +39,14 @@ export default function CreateProfile({
 
   const {fullName, emailAddress} = values;
 
-  function onChangeText(text: string, field: string) {
-    dispatch({[field]: text, render: true});
-  }
+  const onChangeText = useCallback(
+    (text: string, field: string) => {
+      dispatch({[field]: text, render: true});
+    },
+    [dispatch],
+  );
 
-  function validateInputs() {
+  const validateInputs = useCallback(() => {
     if (!fullName) {
       Toast.show('Please enter your full name', Toast.LONG);
       return false;
@@ -57,13 +60,14 @@ export default function CreateProfile({
       return false;
     }
     return true;
-  }
+  }, [fullName, emailAddress]);
 
-  async function handleUpdateProfile() {
+  const handleUpdateProfile = useCallback(async () => {
     if (!validateInputs()) return;
 
-    const {success, data, error, message} = await updateSignUpProfile({
+    const {success, message} = await updateSignUpProfile({
       entityRegistration: {
+        entityType: {code: 'CUSTOMER'},
         user: {
           email: emailAddress,
           fullName: fullName,
@@ -75,7 +79,7 @@ export default function CreateProfile({
     } else {
       Toast.show(message, Toast.LONG);
     }
-  }
+  }, [fullName, emailAddress, updateSignUpProfile, navigation, validateInputs]);
 
   return (
     <Container>
@@ -90,6 +94,7 @@ export default function CreateProfile({
           <Input
             value={fullName}
             onChangeText={text => onChangeText(text, 'fullName')}
+            placeholder="e.g. Tan Ah Gao"
           />
         </FormGroup>
         <FormGroup>
@@ -98,6 +103,7 @@ export default function CreateProfile({
             value={emailAddress}
             inputMode="email"
             onChangeText={text => onChangeText(text, 'emailAddress')}
+            placeholder="e.g. ahgao@business.com"
           />
         </FormGroup>
       </View>

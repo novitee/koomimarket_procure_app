@@ -5,32 +5,27 @@ import Text from 'components/Text';
 import Button from 'components/Button';
 import YesNoCheckBox from 'components/YesNoCheckBox';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-const dummyData = [
-  {id: 1, name: 'Carrot', price: 0.99, unit: 'KG', quantity: 1},
-  {id: 2, name: 'Tomato', price: 1.49, unit: 'KG', quantity: 1},
-  {id: 3, name: 'Broccoli', price: 1.99, unit: 'KG', quantity: 2},
-  {id: 4, name: 'Spinach', price: 0.89, unit: 'KG', quantity: 2},
-];
-
-function ProductItem({
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
+function LineItem({
   item,
   onCheck,
 }: {
   item: any;
   onCheck?: (value: string) => void;
 }) {
-  const value =
-    typeof item?.issue === 'undefined' ? null : item?.issue ? 'no' : 'yes';
+  const {name, qty, uom, deliveryCheck} = item || {};
+  const deliveryCheckReason =
+    deliveryCheck?.status === 'TROUBLED' && deliveryCheck?.reason;
+  const value = deliveryCheck?.status === 'TROUBLED' ? 'no' : 'yes';
   return (
     <View className="flex-row items-center py-6 border-b border-gray-400">
-      <Text className="text-30 font-bold w-16 text-center">
-        {item.quantity}
-      </Text>
+      <Text className="text-30 font-bold w-16 text-center">{qty}</Text>
       <View className="flex-1">
-        <Text className="font-bold">{item.name}</Text>
-        <Text className="font-light mt-2">{item.unit}</Text>
-        {item?.issue && (
-          <Text className="font-medium text-error mt-2">{`Issue: ${item.name}`}</Text>
+        <Text className="font-bold">{name}</Text>
+        <Text className="font-light mt-2">{uom}</Text>
+        {deliveryCheckReason && (
+          <Text className="font-medium text-error mt-2">{`Issue: ${deliveryCheckReason}`}</Text>
         )}
       </View>
       <YesNoCheckBox value={value} onChange={onCheck} />
@@ -39,11 +34,17 @@ function ProductItem({
 }
 export default function GoodsReceivingScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
+  const {orderNo, lineItems} = route.params || {};
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    productData: dummyData,
+    lineItemData: lineItems,
+  });
+
+  const [{}, checkGoodsReceived] = useMutation({
+    url: `orders/${orderNo}/delivery-check`,
   });
 
   function reducer(state: any, action: any) {
@@ -59,20 +60,19 @@ export default function GoodsReceivingScreen({
     };
   }
 
-  const {productData} = values;
+  const {lineItemData} = values;
 
   const handleUpdateIssue = useCallback(
     (newItem: any) => {
-      console.log(newItem);
-      const itemIndex = productData.findIndex(
+      const itemIndex = lineItemData.findIndex(
         (item: any) => item.id === newItem.id,
       );
 
-      const newProductData = [...productData];
-      newProductData[itemIndex] = newItem;
-      dispatch({productData: newProductData, render: true});
+      const newLineItemData = [...lineItemData];
+      newLineItemData[itemIndex] = newItem;
+      dispatch({lineItemData: newLineItemData, render: true});
     },
-    [productData],
+    [lineItemData],
   );
 
   const handleCheckProduct = useCallback(
@@ -80,25 +80,25 @@ export default function GoodsReceivingScreen({
       console.log(value);
       if (value === 'no') {
         navigation.navigate('GoodsReceivingIssue', {
-          product: item,
+          lineItem: item,
           onUpdateIssue: handleUpdateIssue,
         });
       } else if (value === 'yes') {
-        const itemIndex = productData.findIndex(
-          (productItem: any) => item.id === productItem.id,
+        const itemIndex = lineItemData.findIndex(
+          (lineItem: any) => item.id === lineItem.id,
         );
-        const newProductData = [...productData];
-        newProductData[itemIndex].issue = null;
-        dispatch({productData: newProductData, render: true});
+        const newLineItemData = [...lineItemData];
+        newLineItemData[itemIndex].issue = null;
+        dispatch({lineItemData: newLineItemData, render: true});
       }
     },
-    [handleUpdateIssue, navigation, productData],
+    [navigation, lineItemData],
   );
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       return (
-        <ProductItem
+        <LineItem
           item={item}
           onCheck={value => handleCheckProduct(item, value)}
         />
@@ -108,34 +108,54 @@ export default function GoodsReceivingScreen({
   );
 
   const numOfChecked = useMemo(() => {
-    return productData.filter((item: any) => typeof item.issue !== 'undefined')
-      .length;
-  }, [productData]);
+    return lineItemData.filter(
+      (item: any) => typeof item.deliveryCheck !== 'undefined',
+    ).length;
+  }, [lineItemData]);
 
   function markAllAsGood() {
-    const newProductData = [...productData].map((item: any) => ({
+    const newLineItemData = [...lineItemData].map((item: any) => ({
       ...item,
-      issue: null,
+      deliveryCheck: {
+        status: 'NOTHING',
+      },
     }));
 
-    dispatch({productData: newProductData, render: true});
+    dispatch({lineItemData: newLineItemData, render: true});
   }
   function markTheRestAsGood() {
-    const newProductData = [...productData].map((item: any) => {
-      if (typeof item.issue === 'undefined') {
+    const newLineItemData = [...lineItemData].map((item: any) => {
+      if (typeof item.deliveryCheck === 'undefined') {
         return {
           ...item,
-          issue: null,
+          deliveryCheck: {
+            status: 'NOTHING',
+          },
         };
       }
 
       return item;
     });
 
-    dispatch({productData: newProductData, render: true});
+    dispatch({lineItemData: newLineItemData, render: true});
   }
 
-  function handleConfirm() {
+  function convertLineItemsToParams() {
+    return lineItemData.map((item: any) => ({
+      id: item.id,
+      deliveryCheck: item.deliveryCheck,
+    }));
+  }
+
+  async function handleConfirm() {
+    let lineItemParams = convertLineItemsToParams();
+    const response = await checkGoodsReceived({lineItems: lineItemParams});
+    const {data, success, error, message} = response || {};
+
+    if (!success) {
+      Toast.show(error?.message, Toast.LONG);
+      return;
+    }
     navigation.navigate('GoodsReceivingDone');
   }
 
@@ -144,17 +164,17 @@ export default function GoodsReceivingScreen({
       <Text className="text-primary font-bold text-xl">Products</Text>
       <FlatList
         className="flex-1"
-        data={productData}
-        extraData={productData}
+        data={lineItemData}
+        extraData={lineItemData}
         renderItem={_renderItem}
       />
       {numOfChecked === 0 && (
         <Button onPress={markAllAsGood}>{'Mark all as good'}</Button>
       )}
-      {numOfChecked > 0 && numOfChecked < productData.length && (
+      {numOfChecked > 0 && numOfChecked < lineItemData.length && (
         <Button onPress={markTheRestAsGood}>{'Mark the rest as good'}</Button>
       )}
-      {numOfChecked === productData.length && (
+      {numOfChecked === lineItemData.length && (
         <Button onPress={handleConfirm}>{'Confirm'}</Button>
       )}
     </Container>

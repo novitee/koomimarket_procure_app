@@ -12,7 +12,7 @@ import SettingsScreen from 'screens/Outlets/Settings';
 import SupportScreen from 'screens/Outlets/Support';
 import AddOutletScreen from 'screens/Outlets/AddOutlet';
 import EditProfileScreen from 'screens/Outlets/EditProfile';
-import EditOutletScreen from 'screens/Outlets/EditOutlet';
+import EditBusinessScreen from 'screens/Outlets/EditBusiness';
 import AddSupplierName from 'screens/AddingSupplierManually/AddSupplierName';
 import AddSupplierPurpose from 'screens/AddingSupplierManually/AddSupplierPurpose';
 import AddSupplierContact from 'screens/AddingSupplierManually/AddSupplierContact';
@@ -41,7 +41,7 @@ import OrderDetailScreen from 'screens/Order/OrderDetail';
 import GoodsReceivingScreen from 'screens/Order/GoodsReceiving';
 import GoodsReceivingIssue from 'screens/Order/GoodsReceivingIssue';
 import GoodsReceivingDone from 'screens/Order/GoodsReceivingDone';
-
+import {resetAuthData} from 'utils/auth';
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
@@ -63,6 +63,7 @@ export const customScreenMemberOptions:
 });
 
 export default function MainNavigator(): JSX.Element {
+  // resetAuthData();
   return (
     <Stack.Navigator screenOptions={customScreenOptions}>
       {/* Outlets */}
@@ -89,7 +90,7 @@ export default function MainNavigator(): JSX.Element {
           }}
           component={EditProfileScreen}
         />
-        <Stack.Screen name="EditOutlet" component={EditOutletScreen} />
+        <Stack.Screen name="EditBusiness" component={EditBusinessScreen} />
       </Stack.Group>
       {/* SupplerTabs */}
 

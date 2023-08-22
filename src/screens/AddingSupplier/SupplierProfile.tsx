@@ -28,7 +28,7 @@ const Icons = [
   () => <ClockIcon color={colors.primary.DEFAULT} />,
 ];
 
-function querySupplier(slug: string) {
+function useQuerySupplier(slug: string) {
   const url = `suppliers/${slug}`;
   const params = {
     fields: 'id,name,slug,description,minOrder,deliveryFee,cutOffTiming',
@@ -62,7 +62,7 @@ export default function SupplierProfileScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {slug} = route.params || {};
-  const {data} = querySupplier(slug);
+  const {data} = useQuerySupplier(slug);
   const {data: productsData} = useQueryProducts(slug);
   const {company: supplier} = data || {};
   const {

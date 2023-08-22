@@ -18,35 +18,38 @@ import Input from 'components/Input';
 import ImagePicker from 'components/ImagePicker';
 import PlusIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
-
-const issueOptions = [
+const reasonOptions = [
   {
     id: 1,
     name: 'Missing',
+    value: 'MISSING',
   },
   {
     id: 2,
     name: 'Spoil',
+    value: 'SPOIL',
   },
   {
     id: 3,
     name: 'Wrong Amount',
+    value: 'WRONG_AMOUNT',
   },
   {
     id: 4,
     name: 'Other',
+    value: 'OTHER',
   },
 ];
 export default function GoodsReceivingIssue({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const {product, onUpdateIssue} = route.params || {};
+  const {lineItem, onUpdateIssue} = route.params || {};
 
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    issue: null,
+    reason: null,
   });
 
   function reducer(state: any, action: any) {
@@ -64,11 +67,14 @@ export default function GoodsReceivingIssue({
 
   function handleUpdateIssue() {
     const newItem = {
-      ...product,
-      issue: values.issue,
-      comment: values.comment,
-      amountDelivered: values.amountDelivered,
-      photos: values.photos,
+      ...lineItem,
+      deliveryCheck: {
+        status: 'TROUBLED',
+        reason: values.reason?.value,
+        comment: values.comment,
+        requestTroubleQuantity: values.requestTroubleQuantity,
+        photos: values.photos || [],
+      },
     };
 
     onUpdateIssue(newItem);
@@ -78,33 +84,33 @@ export default function GoodsReceivingIssue({
   function handleSelectPhoto(assets: any) {
     dispatch({photos: assets, render: true});
   }
-  const {issue, amountDelivered, photos} = values;
+  const {reason, requestTroubleQuantity, photos} = values;
 
   return (
     <Container>
       <View className="flex-row items-center py-6  bg-gray-EEF3FD">
         <Text className="text-30 font-bold w-16 text-center">
-          {product.quantity}
+          {lineItem.quantity}
         </Text>
         <View className="flex-1">
-          <Text className="font-bold">{product.name}</Text>
-          <Text className="font-light mt-2">{product.unit}</Text>
+          <Text className="font-bold">{lineItem.name}</Text>
+          <Text className="font-light mt-2">{lineItem.unit}</Text>
         </View>
       </View>
       <KeyboardAvoidingView>
         <ScrollView className="flex-1 mt-5">
           <View className="border border-gray-D1D5DB divide-y divide-gray-D1D5DB">
-            {issueOptions.map((item: any) => (
+            {reasonOptions.map((item: any) => (
               <TouchableOpacity
-                onPress={() => dispatch({issue: item, render: true})}
+                onPress={() => dispatch({reason: item, render: true})}
                 key={item.id}
                 className="flex-row items-center justify-between px-3 py-6">
                 <Text>{item.name}</Text>
                 <View
                   className={clsx({
                     'w-6 h-6 rounded-full items-center justify-center': true,
-                    'bg-primary': item.id === issue?.id,
-                    'border border-gray-D1D5DB': item.id !== issue?.id,
+                    'bg-primary': item.id === reason?.id,
+                    'border border-gray-D1D5DB': item.id !== reason?.id,
                   })}>
                   <View className="w-2.5 h-2.5 rounded-full bg-white" />
                 </View>
@@ -112,18 +118,21 @@ export default function GoodsReceivingIssue({
             ))}
           </View>
           <View className="mt-5">
-            {issue?.id === 3 && (
+            {reason?.id === 3 && (
               <FormGroup>
                 <Label required>Enter the amount delivered </Label>
                 <Input
-                  value={amountDelivered}
+                  placeholder="e.g. 1"
+                  value={requestTroubleQuantity}
                   onChangeText={(text: string) =>
-                    dispatch({amountDelivered: text, render: true})
+                    dispatch({requestTroubleQuantity: text, render: true})
                   }
+                  inputType="amount"
+                  decimalPlaces={2}
                 />
               </FormGroup>
             )}
-            {issue && (
+            {reason && (
               <FormGroup>
                 <Label required>Leave a comment</Label>
                 <Input
@@ -137,7 +146,7 @@ export default function GoodsReceivingIssue({
                 />
               </FormGroup>
             )}
-            {issue && issue.id !== 1 && (
+            {reason && reason.id !== 1 && (
               <FormGroup>
                 <Label required>Add photo</Label>
                 <ImagePicker onChange={handleSelectPhoto}>
@@ -176,7 +185,7 @@ export default function GoodsReceivingIssue({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Button disabled={!issue} onPress={handleUpdateIssue}>
+      <Button disabled={!reason} onPress={handleUpdateIssue}>
         Confirm
       </Button>
     </Container>

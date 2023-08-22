@@ -73,6 +73,7 @@ function useMutation({
     const overrideUrl = opts.overrides?.url;
     const authToken = getState().authToken || '';
     const authRefreshToken = getState().authRefreshToken || '';
+    const cartToken = getState().cartToken || '';
     try {
       dispatch({type: REQUEST_START});
 
@@ -83,7 +84,11 @@ function useMutation({
         dataParams = formData;
       }
 
-      const resp = (await axios({authToken, authRefreshToken}).request({
+      const resp = (await axios({
+        authToken,
+        authRefreshToken,
+        cartToken,
+      }).request({
         method: method,
         url: overrideUrl ? overrideUrl : url,
         data: dataParams,

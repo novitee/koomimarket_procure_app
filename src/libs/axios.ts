@@ -4,7 +4,11 @@ const REACT_APP_API_URI = 'http://localhost:36001';
 const BASE_URL = `${REACT_APP_API_URI}/api/v1/procure-storefront/`;
 
 export default function createAxios(
-  {authToken, authRefreshToken} = {authToken: '', authRefreshToken: ''},
+  {authToken, authRefreshToken, cartToken = null} = {
+    authToken: '',
+    authRefreshToken: '',
+    cartToken: '',
+  },
 ) {
   const headers: Record<string, any> = {
     Accept: 'application/json',
@@ -19,6 +23,9 @@ export default function createAxios(
   }
   if (authRefreshToken) {
     headers['x-refresh-token'] = authRefreshToken;
+  }
+  if (cartToken) {
+    headers['x-cart-token'] = cartToken;
   }
 
   let instance = axios.create({

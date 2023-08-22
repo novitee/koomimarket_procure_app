@@ -9,10 +9,14 @@ async function fetcher(
 ) {
   const authToken = getState().authToken || '';
   const authRefreshToken = getState().authRefreshToken || '';
+  const cartToken = getState().cartToken || '';
 
-  const result = await axios({authToken, authRefreshToken}).get(request, {
-    params,
-  });
+  const result = await axios({authToken, authRefreshToken, cartToken}).get(
+    request,
+    {
+      params,
+    },
+  );
 
   if (returnOriginalData) {
     return result;

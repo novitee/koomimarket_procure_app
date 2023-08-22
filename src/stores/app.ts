@@ -28,6 +28,7 @@ export interface IAppStore {
     | 'REGISTERING'
     | 'BUYER_COMPLETED'
     | 'SUPPLIER_COMPLETED';
+  cartToken?: string;
 }
 const appStore = createStore<IAppStore>()(
   persist(
@@ -37,6 +38,7 @@ const appStore = createStore<IAppStore>()(
       isFirstLoad: true,
       authStatus: 'NOT_AUTH',
       authRegisterType: '',
+      cartToken: '',
     }),
     {
       name: 'app-storage',

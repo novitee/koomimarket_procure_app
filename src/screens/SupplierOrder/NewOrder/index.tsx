@@ -1,28 +1,37 @@
-import React, {useCallback, useReducer, useState, useEffect} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import React, {
+  useCallback,
+  useReducer,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import IllustrationIcon from 'assets/images/Illustration.svg';
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import Button from 'components/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import SearchBar from 'components/SearchBar';
-import Counter from 'components/Counter';
 import {toCurrency} from 'utils/format';
-import BottomSheet from 'components/BottomSheet';
-import Input from 'components/Input';
 import useQuery from 'libs/swr/useQuery';
 import useSearch from 'hooks/useSearch';
 import useMutation from 'libs/swr/useMutation';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import {useGlobalStore} from 'stores/global';
+import ToggleUpdateProduct from './ToggleUpdateProduct';
+import OrderItem from './OrderItem';
+import useCart from 'hooks/useCart';
+
+function _keyExtractor(item: any, index: number) {
+  return `${item.name}-${index}`;
+}
+
+const _renderItemSeparator = () => (
+  <View className="w-full h-[1px] bg-gray-D1D5DB" />
+);
+
 function useQueryCartItems({
   supplierId = '',
   searchString = '',
@@ -44,126 +53,24 @@ function useQueryCartItems({
   return useQuery([url, params]);
 }
 
-function _keyExtractor(item: any, index: number) {
-  return `${item.name}-${index}`;
+function useQuerySupplier(id: string) {
+  const url = `suppliers/${id}`;
+  const params = {
+    fields: 'id,minOrder',
+  };
+  return useQuery([url, params]);
 }
-
-function ToggleUpdateProduct({
-  isOpen,
-  supplierId,
-  item,
-  onClose,
-}: {
-  isOpen: boolean;
-  supplierId: string;
-  item: any;
-  onClose: (refresh?: boolean) => void;
-}) {
-  const [pricing, setPricing] = useState(item?.pricing);
-
-  const [{loading}, updateItem] = useMutation({
-    method: 'PATCH',
-    url: `update-item/${item?.slug}`,
-  });
-
-  const handleUpdate = useCallback(async () => {
-    const {data} = await updateItem({
-      supplierId: supplierId,
-      product: {
-        pricing,
-      },
-    });
-    onClose(true);
-  }, [updateItem]);
-
-  return (
-    <BottomSheet isOpen={isOpen} contentHeight={400}>
-      <View className="pb-10 px-5 pt-5 flex-1">
-        <View className="flex-1">
-          <View className="border-b border-gray-300 pb-10">
-            <Text className="text-primary font-semibold text-xl text-center">{`Edit ${item?.name} price`}</Text>
-          </View>
-          <View className="flex-row justify-between mt-10">
-            <View className="flex-1">
-              <Text className="font-semibold mb-3">Original</Text>
-              <Text className="mt-3">
-                $ {`${item?.pricing} ${item.uom?.toUpperCase()}`} (S)
-              </Text>
-            </View>
-            <View className="flex-1">
-              <Text className="font-semibold mb-3">Update to</Text>
-              <Input
-                keyboardType="decimal-pad"
-                className="rounded-lg"
-                StartComponent={() => (
-                  <View className="flex-row items-center ml-2">
-                    <Text className="text-gray-500 text-center ">$</Text>
-                  </View>
-                )}
-                value={pricing}
-                onChangeText={setPricing}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View className="flex-row">
-          <Button
-            variant="outline"
-            onPress={() => onClose()}
-            className="flex-1">
-            Cancel
-          </Button>
-          <Button onPress={handleUpdate} className="flex-1 ml-2">
-            Save
-          </Button>
-        </View>
-      </View>
-    </BottomSheet>
-  );
-}
-
-function OrderItem({
-  item,
-  onEdit,
-}: {
-  item?: any;
-  onPress?: TouchableOpacityProps['onPress'];
-  onEdit?: TouchableOpacityProps['onPress'];
-}) {
-  return (
-    <View className="flex-row items-center justify-between rounded-lg p-5">
-      <View>
-        <Text className="text-sm font-bold ">{item.name}</Text>
-        <TouchableOpacity
-          className="p-2 bg-primary rounded mt-2"
-          onPress={onEdit}>
-          <Text className="text-white">
-            {`${toCurrency(item.pricing, 'USD')} ${item.uom?.toUpperCase()}`}{' '}
-            (S)
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Counter defaultValue={1} onChange={() => {}} />
-    </View>
-  );
-}
-
-const _renderItemSeparator = () => (
-  <View className="w-full h-[1px] bg-gray-D1D5DB" />
-);
 
 function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
+  const {} = useCart();
   const [currentState, setCurrentState] = useState(0);
-  const [values, dispatch] = useReducer(reducer, {
-    render: false,
-    selectedItem: {},
-  });
 
   const channel = useGlobalStore(state => state.currentChannel);
+
   const {supplierId} = channel || {};
 
-  const minOrderAmount = 150;
+  const {data: dataSupplier} = useQuerySupplier(supplierId);
+  const {company: supplier} = dataSupplier || {};
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -178,15 +85,26 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     };
   }
 
-  const {selectedItem} = values;
+  const [values, dispatch] = useReducer(reducer, {
+    render: false,
+    selectedItem: {},
+    cartDetails: [],
+  });
+  const {selectedItem, cartDetails} = values;
   const {searchString, handleSearch} = useSearch();
 
+  const [{loading}, generateCheckoutCart] = useMutation({
+    url: 'generate-checkout-cart',
+  });
+
   const isFocused = useIsFocused();
-  useEffect(() => {
-    if (isFocused) {
-      handleSearch('');
-    }
-  }, [isFocused]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        handleSearch('');
+      }
+    }, [isFocused]),
+  );
 
   const {data, mutate: refreshCartItems} = useQueryCartItems({
     supplierId,
@@ -233,17 +151,49 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     });
   }, []);
 
+  const handleChangeItem = useCallback(
+    ({item, qty}: {item: any; qty: any}) => {
+      const newItem = {
+        productId: item.id,
+        qty,
+        uom: item.uom,
+      };
+      const findIndex = cartDetails.findIndex(
+        (cartDetail: any) => cartDetail.productId === item.id,
+      );
+      let newCartDetails = [];
+      if (findIndex === -1) {
+        newCartDetails = [...cartDetails, newItem];
+      } else {
+        newCartDetails = cartDetails.map((cartDetail: any) => {
+          return cartDetail.productId === item.id
+            ? {...cartDetail, qty}
+            : newItem;
+        });
+      }
+      dispatch({cartDetails: newCartDetails, render: true});
+    },
+    [cartDetails],
+  );
+
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       return (
         <OrderItem
           item={item}
           onEdit={() => handleEdit(item)}
-          onPress={() => {}}
+          onPress={(value: number) =>
+            handleChangeItem({
+              // productId: item.id,
+              item,
+              qty: value,
+            })
+          }
+          supplierId={supplierId}
         />
       );
     },
-    [handleEdit],
+    [handleEdit, handleChangeItem, cartDetails],
   );
   const handleClose = useCallback(
     (refresh = false) => {
@@ -257,6 +207,24 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   );
 
   const {records} = data || {};
+
+  const handleCheckoutCart = useCallback(async () => {
+    const {data} = await generateCheckoutCart({
+      supplierId,
+      items: cartDetails,
+    });
+    if (data) {
+      navigation.navigate('FinalizeOrder', {
+        billingCartId: data.billingCart?.id,
+      });
+    }
+  }, [generateCheckoutCart, cartDetails]);
+  const minOrderAmount = supplier?.minOrder;
+  const allowCheckout = useMemo(() => {
+    return (
+      cartDetails.length > 0 ** cartDetails.every((item: any) => item.qty > 0)
+    );
+  }, [cartDetails]);
 
   return (
     <>
@@ -311,6 +279,13 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           ListEmptyComponent={EmptyComponent}
           ItemSeparatorComponent={_renderItemSeparator}
         />
+        <View className="bg-white px-5 pt-2">
+          <Button
+            disabled={!allowCheckout || loading}
+            onPress={handleCheckoutCart}>
+            Next
+          </Button>
+        </View>
       </Container>
       <ToggleUpdateProduct
         isOpen={!!selectedItem?.name}

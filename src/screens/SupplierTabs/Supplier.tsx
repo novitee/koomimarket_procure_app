@@ -1,5 +1,5 @@
 import React, {useCallback, useLayoutEffect, useEffect} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ShippingIcon from 'assets/images/shipping.svg';
@@ -109,15 +109,17 @@ export default function SupplierScreen({
     },
   ]);
 
-  useEffect(() => {
-    if (isFocused) {
-      if (!searchString) {
-        refreshChannels();
-      } else {
-        handleSearch('');
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        if (!searchString) {
+          refreshChannels();
+        } else {
+          handleSearch('');
+        }
       }
-    }
-  }, [isFocused]);
+    }, [isFocused]),
+  );
 
   useLayoutEffect(() => {
     if (currentOutlet) {

@@ -13,27 +13,21 @@ import StatusBadge from 'components/StatusBadge';
 import dayjs from 'dayjs';
 import Button from 'components/Button';
 import {BackButton} from 'navigations/common';
-
+import {toCurrency} from 'utils/format';
+import useQuery from 'libs/swr/useQuery';
 const tabs = [
   {
     id: 'items_ordered',
     label: 'Items Ordered',
   },
   {
-    id: 'comments',
+    id: 'remarks',
     label: 'Comments',
   },
   {
     id: 'details',
     label: 'Details',
   },
-];
-
-const dummyData = [
-  {id: 1, name: 'Carrot', price: 0.99, unit: 'KG', quantity: 1},
-  {id: 2, name: 'Tomato', price: 1.49, unit: 'KG', quantity: 1},
-  {id: 3, name: 'Broccoli', price: 1.99, unit: 'KG', quantity: 2},
-  {id: 4, name: 'Spinach', price: 0.89, unit: 'KG', quantity: 2},
 ];
 
 const HeaderLeft = ({
@@ -53,6 +47,17 @@ const HeaderLeft = ({
     </View>
   );
 };
+
+function useQueryOrder(orderNo: string) {
+  const url = orderNo ? `orders/${orderNo}` : undefined;
+  const params = {
+    fields:
+      'id,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck',
+    include: 'supplier(name)',
+  };
+  return useQuery([url, params]);
+}
+
 export default function OrderDetailScreen({
   navigation,
   route,
@@ -60,9 +65,25 @@ export default function OrderDetailScreen({
   const pageViewRef = createRef<PagerView>();
   const [selectedPage, setSelectedPage] = useState(0);
 
-  const {order} = route.params || {};
-  const {comments, status, orderedAt, deliveryDate, products, supplier} =
-    order || {};
+  const {orderNo} = route.params || {};
+
+  const {data, mutate} = useQueryOrder(orderNo);
+  const {order} = data || {};
+
+  const {
+    readyForDeliveryCheck,
+    remarks,
+    status,
+    orderedAt,
+    deliveryDate,
+    lineItems = [],
+    supplier,
+    total,
+    shippingAddress,
+    customer,
+  } = order || {};
+  const {fullName, address, postal} = shippingAddress || {};
+  const {name} = customer || {};
 
   useLayoutEffect(() => {
     if (supplier) {
@@ -79,20 +100,20 @@ export default function OrderDetailScreen({
     ['Status', status],
     ['Order Date', dayjs(orderedAt).format('DD/MM/YYYY')],
     ['Delivery Date', dayjs(deliveryDate).format('DD/MM/YYYY (ddd)')],
-    ['Products ordered', products.length],
-    ['Estimated Order Total', products.length],
+    ['Products ordered', lineItems.length],
+    ['Estimated Order Total', toCurrency(total, 'SGD')],
   ];
   const orderDetails: Record<string, any> = [
-    ['Order ID', 'KM00004562K'],
-    ['Ordered By', 'Lee Zong Han'],
-    ['Delivery Address', '17 Jln Mesin #05-605 Koomi Office'],
-    ['Customer ID', '1011'],
+    ['Order ID', orderNo],
+    ['Ordered By', name],
+    ['Delivery Address', `${fullName} \n${address} #${postal}`],
   ];
   const onPageSelected: DirectEventHandler<
     PagerViewOnPageSelectedEventData
   > = ({nativeEvent: {position}}) => {
     setSelectedPage(position);
   };
+
   return (
     <Container className="px-0">
       <View className="flex-row">
@@ -105,7 +126,14 @@ export default function OrderDetailScreen({
               'border-gray-D4D4D8': index !== selectedPage,
             })}
             key={tab.id}>
-            <Text className="text-center font-medium">{tab.label}</Text>
+            <View className="items-center justify-center flex-row">
+              <Text className="text-center font-medium">{tab.label}</Text>
+              {tab.id == 'remarks' && remarks && (
+                <View className="ml-3 rounded-full w-5 h-5 bg-primary items-center justify-center">
+                  <Text className="text-white">1</Text>
+                </View>
+              )}
+            </View>
           </TouchableOpacity>
         ))}
       </View>
@@ -118,26 +146,30 @@ export default function OrderDetailScreen({
           key={0}
           className="flex-1"
           contentContainerStyle={styles.scrollViewContent}>
-          <LineButton
-            onPress={() => navigation.navigate('AddingProductType')}
-            className="border-t border-gray-D4D4D8">
-            Repeat Order
-          </LineButton>
-          {dummyData.map((item: any, index: number) => (
+          {(status === 'COMPLETED' || status === 'CANCELED') && (
+            <LineButton
+              onPress={() => navigation.navigate('AddingProductType')}
+              className="border-t border-gray-D4D4D8">
+              Repeat Order
+            </LineButton>
+          )}
+          {lineItems.map((item: any, index: number) => (
             <View
               className="flex-row items-center py-6 border-b border-gray-400"
               key={index}>
               <Text className="text-30 font-bold w-16 text-center">
-                {item.quantity}
+                {item.qty}
               </Text>
               <View className="flex-1">
                 <Text className="font-bold">{item.name}</Text>
-                <Text className="font-light mt-2">{item.unit}</Text>
+                <Text className="font-light mt-2">{item.uom} (S)</Text>
               </View>
             </View>
           ))}
           <View className="px-4">
-            <Text className="mt-6 font-bold">Estimated Order Total:</Text>
+            <Text className="mt-6 font-bold">
+              Estimated Order Total: {toCurrency(total, 'SGD')}
+            </Text>
             <Text className="text-sm font-light mt-2">
               KoomiMarket does not guarantee the accuracy of prices and does not
               assume liability for errors.
@@ -145,7 +177,7 @@ export default function OrderDetailScreen({
           </View>
         </ScrollView>
         <View key={1} className="p-4">
-          <Text>{comments}</Text>
+          <Text>{remarks}</Text>
         </View>
         <ScrollView
           key={2}
@@ -179,11 +211,19 @@ export default function OrderDetailScreen({
           </View>
         </ScrollView>
       </PagerView>
-      <View className="px-5">
-        <Button onPress={() => navigation.navigate('GoodsReceiving')}>
-          I have received the order
-        </Button>
-      </View>
+      {readyForDeliveryCheck && status == 'ACKNOWLEDGED' && (
+        <View className="px-5">
+          <Button
+            onPress={() =>
+              navigation.navigate('GoodsReceiving', {
+                orderNo: orderNo,
+                lineItems: lineItems,
+              })
+            }>
+            I have received the order
+          </Button>
+        </View>
+      )}
     </Container>
   );
 }

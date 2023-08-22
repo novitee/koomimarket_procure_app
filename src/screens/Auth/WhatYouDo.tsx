@@ -52,7 +52,7 @@ export default function WhatYouDoScreen({
       if (code === 'buyer') {
         setState({authStatus: 'BUYER_COMPLETED'});
       } else if (code === 'supplier') {
-        Linking.openURL(SUPPLIER_DASHBOARD_URL);
+        SUPPLIER_DASHBOARD_URL && Linking.openURL(SUPPLIER_DASHBOARD_URL);
       }
     } else if (mode === 'signUp') {
       if (code === 'buyer') {

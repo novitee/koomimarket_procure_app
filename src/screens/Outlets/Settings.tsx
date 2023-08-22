@@ -1,4 +1,5 @@
 import {View, TouchableOpacity} from 'react-native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import Container from 'components/Container';
 import Text, {Title} from 'components/Text';
@@ -36,9 +37,21 @@ const menus = [
 export default function SettingsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {user} = useMe();
+  const {user, refresh} = useMe();
+  const isFocused = useIsFocused();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        refresh();
+      }
+    }, [isFocused]),
+  );
+
   const {navigate} = navigation;
-  const {me, currentOutlet} = user || {};
+
+  const {me, currentCompany} = user || {};
+
   const {showModal, closeModal} = useModal();
 
   function handleMenuAction(id: string) {
@@ -67,25 +80,25 @@ export default function SettingsScreen({
         onPress={() => navigate('EditProfile')}
         className="flex-row items-center mt-8 p-4">
         <View className="flex-row items-center flex-1">
-          <Avatar url={me?.avatar} name={me?.fullName} />
+          <Avatar url={me?.avatar?.url} name={me?.fullName} />
           <Text className="ml-4 text-32 font-medium">{me?.fullName}</Text>
         </View>
         <ChevronRightIcon color={colors.chevron} />
       </TouchableOpacity>
       <Divider />
-      {currentOutlet && (
+      {currentCompany && (
         <>
           <Text className="px-4">Business</Text>
           <TouchableOpacity
-            onPress={() => navigate('EditOutlet')}
+            onPress={() => navigate('EditBusiness')}
             className="flex-row items-center mt-2 p-4">
             <View className="flex-row items-center flex-1">
               <Avatar
-                url={currentOutlet?.avatar}
-                name={currentOutlet?.fullName}
+                url={currentCompany?.photo?.url}
+                name={currentCompany?.name}
               />
               <Text className="ml-4 text-32 font-medium">
-                {currentOutlet?.fullName}
+                {currentCompany?.name}
               </Text>
             </View>
             <ChevronRightIcon color={colors.chevron} />

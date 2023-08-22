@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from 'react-native';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useEffect} from 'react';
 import Container from 'components/Container';
 import ShippingIcon from 'assets/images/shipping.svg';
 import useQuery from 'libs/swr/useQuery';
@@ -17,140 +17,23 @@ import dayjs from 'dayjs';
 import StatusBadge from 'components/StatusBadge';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
-
-const dummyData = [
-  {
-    id: 1,
-    orderedAt: '2022-01-01',
-    deliveryDate: '2022-01-01',
-    status: 'SENT',
-    comments: 'Call me when reach.',
-    supplier: {
-      name: 'Vegetable Farm',
-    },
-    products: [
-      {
-        id: 1,
-        name: 'Carrot',
-        price: 0.99,
-        unit: 'KG',
-        quantity: 1,
-      },
-      {
-        id: 2,
-        name: 'Broccoli',
-        price: 1.5,
-        unit: 'KG',
-        quantity: 2,
-      },
-    ],
-  },
-  {
-    id: 2,
-    deliveryDate: '2022-01-01',
-    orderedAt: '2022-01-02',
-    status: 'CONFIRMED',
-    comments: 'Call me when reach.',
-    supplier: {
-      name: 'Fruit Orchard',
-    },
-    products: [
-      {
-        id: 3,
-        name: 'Apple',
-        price: 1.5,
-        unit: 'KG',
-        quantity: 2,
-      },
-      {
-        id: 4,
-        name: 'Banana',
-        price: 0.99,
-        unit: 'KG',
-        quantity: 3,
-      },
-    ],
-  },
-  {
-    id: 3,
-    orderedAt: '2022-01-03',
-    deliveryDate: '2022-01-01',
-    status: 'ISSUE',
-    comments: 'Call me when reach.',
-    supplier: {
-      name: 'Dairy Farm',
-    },
-    products: [
-      {
-        id: 5,
-        name: 'Milk',
-        price: 2.99,
-        unit: 'L',
-        quantity: 1,
-      },
-      {
-        id: 6,
-        name: 'Cheese',
-        price: 3.5,
-        unit: 'KG',
-        quantity: 2,
-      },
-    ],
-  },
-  {
-    id: 4,
-    orderedAt: '2022-01-04',
-    deliveryDate: '2022-01-01',
-    status: 'CANCELLED',
-    comments: 'Call me when reach.',
-    supplier: {
-      name: 'Bakery',
-    },
-    products: [
-      {
-        id: 7,
-        name: 'Bread',
-        price: 3.5,
-        unit: 'loaf',
-        quantity: 3,
-      },
-      {
-        id: 8,
-        name: 'Croissant',
-        price: 1.99,
-        unit: 'piece',
-        quantity: 5,
-      },
-      {
-        id: 9,
-        name: 'Egg',
-        price: 1.99,
-        unit: 'unit',
-        quantity: 5,
-      },
-      {
-        id: 10,
-        name: 'Carrot',
-        price: 1.99,
-        unit: 'unit',
-        quantity: 5,
-      },
-    ],
-  },
-];
-
+import CheckIcon from 'assets/images/check.svg';
+import SearchBar from 'components/SearchBar';
+import useSearch from 'hooks/useSearch';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
-function renderProductName(products: any[]) {
-  if (products.length < 4) {
-    return `${products.map(p => p.name).join(', ')}`;
+function renderProductName(lineItems: any[]) {
+  if (!lineItems) return '';
+  if (lineItems?.length < 4) {
+    return `${lineItems.map(p => p.name).join(', ')}`;
   } else {
-    return `${products
+    return `${lineItems
       .slice(0, 2)
       .map(p => p.name)
-      .join(', ')} & ${products.length - 2} items`;
+      .join(', ')} & ${lineItems?.length - 2} items`;
   }
 }
 
@@ -161,15 +44,15 @@ function OrderItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {supplier, orderedAt, status, products} = item;
+  const {supplier, orderedAt, status, lineItems, deliveredAt} = item;
   return (
     <TouchableOpacity
       onPress={onPress}
       className=" items-center rounded-lg border border-gray-D4D4D8 p-4 mb-4">
       <View className="flex-row">
-        <Avatar size={40} name={supplier.name} />
+        <Avatar size={40} name={supplier.name} url={supplier?.photo?.url} />
         <View className="flex-1 justify-center ml-4 mr-2">
-          <Text className="font-bold text-16">{supplier.name}</Text>
+          <Text className="font-bold text-16 w-3/4">{supplier.name}</Text>
           <Text className="text-14 text-gray-400">{`Ordered ${dayjs(
             orderedAt,
           ).format('MM/DD/YYYY (ddd)')}`}</Text>
@@ -177,23 +60,54 @@ function OrderItem({
         <StatusBadge status={status} />
       </View>
       <View className="flex-row w-full items-center justify-between mt-3">
-        <Text className="text-14 font-medium">{`${renderProductName(
-          products,
-        )}`}</Text>
+        <Text className="text-14 font-medium flex-shrink-0 truncate w-3/4">
+          {renderProductName(lineItems)}
+        </Text>
         <ChevronRightIcon
           className="rotate-180"
           color={colors.primary.DEFAULT}
         />
       </View>
+      {deliveredAt && status === 'COMPLETED' && (
+        <View className="flex-row w-full items-center mt-3">
+          <Text className="text-14 text-red-500 flex-shrink-0 truncate mr-4">
+            Order Received
+          </Text>
+          <CheckIcon color={colors.primary.DEFAULT} />
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
 
+function useQueryOrders(searchString: string) {
+  const url = 'orders';
+  const params = {
+    first: 100,
+    skip: 0,
+    fields: 'id,orderNo,orderedAt,lineItems,status,deliveredAt,total',
+    include: 'supplier(name,photo)',
+    searchString,
+    orderBy: {
+      orderedAt: 'desc',
+    },
+  };
+  return useQuery([url, params]);
+}
 export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
-  const {} = useQuery('');
-  // const records: any = [];
-  const records = dummyData;
+  const {searchString, handleSearch} = useSearch();
+  const {data, mutate} = useQueryOrders(searchString);
+  const {records} = data || {};
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
+  const isFocused = useIsFocused();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        mutate();
+      }
+    }, [isFocused]),
+  );
 
   useLayoutEffect(() => {
     if (currentOutlet) {
@@ -215,7 +129,7 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
 
   const handlePressItem = useCallback(
     (item: any) => {
-      navigation.navigate('OrderDetail', {order: item});
+      navigation.navigate('OrderDetail', {orderNo: item.orderNo});
     },
     [navigation],
   );
@@ -229,6 +143,16 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
 
   return (
     <Container>
+      <SearchBar onSearch={handleSearch} />
+      <TouchableOpacity
+        onPress={() => {}}
+        className="flex-row justify-between items-center mt-8 border-y p-3 border-gray-300">
+        <Text className="font-bold text-primary">Check Due Invoices</Text>
+        <ChevronRightIcon
+          className="rotate-180"
+          color={colors.primary.DEFAULT}
+        />
+      </TouchableOpacity>
       <FlatList
         keyExtractor={_keyExtractor}
         className="mt-6"

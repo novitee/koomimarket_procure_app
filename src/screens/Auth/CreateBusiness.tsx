@@ -1,5 +1,5 @@
 import {ScrollView, View} from 'react-native';
-import React, {useReducer, useState, useEffect} from 'react';
+import React, {useReducer, useState, useCallback} from 'react';
 import Container from 'components/Container';
 import {SubTitle, Title} from 'components/Text';
 import Label from 'components/Form/Label';
@@ -12,6 +12,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
+import {saveAuthData} from 'utils/auth';
+import {setState} from 'stores/app';
 
 const url: string = 'registrations/update-sign-up-profile';
 
@@ -26,25 +28,11 @@ export default function CreateBusiness({
     method: 'PATCH',
     url: url,
   });
-  const {values: pValues, handlePostalCodeChange} = usePostalCode();
+  const [{loading: loadingComplete}, completeSignUpProfile] = useMutation({
+    url: 'registrations/complete',
+  });
 
-  useEffect(() => {
-    const {address, postalCode} = pValues;
-    if (sameAsBillingAddress) {
-      onChangeFields({
-        postalCode: postalCode,
-        billingAddress: address,
-        // deliveryPostalCode: postalCode,
-        // deliveryAddress: address,
-        errors: {...errors, postalCode: !address},
-      });
-    } else {
-      onChangeFields({
-        postalCode: postalCode,
-        billingAddress: address,
-      });
-    }
-  }, [pValues]);
+  const {loading: loadingPostal, handlePostalCodeChange} = usePostalCode();
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -58,63 +46,58 @@ export default function CreateBusiness({
 
   const {
     businessName,
-    // deliveryAddress,
     postalCode,
     billingAddress,
     unitNo,
-    sameAsBillingAddress,
-    // deliveryPostalCode,
-    // deliveryUnitNo,
     errors = {},
   } = values;
 
-  function onChangeText(text: string | boolean, field: string) {
-    dispatch({[field]: text, render: true});
-  }
+  const onChangeFields = useCallback(
+    (fields: {[key: string]: string | boolean | object}) => {
+      dispatch({...fields, render: true});
+    },
+    [],
+  );
 
-  function onChangeFields(fields: {[key: string]: string | boolean | object}) {
-    dispatch({...fields, render: true});
-  }
-
-  function handleChangePostalCode(text: string) {
-    handlePostalCodeChange(text);
-  }
-
-  // function handleSetSameAsBillingAddress(value: boolean) {
-  //   if (value) {
-  //     onChangeFields({
-  //       deliveryAddress: billingAddress,
-  //       deliveryUnitNo: unitNo,
-  //       deliveryPostalCode: postalCode,
-  //       sameAsBillingAddress: true,
-  //     });
-  //   } else {
-  //     onChangeFields({
-  //       sameAsBillingAddress: false,
-  //     });
-  //   }
-  // }
-
-  function handleChangeUnitNo(text: string) {
-    if (sameAsBillingAddress) {
-      onChangeFields({unitNo: text, deliveryUnitNo: text});
-    } else {
-      onChangeFields({unitNo: text});
-    }
-  }
-
-  function validateInputs(errors: {[key: string]: boolean}) {
-    onChangeFields({errors});
-    return Object.keys(errors).reduce((acc: boolean, key: string) => {
-      if (errors[key]) {
-        Toast.show('Please fill in all required fields', Toast.SHORT);
-        return false;
+  const handleChangePostalCode = useCallback(
+    async (text: string) => {
+      const address = await handlePostalCodeChange(text);
+      if (address) {
+        onChangeFields({billingAddress: address, postalCode: text});
       }
-      return acc;
-    }, true);
-  }
+    },
+    [handlePostalCodeChange],
+  );
 
-  async function handleUpdateProfile() {
+  const validateInputs = useCallback(
+    (errors: {[key: string]: boolean}) => {
+      onChangeFields({errors});
+      return Object.keys(errors).reduce((acc: boolean, key: string) => {
+        if (errors[key]) {
+          Toast.show('Please fill in all required fields', Toast.SHORT);
+          return false;
+        }
+        return acc;
+      }, true);
+    },
+    [onChangeFields],
+  );
+
+  const handleOpenComplete = useCallback(async () => {
+    const {data, success, message} = await completeSignUpProfile();
+    if (!success) {
+      Toast.show(message, Toast.LONG);
+      return;
+    }
+    const {authData} = data;
+    saveAuthData({
+      token: authData.token,
+      refreshToken: authData.refreshToken,
+    });
+    setState({authStatus: 'BUYER_COMPLETED'});
+  }, [completeSignUpProfile]);
+
+  const handleUpdateProfile = useCallback(async () => {
     const validFields = validateInputs({
       ...errors,
       businessName: !businessName,
@@ -122,19 +105,24 @@ export default function CreateBusiness({
     });
     if (!validFields) return;
 
-    const {success, data, error, message} = await updateSignUpProfile({
+    const {success, message} = await updateSignUpProfile({
       entityRegistration: {
         registrationInfo: {
-          company: {name: businessName, unitNo},
+          company: {
+            name: businessName,
+            postal: postalCode,
+            unitNo,
+            billingAddress,
+          },
         },
       },
     });
     if (success) {
-      navigation.navigate('WhatYouLike');
+      handleOpenComplete();
     } else {
       Toast.show(message, Toast.LONG);
     }
-  }
+  }, [errors, businessName, postalCode, unitNo, updateSignUpProfile]);
 
   return (
     <Container className="px-0">
@@ -165,7 +153,10 @@ export default function CreateBusiness({
               value={postalCode}
               onChangeText={handleChangePostalCode}
               placeholder="Postal Code"
-              className={errors.postalCode ? 'border-red-500 mb-4' : 'mb-4'}
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.postalCode,
+              })}
               keyboardType="numeric"
             />
             <Input
@@ -176,44 +167,15 @@ export default function CreateBusiness({
             />
             <Input
               value={unitNo}
-              onChangeText={handleChangeUnitNo}
+              onChangeText={(text: string) => onChangeFields({unitNo: text})}
               placeholder="Unit Number"
             />
           </FormGroup>
-          {/* <FormGroup>
-            <Label required>Delivery Address</Label>
-            <CheckBox
-              label="Same as billing address"
-              containerClassName="my-4"
-              defaultValue={sameAsBillingAddress}
-              onChange={handleSetSameAsBillingAddress}
-            />
-            <Input
-              value={deliveryPostalCode}
-              onChangeText={text => onChangeText(text, 'deliveryPostalCode')}
-              placeholder="Postal Code"
-              className="mb-4"
-              keyboardType="numeric"
-              editable={!sameAsBillingAddress}
-            />
-            <Input
-              value={deliveryAddress}
-              placeholder="Delivery Address"
-              className="mb-4"
-              editable={!sameAsBillingAddress}
-            />
-            <Input
-              value={deliveryUnitNo}
-              onChangeText={text => onChangeText(text, 'deliveryUnitNo')}
-              placeholder="Unit Number"
-              editable={!sameAsBillingAddress}
-            />
-          </FormGroup> */}
         </ScrollView>
         <View className=" pt-4 px-5">
           <Button
             onPress={handleUpdateProfile}
-            loading={loading}
+            loading={loading || loadingPostal || loadingComplete}
             className={clsx({
               'bg-gray-400 cursor-not-allowed': loading,
             })}>

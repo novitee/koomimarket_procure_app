@@ -9,9 +9,11 @@ import {Asset} from 'react-native-image-picker';
 export default function ImageUpload({
   onChange,
   icon,
+  editable = true,
 }: {
   onChange?: ((value: Asset | Asset[]) => void) | undefined;
   icon?: React.ReactNode;
+  editable?: boolean;
 }) {
   return (
     <ImagePicker onChange={onChange}>
@@ -34,11 +36,13 @@ export default function ImageUpload({
               <Text className="text-white font-medium">{`Uploading ${progress}%`}</Text>
             </View>
           )}
-          <TouchableOpacity
-            onPress={onPick}
-            className="w-12 h-12 rounded-full items-center justify-center bg-primary absolute -bottom-2 right-3 z-20">
-            <CameraIcon color="#ffffff" />
-          </TouchableOpacity>
+          {editable && (
+            <TouchableOpacity
+              onPress={onPick}
+              className="w-12 h-12 rounded-full items-center justify-center bg-primary absolute -bottom-2 right-3 z-20">
+              <CameraIcon color="#ffffff" />
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </ImagePicker>

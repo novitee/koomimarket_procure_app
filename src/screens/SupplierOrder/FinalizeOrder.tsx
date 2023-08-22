@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from 'react';
+import React, {useReducer, useState, useCallback, useEffect} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import Label from 'components/Form/Label';
@@ -9,6 +9,11 @@ import Input from 'components/Input';
 import DateInput from 'components/DateInput';
 import dayjs from 'dayjs';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import useMutation from 'libs/swr/useMutation';
+import useQuery from 'libs/swr/useQuery';
+import {toCurrency} from 'utils/format';
+import {generateOfflineBillingCart} from 'utils/billingCart';
+import Toast from 'react-native-simple-toast';
 
 const dummyData = [
   {id: 1, name: 'Carrot', price: 0.99, unit: 'KG', quantity: 1},
@@ -16,10 +21,30 @@ const dummyData = [
   {id: 3, name: 'Broccoli', price: 1.99, unit: 'KG', quantity: 2},
   {id: 4, name: 'Spinach', price: 0.89, unit: 'KG', quantity: 2},
 ];
+
 export default function FinalizeOrderScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const supplierName = 'Vegetable Farm';
+  const {billingCartId} = route.params || {};
+
+  const {data} = useQuery(
+    billingCartId ? `get-billing-cart/${billingCartId}` : undefined,
+  );
+
+  const [{}, generateReasonableDeliveryTime] = useMutation({
+    url: 'delivery-dates',
+  });
+  const [{}, updateDeliveryDate] = useMutation({
+    url: 'update-delivery-date',
+  });
+  const [{}, updateBillingCart] = useMutation({
+    url: 'update-billing-cart',
+  });
+  const [{}, createOfflinePaymentOrders] = useMutation({
+    url: 'create-offline-payment-orders',
+  });
 
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
@@ -39,14 +64,92 @@ export default function FinalizeOrderScreen({
     };
   }
 
-  const {requestedDeliveryDate, comment} = values;
+  const {requestedDeliveryDate, remarks, reasonableDeliveryTime} = values;
 
-  function handleOrder() {
-    navigation.navigate('DoneOrder', {
-      requestedDeliveryDate,
-      productsOrdered: dummyData.length,
+  const {getBillingCart: billingCart} = data || {};
+  const {cartGroups, supplierId, total = 0} = billingCart || {};
+  const cartGroup = cartGroups?.[0] || {};
+  const mappingProducts = cartGroup?.cartItems?.map((cartItem: any) => ({
+    id: cartItem.productId,
+  }));
+  const deliveryInputData = {
+    id: supplierId,
+    products: mappingProducts,
+  };
+
+  // const getReasonableDeliveryTime = async () => {
+  //   const {data, success} = await generateReasonableDeliveryTime({
+  //     supplier: deliveryInputData,
+  //   });
+  //   if (success) {
+  //     dispatch({
+  //       reasonableDeliveryTime: data?.deliveryDates,
+  //       // render: true,
+  //     });
+  //   }
+  // };
+  // getReasonableDeliveryTime();
+  // console.log('reasonableDeliveryTime :>> ', reasonableDeliveryTime);
+
+  // useEffect(() => {
+  //   if (!!deliveryInputData) {
+  //     getReasonableDeliveryTime();
+  //   }
+  // }, [deliveryInputData]);
+
+  const handleUpdateDeliveryDate = useCallback(
+    async (date: Date) => {
+      const {data, success} = await updateDeliveryDate({
+        cartGroup: {
+          billingCartId,
+          deliveryDate: dayjs(date).valueOf(),
+          id: cartGroup?.id,
+        },
+      });
+      if (success) {
+        dispatch({requestedDeliveryDate: date, render: true});
+      }
+    },
+    [cartGroup?.id, billingCartId, updateDeliveryDate],
+  );
+
+  const handleCreateOfflinePaymentOrders = useCallback(async () => {
+    const {data, success, error} = await createOfflinePaymentOrders({
+      billingCartId,
+      supplierId,
+      procurePortalOrderUrl: '/order-details',
     });
-  }
+    if (!success) {
+      Toast.show(error?.message, Toast.LONG);
+    }
+    return data;
+  }, [billingCartId, createOfflinePaymentOrders, supplierId]);
+
+  const handleOrder = useCallback(async () => {
+    const newBillingCart = generateOfflineBillingCart(billingCart, remarks);
+    const {data, success, error} = await updateBillingCart({
+      billingCart: newBillingCart,
+      myOrderUrl: '/my-orders',
+      portalOrderUrl: '/orders',
+    });
+
+    if (!success) {
+      Toast.show(error?.message, Toast.LONG);
+      return;
+    }
+    const checkoutData = await handleCreateOfflinePaymentOrders();
+    if (checkoutData) {
+      navigation.navigate('DoneOrder', {
+        order: checkoutData.orders?.[0],
+      });
+    }
+  }, [
+    billingCart,
+    handleCreateOfflinePaymentOrders,
+    navigation,
+    requestedDeliveryDate,
+    updateBillingCart,
+  ]);
 
   return (
     <Container>
@@ -73,9 +176,8 @@ export default function FinalizeOrderScreen({
         <FormGroup>
           <Label required>Requested Delivery Date</Label>
           <DateInput
-            onChange={date =>
-              dispatch({requestedDeliveryDate: date, render: true})
-            }
+            defaultValue={requestedDeliveryDate}
+            onChange={handleUpdateDeliveryDate}
           />
         </FormGroup>
         <FormGroup>
@@ -87,7 +189,7 @@ export default function FinalizeOrderScreen({
             textAlignVertical={'top'}
             className="h-[100px]"
             scrollEnabled={false}
-            onChangeText={text => dispatch({comment: text, render: true})}
+            onChangeText={text => dispatch({remarks: text, render: true})}
           />
         </FormGroup>
 
@@ -107,7 +209,9 @@ export default function FinalizeOrderScreen({
             </View>
           </View>
         ))}
-        <Text className="mt-6 font-bold">Estimated Order Total:</Text>
+        <Text className="mt-6 font-bold">
+          Estimated Order Total: {toCurrency(total, 'SGD')}
+        </Text>
         <Text className="text-sm font-light mt-2">
           All prices to all products to see the estimated order total
         </Text>
@@ -115,13 +219,12 @@ export default function FinalizeOrderScreen({
 
       <Button
         onPress={handleOrder}
-        disabled={!requestedDeliveryDate || !comment}>
+        disabled={!requestedDeliveryDate || !remarks}>
         Tap to Order
       </Button>
     </Container>
   );
 }
-
 const styles = StyleSheet.create({
   scrollViewContent: {
     paddingBottom: 40,

@@ -11,9 +11,10 @@ export default function DoneOrderScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const supplierName = 'Vegetable Farm';
-  const {requestedDeliveryDate, productsOrdered} = route.params || {};
-
+  const {order} = route.params || {};
+  const {supplierInfo, deliveryDate, orderNo, orderedAt, lineItems} =
+    order || {};
+  const supplierName = supplierInfo?.name;
   return (
     <View className="bg-primary/30 flex-1">
       <Container containerClassName="bg-transparent" className="bg-transparent">
@@ -24,18 +25,28 @@ export default function DoneOrderScreen({
         <Text className="text-30 text-center font-medium">has been sent</Text>
         <View className="flex-1 justify-end">
           <View className="bg-white rounded-xl border border-gray-900 py-4 px-3">
-            <Text className="text-20 text-primary font-bold mb-4">
-              Order Summary
-            </Text>
+            <View className="flex-row justify-between py-3">
+              <Text className="text-20 text-primary font-bold mb-4">
+                Order Summary
+              </Text>
+              <Text className="text-20 text-primary font-bold mb-4">
+                {orderNo}
+              </Text>
+            </View>
+            <View className="flex-row justify-between py-3 ">
+              <Text className="font-medium">
+                {dayjs(orderedAt).format('DD/MM/YYYY')}
+              </Text>
+            </View>
             <View className="flex-row justify-between py-3 border-t border-gray-900">
               <Text className="font-medium">Delivery Date</Text>
               <Text className="font-medium">
-                {dayjs(requestedDeliveryDate).format('DD/MM/YYYY (ddd)')}
+                {dayjs(deliveryDate).format('DD/MM/YYYY (ddd)')}
               </Text>
             </View>
             <View className="flex-row  justify-between py-3 border-t border-gray-900">
               <Text className="font-medium">Products ordered</Text>
-              <Text className="font-medium">{productsOrdered}</Text>
+              <Text className="font-medium">{lineItems.length}</Text>
             </View>
           </View>
         </View>
