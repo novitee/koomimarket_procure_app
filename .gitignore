@@ -32,6 +32,7 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
+!koomiprocure.keystore
 !debug.keystore
 
 # node.js
