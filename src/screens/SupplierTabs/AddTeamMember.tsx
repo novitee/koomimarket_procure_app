@@ -1,11 +1,12 @@
 import {TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import {styled} from 'nativewind';
 import UserIcon from 'assets/images/user.svg';
 import colors from 'configs/colors';
 import ContactList from 'components/ContactList';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
 
@@ -23,8 +24,23 @@ const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
 //   );
 // }
 
-export default function AddTeamMemberScreen() {
+export default function AddTeamMemberScreen({
+  navigation,
+}: NativeStackScreenProps<any>) {
   const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: () => (
+        <TouchableOpacity onPress={handleAdd}>
+          <Text className="text-primary">Add</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  function handleAdd() {}
 
   function handleSelectMembers(newMember: any) {
     const index = selectedMembers.findIndex(
