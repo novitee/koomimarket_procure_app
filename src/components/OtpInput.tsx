@@ -2,6 +2,7 @@ import {View, TextInputProps, TextInput} from 'react-native';
 import React, {useLayoutEffect, useRef, useState} from 'react';
 import {styled} from 'nativewind';
 import clsx from 'libs/clsx';
+import colors from 'configs/colors';
 
 interface InputNumberProps extends Omit<TextInputProps, 'onChangeText'> {
   index: number;
@@ -16,7 +17,7 @@ interface OtpInputProps {
 
 const StyledInput = styled(
   TextInput,
-  'h-[56px] w-10 text-24 text-center border border-gray-D1D5DB rounded-[12px] mx-1 font-inter',
+  'h-[56px] w-10 text-24 text-center border border-gray-D1D5DB rounded-[12px] mx-1 font-inter text-dark',
 );
 
 function InputNumber({
@@ -45,6 +46,9 @@ function InputNumber({
       onChangeText={text => onChangeText?.(index, text)}
       onKeyPress={onKeyPress}
       selectTextOnFocus
+      cursorColor={colors.dark}
+      placeholderTextColor={colors.gray.D1D5DB}
+      selectionColor={colors.dark}
     />
   );
 }

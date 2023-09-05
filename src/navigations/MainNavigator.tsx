@@ -41,7 +41,8 @@ import OrderDetailScreen from 'screens/Order/OrderDetail';
 import GoodsReceivingScreen from 'screens/Order/GoodsReceiving';
 import GoodsReceivingIssue from 'screens/Order/GoodsReceivingIssue';
 import GoodsReceivingDone from 'screens/Order/GoodsReceivingDone';
-import {resetAuthData} from 'utils/auth';
+import AddSupplierProfileScreen from 'screens/AddingSupplier/AddSupplierProfile';
+import AddSupplierManuallyScreen from 'screens/AddingSupplier/AddSupplierManually';
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
@@ -136,6 +137,17 @@ export default function MainNavigator(): JSX.Element {
             headerTitle: 'Add Suppliers',
           }}
           component={AreCurrentCustomerScreen}
+        />
+        <Stack.Screen
+          name="AddSupplierProfile"
+          component={AddSupplierProfileScreen}
+        />
+        <Stack.Screen
+          name="AddSupplierManually"
+          component={AddSupplierManuallyScreen}
+          options={{
+            headerTitle: 'Add Supplier',
+          }}
         />
       </Stack.Group>
       {/* AddingSupplierManually */}

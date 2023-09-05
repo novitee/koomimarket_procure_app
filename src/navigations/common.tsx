@@ -14,10 +14,10 @@ import QuestionIcon from 'assets/images/question-mark-circle.svg';
 import SettingIcon from 'assets/images/cog.svg';
 import KoomiLogo from 'assets/images/koomi-logo.svg';
 
-import ChatIcon from 'assets/images/chat.svg';
+import SupplierIcon from 'assets/images/supplier_bar.svg';
 import ClipBoardListIcon from 'assets/images/clipboard-list.svg';
 import UserGroupIcon from 'assets/images/user-group.svg';
-import ChatIconActive from 'assets/images/chat_active.svg';
+import SupplierIconActive from 'assets/images/supplier_bar_active.svg';
 import ClipBoardListIconActive from 'assets/images/clipboard-list_active.svg';
 import UserGroupIconActive from 'assets/images/user-group_active.svg';
 import ChevronRight from 'assets/images/chevron-left.svg';
@@ -72,10 +72,10 @@ const barSources: Record<
   string,
   FunctionComponent<SVGAttributes<SVGElement>>
 > = {
-  supplier: ChatIcon,
+  supplier: SupplierIcon,
   order: ClipBoardListIcon,
   team: UserGroupIcon,
-  supplier_active: ChatIconActive,
+  supplier_active: SupplierIconActive,
   order_active: ClipBoardListIconActive,
   team_active: UserGroupIconActive,
 };

@@ -108,13 +108,15 @@ export default function EditBusinessScreen({
     }, true);
   }, []);
 
-  const handleSave = useCallback(async () => {
+  async function handleSave() {
     const validFields = validateInputs({
       ...errors,
       name: !name,
       postal: !postal,
     });
-    if (!validFields) return;
+    if (!validFields) {
+      return;
+    }
 
     const {success, error} = await updateBusinessProfile({
       company: {
@@ -131,7 +133,7 @@ export default function EditBusinessScreen({
       return;
     }
     navigation.goBack();
-  }, [updateBusinessProfile]);
+  }
 
   return (
     <Container className="px-0">
@@ -197,9 +199,11 @@ export default function EditBusinessScreen({
         </ScrollView>
 
         {editMode && (
-          <Button loading={loading || loadingPostal} onPress={handleSave}>
-            Save
-          </Button>
+          <View className="px-5">
+            <Button loading={loading || loadingPostal} onPress={handleSave}>
+              Save
+            </Button>
+          </View>
         )}
       </KeyboardAvoidingView>
     </Container>

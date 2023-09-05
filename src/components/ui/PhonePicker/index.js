@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import countries from '../../../utils/country';
 import clsx from 'libs/clsx';
+import colors from 'configs/colors';
 const getFlagEmoji = countryCode =>
   String.fromCodePoint(
     ...[...countryCode.toUpperCase()].map(x => 0x1f1a5 + x.charCodeAt(0)),
@@ -70,7 +71,7 @@ export default function PhonePicker({
     }
   }
 
-  function renderItem({item}) {
+  function renderItem({ item }) {
     const isSelected = item.name == (selectedCountry && selectedCountry.name);
     return (
       <TouchableOpacity
@@ -84,18 +85,18 @@ export default function PhonePicker({
         ])}
         onPress={onSelect.bind(this, item)}
         disabled={isSelected}>
-        <Text style={{fontSize: 32}}>{getFlagEmoji(item.code)}</Text>
+        <Text style={{ fontSize: 32 }}>{getFlagEmoji(item.code)}</Text>
         <Text
           style={StyleSheet.flatten([
-            {fontSize: 18, fontWeight: 500, marginLeft: 6},
-            isSelected && {color: '#0369a1'},
+            { fontSize: 18, fontWeight: 500, marginLeft: 6 },
+            isSelected && { color: '#0369a1' },
           ])}>
           {item.name}
         </Text>
         <Text
           style={StyleSheet.flatten([
-            {fontSize: 18, fontWeight: 500, marginLeft: 6},
-            isSelected && {color: '#0369a1'},
+            { fontSize: 18, fontWeight: 500, marginLeft: 6 },
+            isSelected && { color: '#0369a1' },
           ])}>
           (+{item.phone_code})
         </Text>
@@ -119,7 +120,7 @@ export default function PhonePicker({
       <View
         style={StyleSheet.flatten([
           styles.container,
-          {borderColor: !!isError ? '#D80D1D' : '#ddd'},
+          { borderColor: !!isError ? '#D80D1D' : '#ddd' },
         ])}
         className={clsx({
           'mx-4 my-2 rounded-lg border-gray-300 bg-gray-EEF3FD/50':
@@ -129,18 +130,18 @@ export default function PhonePicker({
           disabled={!editable}
           style={styles.dropdownButton}
           onPress={onOpen}>
-          <Text style={{fontSize: 32}}>
+          <Text style={{ fontSize: 32 }}>
             {getFlagEmoji((selectedCountry && selectedCountry.code) || 'sg')}
           </Text>
           <Text
-            style={{fontSize: 18, fontWeight: 500}}
+            style={{ fontSize: 18, fontWeight: 500 }}
             className={clsx({
               'text-gray-500': editable === false,
             })}>
             +{(selectedCountry && selectedCountry.phone_code) || 65}
           </Text>
           <Text
-            style={{fontSize: 12, marginLeft: 2}}
+            style={{ fontSize: 12, marginLeft: 2 }}
             className={clsx({
               'text-gray-500': editable === false,
             })}>
@@ -156,6 +157,9 @@ export default function PhonePicker({
           className={clsx({
             'text-gray-500': editable === false,
           })}
+          cursorColor={colors.dark}
+          placeholderTextColor={colors.gray.D1D5DB}
+          selectionColor={colors.dark}
           editable={editable}
         />
       </View>
@@ -175,11 +179,11 @@ export default function PhonePicker({
               width: '100%',
               marginBottom: 20,
             }}>
-            <Text style={{fontSize: 18, fontWeight: 600}}>Select Country</Text>
+            <Text style={{ fontSize: 18, fontWeight: 600 }}>Select Country</Text>
             <TouchableOpacity
-              style={{position: 'absolute', right: 0}}
+              style={{ position: 'absolute', right: 0 }}
               onPress={onClose}>
-              <Text style={{fontSize: 22}}>✗</Text>
+              <Text style={{ fontSize: 22 }}>✗</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.searchInputWrap}>
@@ -226,6 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     height: 56,
+    color: colors.dark,
   },
   searchInputWrap: {
     flexDirection: 'row',

@@ -6833,6 +6833,11 @@ react-native-codegen@^0.71.5:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
+react-native-contacts@^7.0.7:
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-7.0.7.tgz#d8c28e74c30cc60d26a090acbd093684b7bd61ea"
+  integrity sha512-UYECbAS7iQPN8vwXSex6oklXGTiJ/6KpWf8EJgMGVg+E1uU3Hx5T+WIiD0g2wNr6pDPNY8u5f1zFNksWSI9Pgw==
+
 react-native-date-picker@^4.2.13:
   version "4.2.13"
   resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-4.2.13.tgz#b5b894ee6c5a154a752f9094342170515e169ea6"

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from 'react-native';
-import React, {useCallback, useLayoutEffect, useEffect} from 'react';
+import React, {useCallback, useLayoutEffect} from 'react';
 import Container from 'components/Container';
 import ShippingIcon from 'assets/images/shipping.svg';
 import useQuery from 'libs/swr/useQuery';
@@ -21,6 +21,7 @@ import CheckIcon from 'assets/images/check.svg';
 import SearchBar from 'components/SearchBar';
 import useSearch from 'hooks/useSearch';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {BackButton} from 'navigations/common';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -106,12 +107,17 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
       if (isFocused) {
         mutate();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFocused]),
   );
 
   useLayoutEffect(() => {
     if (currentOutlet) {
-      navigation.setOptions({headerTitle: currentOutlet?.name});
+      navigation.setOptions({
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerLeft: () => <BackButton canGoBack goBack={navigation.goBack} />,
+        headerTitle: currentOutlet?.name,
+      });
     }
   }, [currentOutlet, navigation]);
 

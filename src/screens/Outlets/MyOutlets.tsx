@@ -16,8 +16,9 @@ import {useIsFocused} from '@react-navigation/native';
 import {Image} from 'react-native';
 import {LogBox} from 'react-native';
 import {setGlobal} from 'stores/global';
-import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import useMutation from 'libs/swr/useMutation';
 import {saveAuthData} from 'utils/auth';
+import Loading from 'components/Loading';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -63,7 +64,7 @@ function useQueryOutlets() {
 export default function MyOutletsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {data, mutate} = useQueryOutlets();
+  const {data, isLoading, mutate} = useQueryOutlets();
   useIsFocused();
 
   const [{loading}, setOutlet] = useMutation({
@@ -80,14 +81,14 @@ export default function MyOutletsScreen({
   const handleSelectOutlet = useCallback(
     async ({item}: {item?: any}) => {
       setGlobal({currentOutlet: item});
-      const {data, success} = await setOutlet({outletId: item.id});
+      const {data: dataResp, success} = await setOutlet({outletId: item.id});
       if (success) {
-        const {token, refreshToken} = data;
+        const {token, refreshToken} = dataResp;
         saveAuthData({token, refreshToken});
         navigation.navigate('SupplierTabs');
       }
     },
-    [navigation],
+    [navigation, setOutlet],
   );
 
   const EmptyComponent = useCallback(() => {
@@ -128,6 +129,7 @@ export default function MyOutletsScreen({
       <Button className="mt-4" onPress={toAddOutlet}>
         + Create Outlet
       </Button>
+      {(isLoading || loading) && <Loading />}
     </Container>
   );
 }

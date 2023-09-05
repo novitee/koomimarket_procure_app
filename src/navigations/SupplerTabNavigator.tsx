@@ -13,6 +13,7 @@ export default function SupplerTabNavigator() {
         name="Supplier"
         options={{
           headerTitleStyle: mainHeaderTitleStyle,
+          headerTitle: '',
         }}
         component={SupplierScreen}
       />
@@ -20,6 +21,7 @@ export default function SupplerTabNavigator() {
         name="Order"
         options={{
           headerTitleStyle: mainHeaderTitleStyle,
+          headerTitle: '',
         }}
         component={OrderScreen}
       />
@@ -27,6 +29,7 @@ export default function SupplerTabNavigator() {
         name="Team"
         options={{
           headerTitleStyle: mainHeaderTitleStyle,
+          headerTitle: '',
         }}
         component={TeamScreen}
       />

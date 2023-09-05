@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -78,5 +78,7 @@
 	<string>$(PRODUCT_NAME) would like to your microphone (for videos)</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your photo gallery</string>
+	<key>NSContactsUsageDescription</key>
+	<string>$(PRODUCT_NAME) would like access to your contacts</string>
 </dict>
 </plist>

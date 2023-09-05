@@ -23,6 +23,7 @@ import Avatar from 'components/Avatar';
 import dayjs from 'dayjs';
 import colors from 'configs/colors';
 import useSearch from 'hooks/useSearch';
+import {BackButton} from 'navigations/common';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -91,6 +92,7 @@ export default function SupplierScreen({
     if (params?.searchString) {
       handleSearch(params?.searchString);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.searchString]);
 
   const {data, mutate: refreshChannels} = useQuery([
@@ -118,12 +120,17 @@ export default function SupplierScreen({
           handleSearch('');
         }
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFocused]),
   );
 
   useLayoutEffect(() => {
     if (currentOutlet) {
-      navigation.setOptions({headerTitle: currentOutlet?.name});
+      navigation.setOptions({
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerLeft: () => <BackButton canGoBack goBack={navigation.goBack} />,
+        headerTitle: currentOutlet?.name,
+      });
     }
   }, [currentOutlet, navigation]);
 
@@ -131,8 +138,8 @@ export default function SupplierScreen({
     navigation.navigate('AddSupplierName');
   }, [navigation]);
 
-  const toSupplierList = useCallback(() => {
-    navigation.navigate('SupplierList');
+  const toSupplierProfile = useCallback(() => {
+    navigation.navigate('AddSupplierProfile');
   }, [navigation]);
 
   const handleSelectSupplier = useCallback(
@@ -152,16 +159,16 @@ export default function SupplierScreen({
           Start by adding your suppliers.
         </Text>
 
-        <Button className="mt-4" onPress={toSupplierList}>
+        <Button className="mt-4" onPress={toSupplierProfile}>
           + Add Supplier
         </Button>
       </View>
     );
-  }, [toSupplierList]);
+  }, [toSupplierProfile]);
 
   const EmptySearchComponent = useCallback(() => {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center px-5">
         <IllustrationIcon />
         <Text className="font-bold mt-4 text-center">
           Can't find your supplier?
@@ -221,7 +228,7 @@ export default function SupplierScreen({
           fullWidth={false}
           className="px-4"
           size="md"
-          onPress={toSupplierList}
+          onPress={toSupplierProfile}
           variant="outline">
           + Add Supplier
         </Button>

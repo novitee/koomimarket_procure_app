@@ -46,10 +46,10 @@ export default function CheckBox({
         onPress={handleChange}
         className={clsx({
           'justify-center items-center w-6 h-6 rounded-md ': true,
-          'border border-gray-300 shadow-sm': !checked,
+          'border border-gray-300': !checked,
           'bg-primary': checked === true,
         })}>
-        {checked ? <CheckIcon /> : <View />}
+        {checked ? <CheckIcon color="white" /> : <View />}
       </TouchableOpacity>
       <Label className={labelClassName}>{label}</Label>
     </View>

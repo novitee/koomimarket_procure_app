@@ -11,6 +11,7 @@ import {styled} from 'nativewind';
 import AccountPlus from 'assets/images/account-plus.svg';
 import useQuery from 'libs/swr/useQuery';
 import useMe from 'hooks/useMe';
+import {BackButton} from 'navigations/common';
 
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
 
@@ -23,7 +24,9 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
   useLayoutEffect(() => {
     if (currentOutlet) {
       navigation.setOptions({
-        headerTitle: currentOutlet?.name || 'Test Outlet',
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerLeft: () => <BackButton canGoBack goBack={navigation.goBack} />,
+        headerTitle: currentOutlet?.name,
       });
     }
   }, [currentOutlet, navigation]);
@@ -33,6 +36,8 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
   );
 
   const {records} = data || {};
+
+  console.log(`records :>>`, records);
 
   return (
     <Container className="px-0">
