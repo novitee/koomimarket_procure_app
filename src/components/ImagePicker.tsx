@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {TouchableOpacity, TouchableOpacityProps} from 'react-native';
 import Text from './Text';
-import axios, {AxiosRequestConfig} from 'axios';
 import {
   CameraOptions,
   ImageLibraryOptions,
@@ -55,12 +54,6 @@ export default function ImagePicker({
     };
   }
 
-  const getBlob = async (fileUri: string) => {
-    const resp = await fetch(fileUri);
-    const imageBody = await resp.blob();
-    return imageBody;
-  };
-
   async function handleUpload(assets: Asset[]) {
     const uploadedImages: (Asset & {signedKey?: string})[] = [];
     await Promise.all(
@@ -72,30 +65,18 @@ export default function ImagePicker({
         const {data} = await getSignS3(variables);
 
         if (data) {
-          const axiosOptions: AxiosRequestConfig = {
-            headers: {
-              'Content-Type': file.type,
-              'x-amz-acl': 'public-read',
-            },
-            onUploadProgress: progressEvent => {
-              if (progressEvent.total) {
-                setProgress(
-                  Math.round(
-                    (progressEvent.loaded * 100) / progressEvent.total,
-                  ),
-                );
-              }
-            },
-          };
-
-          const imageBlob = await getBlob(file?.uri || '');
           try {
-            const res = await axios.put(
-              data.signedRequestURL,
-              imageBlob,
-              axiosOptions,
-            );
-            if (res) {
+            const res = await fetch(data.signedRequestURL, {
+              method: 'PUT',
+              body: getImageData(file) as any,
+              headers: {
+                'Content-Type': file.type,
+              } as any,
+            });
+
+            const resJson = JSON.parse(JSON.stringify(res));
+            if (resJson.status === 200) {
+              setProgress(100);
               uploadedImages.push({
                 ...file,
                 uri: data.url || '',

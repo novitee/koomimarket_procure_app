@@ -32,17 +32,16 @@ function OutletItem({
   onPress?: TouchableOpacityProps['onPress'];
 }) {
   const {photo, name, deliveryAddress} = item || {};
-
   return (
     <TouchableOpacity
       onPress={onPress}
       className="flex-row rounded-lg bg-gray-E0E0E4/20 p-5 mb-4">
       <Image
         className="w-[72px] h-[72px] bg-gray-400 rounded-lg overflow-hidden"
-        source={photo?.url}
+        source={{uri: photo?.url}}
       />
       <View className="flex-1 ml-4">
-        <Text className="font-bold text-18">{name || 'Test Outlet 1'}</Text>
+        <Text className="font-bold text-18">{name}</Text>
         <Text className="font-light mt-2">{deliveryAddress}</Text>
       </View>
     </TouchableOpacity>

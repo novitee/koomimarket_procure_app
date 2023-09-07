@@ -175,10 +175,7 @@ export default function CreateBusiness({
         <View className=" pt-4 px-5">
           <Button
             onPress={handleUpdateProfile}
-            loading={loading || loadingPostal || loadingComplete}
-            className={clsx({
-              'bg-gray-400 cursor-not-allowed': loading,
-            })}>
+            loading={loading || loadingPostal || loadingComplete}>
             Create Business
           </Button>
         </View>

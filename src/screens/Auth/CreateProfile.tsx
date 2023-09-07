@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import React, {useReducer, useState, useCallback} from 'react';
 import Container from 'components/Container';
 import {SubTitle, Title} from 'components/Text';
@@ -10,6 +10,7 @@ import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {validateEmail} from 'utils/validate';
+import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 const url: string = 'registrations/update-sign-up-profile';
 
 export default function CreateProfile({
@@ -82,35 +83,39 @@ export default function CreateProfile({
   }, [fullName, emailAddress, updateSignUpProfile, navigation, validateInputs]);
 
   return (
-    <Container>
-      <View className="flex-1">
-        <Title>Let’s create your profile</Title>
-        <SubTitle>
-          Your profile is how you’ll be recognised by others on Koomi.
-        </SubTitle>
+    <Container className="px-0">
+      <KeyboardAvoidingView>
+        <ScrollView className="flex-1 px-5">
+          <Title>Let’s create your profile</Title>
+          <SubTitle>
+            Your profile is how you’ll be recognised by others on Koomi.
+          </SubTitle>
 
-        <FormGroup>
-          <Label required>Full name</Label>
-          <Input
-            value={fullName}
-            onChangeText={text => onChangeText(text, 'fullName')}
-            placeholder="e.g. Tan Ah Gao"
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label required>Email Address</Label>
-          <Input
-            value={emailAddress}
-            inputMode="email"
-            onChangeText={text => onChangeText(text, 'emailAddress')}
-            placeholder="e.g. ahgao@business.com"
-          />
-        </FormGroup>
-      </View>
+          <FormGroup>
+            <Label required>Full name</Label>
+            <Input
+              value={fullName}
+              onChangeText={text => onChangeText(text, 'fullName')}
+              placeholder="e.g. Tan Ah Gao"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label required>Email Address</Label>
+            <Input
+              value={emailAddress}
+              inputMode="email"
+              onChangeText={text => onChangeText(text, 'emailAddress')}
+              placeholder="e.g. ahgao@business.com"
+            />
+          </FormGroup>
+        </ScrollView>
 
-      <Button loading={loading} onPress={handleUpdateProfile}>
-        Next
-      </Button>
+        <View className="px-5">
+          <Button loading={loading} onPress={handleUpdateProfile}>
+            Next
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

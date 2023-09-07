@@ -19,7 +19,7 @@ export default function ImageUpload({
     <ImagePicker onChange={onChange}>
       {({onPick, selectedUri, progress}) => (
         <View className="w-[164px] h-[164px] rounded-full bg-gray-E0E0E4 items-center justify-center ">
-          {selectedUri ? (
+          {selectedUri && editable ? (
             <Image
               resizeMode="cover"
               resizeMethod="scale"

@@ -61,28 +61,41 @@ export default function EditProfileScreen({
   }
 
   const {fullName, email, avatar, mobileCode, mobileNumber} = values;
+
+  const resetToDefault = useCallback(() => {
+    dispatch({
+      fullName: me?.fullName,
+      email: me?.email,
+      avatar: me?.avatar,
+      mobileCode: me?.mobileCode,
+      mobileNumber: me?.mobileNumber,
+      render: true,
+    });
+  }, [me]);
+
+  useEffect(() => {
+    if (me) {
+      resetToDefault();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me]);
+
   const headerRight = useCallback(() => {
     return (
-      <TouchableOpacity onPress={() => setEditMode(!editMode)} hitSlop={5}>
+      <TouchableOpacity
+        onPress={() => {
+          if (editMode) {
+            resetToDefault();
+          }
+          setEditMode(!editMode);
+        }}
+        hitSlop={5}>
         <Text className="text-primary text-lg font-medium">
           {editMode ? 'Cancel' : 'Edit'}
         </Text>
       </TouchableOpacity>
     );
-  }, [editMode]);
-
-  useEffect(() => {
-    if (me) {
-      dispatch({
-        fullName: me?.fullName,
-        email: me?.email,
-        avatar: me?.avatar,
-        mobileCode: me?.mobileCode,
-        mobileNumber: me?.mobileNumber,
-        render: true,
-      });
-    }
-  }, [me]);
+  }, [editMode, resetToDefault]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

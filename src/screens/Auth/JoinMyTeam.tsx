@@ -158,7 +158,6 @@ export default function JoinMyTeamScreen({
             loading={loading || loadingPostal}
             className={clsx({
               'w-full': true,
-              'bg-gray-400 cursor-not-allowed': loading,
             })}>
             Join Team
           </Button>

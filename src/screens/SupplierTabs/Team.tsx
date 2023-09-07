@@ -37,15 +37,13 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
 
   const {records} = data || {};
 
-  console.log(`records :>>`, records);
-
   return (
     <Container className="px-0">
       <Divider className="mt-10" />
       <View className="px-5">
         <Text className="font-bold">Outlet</Text>
         <TouchableOpacity
-          onPress={() => navigate('EditProfile')}
+          onPress={() => {}}
           className="flex-row items-center mt-4">
           <View className="flex-row items-center flex-1">
             <Avatar name={'Test Outlet'} />

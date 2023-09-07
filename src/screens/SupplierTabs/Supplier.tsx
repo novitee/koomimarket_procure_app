@@ -223,16 +223,18 @@ export default function SupplierScreen({
         }
         ItemSeparatorComponent={_renderItemSeparator}
       />
-      <View className="flex-row justify-end px-5">
-        <Button
-          fullWidth={false}
-          className="px-4"
-          size="md"
-          onPress={toSupplierProfile}
-          variant="outline">
-          + Add Supplier
-        </Button>
-      </View>
+      {!!records && records.length > 0 && (
+        <View className="flex-row justify-end px-5">
+          <Button
+            fullWidth={false}
+            className="px-4"
+            size="md"
+            onPress={toSupplierProfile}
+            variant="outline">
+            + Add Supplier
+          </Button>
+        </View>
+      )}
     </Container>
   );
 }

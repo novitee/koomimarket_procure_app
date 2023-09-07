@@ -77,7 +77,9 @@ export default function Button({
       ) : (
         children
       )}
-      {loading && <ActivityIndicator className="ml-3" size={'small'} />}
+      {loading && (
+        <ActivityIndicator className="ml-3 " color={'white'} size={'small'} />
+      )}
     </StyledButton>
   );
 }

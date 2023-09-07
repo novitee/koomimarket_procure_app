@@ -37,7 +37,6 @@ export default function EditBusinessScreen({
     url: 'me/business-profile',
     method: 'PATCH',
   });
-  console.log('currentCompany :>> ', currentCompany);
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {});
 
