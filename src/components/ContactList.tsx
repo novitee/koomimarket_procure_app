@@ -1,9 +1,12 @@
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, Platform} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import Contacts from 'react-native-contacts';
 import UserIcon from 'assets/images/user.svg';
 import colors from 'configs/colors';
 import CheckBox from './CheckBox';
+import {PermissionsAndroid} from 'react-native';
+import Toast from 'react-native-simple-toast';
+
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -55,8 +58,22 @@ export default function ContactList({
 
   useEffect(() => {
     async function getContacts() {
-      const contactsList = await Contacts.getAll();
-      setContacts(contactsList);
+      try {
+        if (Platform.OS === 'android') {
+          await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+            {
+              title: 'Contacts',
+              message: 'This app would like to view your contacts.',
+              buttonPositive: 'Please accept bare mortal',
+            },
+          );
+        }
+        const contactsList = await Contacts.getAll();
+        setContacts(contactsList);
+      } catch (error) {
+        Toast.show('Failed when get contact', Toast.LONG);
+      }
     }
 
     getContacts();
