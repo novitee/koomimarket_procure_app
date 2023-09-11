@@ -7,9 +7,9 @@ import Text from 'components/Text';
 import {setState} from 'stores/app';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
-import {saveAuthData} from 'utils/auth';
+// import {saveAuthData} from 'utils/auth';
 import clsx from 'libs/clsx';
-import {setGlobal} from 'stores/global';
+// import {setGlobal} from 'stores/global';
 import useMe from 'hooks/useMe';
 import {useAppStore} from 'stores/app';
 
@@ -24,23 +24,25 @@ export default function SupplierThankYouScreen({
     url: completeSignUpUrl,
   });
 
-  useEffect(() => {
-    if (user) {
-      setState({authStatus: 'AUTH_COMPLETED'});
-    }
-  }, [navigation, user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     setGlobal({authMode: 'login'});
+  //     setState({authStatus: 'NOT_AUTH'});
+  //   }
+  // }, [navigation, user]);
 
   async function handleComplete() {
     const {data, success, error, message} = await completeSignUp();
 
     if (success) {
-      const {authData} = data;
-      setGlobal({authMode: 'login'});
-      saveAuthData({
-        token: authData.token,
-        refreshToken: authData.refreshToken,
-      });
-      refresh();
+      // const {authData} = data;
+      // setGlobal({authMode: 'login'});
+      // saveAuthData({
+      //   token: authData.token,
+      //   refreshToken: authData.refreshToken,
+      // });
+      // refresh();
+      setState({authStatus: 'NOT_AUTH'});
     } else {
       Toast.show(error?.message || message, Toast.LONG);
     }

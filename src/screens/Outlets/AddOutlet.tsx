@@ -1,9 +1,8 @@
-import {Image, ScrollView, View} from 'react-native';
-import React, {useReducer, useState, useEffect} from 'react';
+import {ScrollView, View} from 'react-native';
+import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
-import Text, {SubTitle, Title} from 'components/Text';
+import {SubTitle, Title} from 'components/Text';
 import CheckBox from 'components/CheckBox';
-import {LogBox} from 'react-native';
 import Button from 'components/Button';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import FormGroup from 'components/Form/FormGroup';
@@ -12,15 +11,9 @@ import Input from 'components/Input';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from 'react-native-simple-toast';
-import {styled} from 'nativewind';
 import ImageUpload from 'components/ImageUpload';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
-// LogBox.ignoreLogs([
-//   'Non-serializable values were found in the navigation state',
-// ]);
-
-// const ErrorText = styled(Text, 'text-error mt-3');
 
 export default function AddOutletScreen({
   navigation,
@@ -177,13 +170,13 @@ export default function AddOutletScreen({
       mobileNumber: 'none',
     };
 
-    const {success, message} = await addOutlet(params);
-
+    const response = await addOutlet(params);
+    const {success, message, errors} = response || {};
     if (success) {
       refreshOutlet?.();
       navigation.goBack();
     } else {
-      Toast.show(message, Toast.LONG);
+      Toast.show(message || errors?.name, Toast.LONG);
     }
   }
 

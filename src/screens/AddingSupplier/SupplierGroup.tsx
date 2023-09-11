@@ -60,7 +60,7 @@ export default function SupplierGroupScreen({
   const {slug} = group || {};
   const {searchString, handleSearch} = useSearch();
 
-  const {data} = useQuery([
+  const {data, mutate} = useQuery([
     'suppliers',
     {
       first: 100,

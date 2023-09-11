@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useReducer,
-  useState,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, {useCallback, useReducer, useState, useMemo} from 'react';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
@@ -17,8 +11,6 @@ import {toCurrency} from 'utils/format';
 import useQuery from 'libs/swr/useQuery';
 import useSearch from 'hooks/useSearch';
 import useMutation from 'libs/swr/useMutation';
-import ChevronRightIcon from 'assets/images/chevron-right.svg';
-import colors from 'configs/colors';
 import {useGlobalStore} from 'stores/global';
 import ToggleUpdateProduct from './ToggleUpdateProduct';
 import OrderItem from './OrderItem';
@@ -32,11 +24,7 @@ const _renderItemSeparator = () => (
   <View className="w-full h-[1px] bg-gray-D1D5DB" />
 );
 
-function useQueryCartItems({
-  supplierId = '',
-  searchString = '',
-  categoryFilter = [],
-}) {
+function useQueryCartItems({supplierId = '', searchString = ''}) {
   const url = 'get-cart-items';
   const params = {
     first: 20,
@@ -101,7 +89,11 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   useFocusEffect(
     React.useCallback(() => {
       if (isFocused) {
-        handleSearch('');
+        if (searchString) {
+          handleSearch('');
+        } else {
+          refreshCartItems();
+        }
       }
     }, [isFocused]),
   );
@@ -184,7 +176,6 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           onEdit={() => handleEdit(item)}
           onPress={(value: number) =>
             handleChangeItem({
-              // productId: item.id,
               item,
               qty: value,
             })

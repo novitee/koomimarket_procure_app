@@ -4,7 +4,12 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import KoomiLogo from 'assets/images/koomi-logo.svg';
-import {customScreenOptions, myOutletsScreenOptions} from './common';
+import {
+  customScreenOptions,
+  myOutletsScreenOptions,
+  BackButton,
+} from './common';
+import {HeaderBackButtonProps} from '@react-navigation/native-stack/lib/typescript/src/types';
 
 import SupplerTabNavigator from './SupplerTabNavigator';
 import MyOutletsScreen from 'screens/Outlets/MyOutlets';
@@ -63,6 +68,22 @@ export const customScreenMemberOptions:
   headerTitle: 'Add Team Member',
 });
 
+export const customScreenSupplierTabOptions:
+  | NativeStackNavigationOptions
+  | ((props: {
+      route: RouteProp<ParamListBase, string>;
+      navigation: any;
+    }) => NativeStackNavigationOptions)
+  | undefined = ({navigation}) => {
+  return {
+    ...customScreenOptions,
+    headerLeft: (props: HeaderBackButtonProps) => (
+      <BackButton {...props} goBack={() => navigation.navigate('MyOutlets')} />
+    ),
+    headerShown: false,
+  };
+};
+
 export default function MainNavigator(): JSX.Element {
   // resetAuthData();
   return (
@@ -97,9 +118,7 @@ export default function MainNavigator(): JSX.Element {
 
       <Stack.Screen
         name="SupplierTabs"
-        options={{
-          headerShown: false,
-        }}
+        options={customScreenSupplierTabOptions}
         component={SupplerTabNavigator}
       />
       <Stack.Screen
