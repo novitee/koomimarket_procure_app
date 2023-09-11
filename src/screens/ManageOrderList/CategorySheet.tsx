@@ -1,5 +1,5 @@
-import {View, Text} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -9,15 +9,17 @@ export default function CategorySheet({
   isOpen,
   selectedEditCategory,
   onCancel,
+  onRemove,
   onSave,
 }: {
   isOpen?: boolean;
   selectedEditCategory?: any;
   onSave?: (values: any) => void;
+  onRemove?: (category: string) => void;
   onCancel?: () => void;
 }) {
   const [category, setCategory] = useState(selectedEditCategory);
-
+  const bottomSheetRef = useRef<any>(null);
   const isEdit = !!selectedEditCategory;
 
   useEffect(() => {
@@ -31,8 +33,13 @@ export default function CategorySheet({
     onSave?.(category);
     setCategory('');
   }
+
+  function handleRemove() {
+    bottomSheetRef.current.close();
+    onRemove?.(selectedEditCategory);
+  }
   return (
-    <BottomSheet isOpen={isOpen} contentHeight={550}>
+    <BottomSheet ref={bottomSheetRef} isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
         <View className="flex-1">
           <View className="border-b border-gray-300 pb-5">
@@ -49,6 +56,15 @@ export default function CategorySheet({
               />
             </View>
           </View>
+          {isEdit && (
+            <View className="py-4 border-y border-gray-D1D5DB mt-4">
+              <TouchableOpacity
+                onPress={handleRemove}
+                className="w-full flex-row justify-center">
+                <Text className="text-primary">Remove Category</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         <View className="flex-row">

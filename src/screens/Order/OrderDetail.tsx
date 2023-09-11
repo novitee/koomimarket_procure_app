@@ -211,7 +211,7 @@ export default function OrderDetailScreen({
           </View>
         </ScrollView>
       </PagerView>
-      {readyForDeliveryCheck && status == 'ACKNOWLEDGED' && (
+      {readyForDeliveryCheck && status === 'ACKNOWLEDGED' && (
         <View className="px-5">
           <Button
             onPress={() =>

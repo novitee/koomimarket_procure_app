@@ -124,10 +124,10 @@ export default function SupplierProfileScreen({
   const _renderCatalogueItem = useCallback(
     ({item}: {item?: any; index: number}) => {
       const {photos, finalPricing} = item || {};
-      const photo = photos?.[0];
+      const photoItem = photos?.[0];
       const {currencyCode, pricing, unit} = finalPricing || {};
       const showPricing = `${currencyCode} ${pricing} ${unit}`;
-      const imageUrl = photo ? {uri: photo?.url} : dummyCover;
+      const imgUrl = photo ? {uri: photoItem?.url} : {};
       return (
         <View className="p-4 flex-row justify-between">
           <View className="mr-4 flex-1">
@@ -135,9 +135,16 @@ export default function SupplierProfileScreen({
             <Text className="text-sm font-light text-gray-400">
               {showPricing}
             </Text>
-            <Text className="text-red-500">See details</Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ProductDetail', {
+                  product: item,
+                })
+              }>
+              <Text className="text-red-500">See details</Text>
+            </TouchableOpacity>
           </View>
-          <Image source={imageUrl} className="w-[72px] h-[72px] flex-0" />
+          <Image source={imgUrl} className="w-[72px] h-[72px] bg-stone-300" />
         </View>
       );
     },

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Text from 'components/Text';
 import {View} from 'react-native';
 import Button from 'components/Button';
@@ -33,8 +33,15 @@ export default function ToggleUpdateProduct({
     onClose(true);
   }, [updateItem]);
 
+  useEffect(() => {
+    if (item && item.pricing && item.pricing !== pricing) {
+      setPricing(item.pricing?.toString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item]);
+
   return (
-    <BottomSheet isOpen={isOpen} contentHeight={400}>
+    <BottomSheet isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
         <View className="flex-1">
           <View className="border-b border-gray-300 pb-10">
@@ -52,6 +59,7 @@ export default function ToggleUpdateProduct({
               <Input
                 keyboardType="decimal-pad"
                 className="rounded-lg"
+                // eslint-disable-next-line react/no-unstable-nested-components
                 StartComponent={() => (
                   <View className="flex-row items-center ml-2">
                     <Text className="text-gray-500 text-center ">$</Text>

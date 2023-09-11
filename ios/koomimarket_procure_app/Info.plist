@@ -80,5 +80,9 @@
 	<string>$(PRODUCT_NAME) would like access to your photo gallery</string>
 	<key>NSContactsUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your contacts</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+	</array>
 </dict>
 </plist>

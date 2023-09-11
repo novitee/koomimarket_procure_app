@@ -25,11 +25,12 @@ export default function ProductDetailScreen({
     ['Category', categoryName],
   ];
 
+  console.log(`product :>>`, product);
   return (
     <Container>
       <Animated.Image
         source={{uri: photos?.[0]?.url}}
-        className="w-full h-[240px]"
+        className="w-full h-[240px] bg-slate-300"
         sharedTransitionTag={`product-${name}`}
       />
 

@@ -14,7 +14,15 @@ import EditIcon from 'assets/images/edit.svg';
 import CheckBox from 'components/CheckBox';
 import {toggleValueInArray} from 'utils/common';
 import EditItemSheet from './EditItemSheet';
-import useNavigation from 'hooks/useNavigation';
+import RemoveCategorySheet from './RemoveCategorySheet';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {BackButton} from 'navigations/common';
+import TrashIcon from 'assets/images/trash.svg';
+import colors from 'configs/colors';
+import RemoveItemSheet from './RemoveItemSheet';
+const REMOVE_ITEMS = 'REMOVE_ITEMS';
+const SAVE_CATEGORY = 'SAVE_CATEGORY';
+const REMOVE_CATEGORY = 'REMOVE_CATEGORY';
 
 function ProductItem({
   item,
@@ -38,7 +46,9 @@ function ProductItem({
   );
 }
 
-export default function ManageOrderListScreen() {
+export default function ManageOrderListScreen({
+  navigation,
+}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -49,9 +59,9 @@ export default function ManageOrderListScreen() {
       },
     ],
     selectedIds: [],
-    openAddCategorySheet: false,
+    showSheet: null,
     selectedEditItem: null,
-    selectedEditCategory: false,
+    selectedEditCategory: '',
   });
 
   function reducer(state: any, action: any) {
@@ -66,12 +76,8 @@ export default function ManageOrderListScreen() {
       ...action,
     };
   }
-  const {
-    openAddCategorySheet,
-    selectedEditItem,
-    selectedEditCategory,
-    productSections,
-  } = values;
+  const {showSheet, selectedEditItem, selectedEditCategory, productSections} =
+    values;
 
   const handleEdit = useCallback((item: any) => {
     dispatch({
@@ -83,19 +89,34 @@ export default function ManageOrderListScreen() {
   const handleEditCategory = useCallback((item: any) => {
     dispatch({
       selectedEditCategory: item,
-      openAddCategorySheet: true,
+      showSheet: SAVE_CATEGORY,
       render: true,
     });
   }, []);
 
   const handleSelect = useCallback(
     (item: any) => {
+      const newSelectedIds = toggleValueInArray(item.id, values.selectedIds);
+      navigation.setOptions({
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerLeft: () =>
+          newSelectedIds.length > 0 ? (
+            <TouchableOpacity
+              className="items-center justify-center px-3"
+              onPress={() => dispatch({showSheet: REMOVE_ITEMS, render: true})}>
+              <TrashIcon color={colors.primary.DEFAULT} />
+            </TouchableOpacity>
+          ) : (
+            <BackButton canGoBack goBack={navigation.goBack} />
+          ),
+      });
+
       dispatch({
-        selectedIds: toggleValueInArray(item.id, values.selectedIds),
+        selectedIds: newSelectedIds,
         render: true,
       });
     },
-    [values.selectedIds],
+    [navigation, values.selectedIds],
   );
 
   const _renderItem = useCallback(
@@ -141,25 +162,83 @@ export default function ManageOrderListScreen() {
     return null;
   }, []);
 
-  function handleAddCategory(newCategory: string) {
+  function handleSaveCategory(newCategory: string) {
+    if (values.selectedEditCategory) {
+      const index = values.productSections.findIndex(
+        (item: any) => values.selectedEditCategory === item.category,
+      );
+      const clonedProductSections = [...values.productSections];
+      if (index > -1) {
+        clonedProductSections[index].category = newCategory;
+      }
+      dispatch({
+        productSections: clonedProductSections,
+        showSheet: null,
+        selectedEditCategory: '',
+        render: true,
+      });
+    } else {
+      dispatch({
+        productSections: [
+          ...productSections,
+          {
+            category: newCategory,
+            data: [],
+          },
+        ],
+        showSheet: null,
+        selectedEditCategory: '',
+        render: true,
+      });
+    }
+  }
+
+  function handleSaveEditItem(item: any) {
+    const clonedProductSections = [...values.productSections];
+    const index = values.productSections.findIndex(
+      (section: any) => section.category === item.category,
+    );
+
+    if (index !== -1) {
+      clonedProductSections[index].data.push(item);
+      clonedProductSections[0].data = clonedProductSections[0].data.filter(
+        (p: any) => p.id !== item.id,
+      );
+    }
     dispatch({
-      productSections: [
-        ...productSections,
-        {
-          category: newCategory,
-          data: [],
-        },
-      ],
-      openAddCategorySheet: false,
+      selectedEditItem: null,
+      productSections: clonedProductSections,
       render: true,
     });
   }
 
-  function handleSaveEditItem(item: any) {
-    dispatch({
-      selectedEditItem: null,
-      render: true,
-    });
+  function handleRemoveCategory() {
+    const index = values.productSections.findIndex(
+      (section: any) => section.category === values.selectedEditCategory,
+    );
+
+    if (index !== -1) {
+      const clonedProductSections = [...values.productSections];
+      clonedProductSections[0].data = [
+        ...clonedProductSections[0].data,
+        ...clonedProductSections[index].data,
+      ];
+      clonedProductSections.splice(index, 1);
+      dispatch({
+        selectedEditCategory: '',
+        productSections: clonedProductSections,
+        showSheet: null,
+        render: true,
+      });
+    }
+  }
+
+  function handleRemoveItems() {
+    console.log(`values.selectedIds :>>`, values.selectedIds);
+  }
+
+  function closeSheet() {
+    dispatch({showSheet: null, render: true});
   }
 
   const categories = productSections.map((i: any) => i.category);
@@ -183,9 +262,7 @@ export default function ManageOrderListScreen() {
               size="md"
               fullWidth={false}
               variant="outline"
-              onPress={() =>
-                dispatch({openAddCategorySheet: true, render: true})
-              }
+              onPress={() => dispatch({showSheet: SAVE_CATEGORY, render: true})}
               className="mr-4 border-gray-400">
               <Text className="text-gray-400 font-semibold">
                 Add New Category
@@ -204,17 +281,40 @@ export default function ManageOrderListScreen() {
         />
       </Container>
       <CategorySheet
-        isOpen={openAddCategorySheet}
+        isOpen={showSheet === SAVE_CATEGORY}
         selectedEditCategory={selectedEditCategory}
-        onCancel={() => dispatch({openAddCategorySheet: false, render: true})}
-        onSave={handleAddCategory}
+        onCancel={closeSheet}
+        onSave={handleSaveCategory}
+        onRemove={item => {
+          dispatch({
+            selectedEditCategory: item,
+            showSheet: REMOVE_CATEGORY,
+            render: true,
+          });
+        }}
       />
       <EditItemSheet
         categories={categories}
         isOpen={!!selectedEditItem}
         selectedItem={selectedEditItem}
-        onCancel={() => dispatch({selectedEditItem: null, render: true})}
+        onCancel={() =>
+          dispatch({
+            selectedEditItem: null,
+            selectedEditCategory: '',
+            render: true,
+          })
+        }
         onSave={handleSaveEditItem}
+      />
+      <RemoveCategorySheet
+        isOpen={showSheet === REMOVE_CATEGORY}
+        onCancel={closeSheet}
+        onConfirm={handleRemoveCategory}
+      />
+      <RemoveItemSheet
+        isOpen={showSheet === REMOVE_ITEMS}
+        onCancel={closeSheet}
+        onConfirm={handleRemoveItems}
       />
     </>
   );

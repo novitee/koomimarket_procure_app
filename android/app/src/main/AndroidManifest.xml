@@ -22,4 +22,7 @@
         </intent-filter>
       </activity>
     </application>
+    <queries>
+      <package android:name="com.whatsapp" />
+    </queries>
 </manifest>

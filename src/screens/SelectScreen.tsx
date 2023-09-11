@@ -12,7 +12,7 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-const StyledView = styled(TouchableOpacity, 'p-5 rounded-5 mb-4');
+const StyledView = styled(TouchableOpacity, 'p-5 rounded mb-4');
 
 function SelectionItem({
   item,
@@ -27,7 +27,7 @@ function SelectionItem({
     <StyledView
       className={clsx({
         'bg-primary': !!isSelected,
-        'bg-gray-F5FBFF': !isSelected,
+        'bg-gray-E0E0E4': !isSelected,
       })}
       onPress={() => onSelect?.(item)}>
       <Text

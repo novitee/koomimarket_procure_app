@@ -56,6 +56,7 @@ export default function ImagePicker({
 
   async function handleUpload(assets: Asset[]) {
     const uploadedImages: (Asset & {signedKey?: string})[] = [];
+    setProgress(1);
     await Promise.all(
       assets.map(async file => {
         const variables = {
@@ -76,7 +77,6 @@ export default function ImagePicker({
 
             const resJson = JSON.parse(JSON.stringify(res));
             if (resJson.status === 200) {
-              setProgress(100);
               uploadedImages.push({
                 ...file,
                 uri: data.url || '',
@@ -93,6 +93,7 @@ export default function ImagePicker({
         }
       }),
     );
+    setProgress(100);
 
     onChange?.(uploadedImages);
   }

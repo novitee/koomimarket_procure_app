@@ -5,6 +5,7 @@ import {
   View,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useCallback, useReducer, useState} from 'react';
 import Container from 'components/Container';
@@ -18,6 +19,7 @@ import AddIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
 import BottomSheet from 'components/BottomSheet';
 import ImagePicker from 'components/ImagePicker';
+import Loading from 'components/Loading';
 
 const units = [
   'Piece(s)',
@@ -100,6 +102,8 @@ export default function AddingProductFormScreen() {
   } = values;
 
   const handleChange = useCallback((key: string, item: any) => {
+    console.log(`key :>>`, key);
+    console.log(`item :>>`, item);
     dispatch({[key]: item, render: true});
   }, []);
 
@@ -110,6 +114,9 @@ export default function AddingProductFormScreen() {
       render: true,
     });
   }
+
+  console.log(`images :>>`, images);
+
   return (
     <>
       <Container className="px-0">
@@ -122,7 +129,7 @@ export default function AddingProductFormScreen() {
                 onChangeText={(text: string) =>
                   handleChange('productName', text)
                 }
-                placeholder="e.g. Ah Gao’s Cafe"
+                placeholder="e.g. Chicken"
               />
             </FormGroup>
             <FormGroup>
@@ -184,21 +191,40 @@ export default function AddingProductFormScreen() {
             <FormGroup>
               <Label required>Image</Label>
               <ImagePicker
-                onChange={(assets: any) => handleChange('images', assets)}>
-                {({onPick}) => (
+                onChange={(assets: any) =>
+                  handleChange('images', [...images, ...assets])
+                }>
+                {({onPick, progress = 0}) => (
                   <TouchableOpacity
                     onPress={onPick}
                     className="border rounded border-gray-D1D5DB flex-row items-center justify-center py-3">
-                    <AddIcon color={colors.gray.D1D5DB} />
-                    <Text className={'text-gray-D1D5DB ml-2'}>
-                      New Category
-                    </Text>
+                    {progress > 0 && progress < 100 ? (
+                      <ActivityIndicator
+                        size={'large'}
+                        color={colors.primary.DEFAULT}
+                      />
+                    ) : (
+                      <>
+                        <AddIcon color={colors.gray.D1D5DB} />
+                        <Text className={'text-gray-D1D5DB ml-2'}>
+                          Upload Image
+                        </Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                 )}
               </ImagePicker>
-              <View className="flex-row w-full flex-wrap">
+              <View className="flex-row w-full flex-wrap pt-3 gap-4">
                 {images.map((image: any) => {
-                  return <Image key={image.uri} source={{uri: image.uri}} />;
+                  return (
+                    <Image
+                      key={image.uri}
+                      source={{uri: image.uri}}
+                      resizeMode="cover"
+                      resizeMethod="scale"
+                      className="w-32 h-32 rounded-lg"
+                    />
+                  );
                 })}
               </View>
             </FormGroup>
@@ -208,7 +234,7 @@ export default function AddingProductFormScreen() {
           </View>
         </KeyboardAvoidingView>
       </Container>
-      <BottomSheet isOpen={!!openNewCategory} contentHeight={400}>
+      <BottomSheet isOpen={!!openNewCategory} contentHeight={550}>
         <View className="pb-10 px-5 pt-5 flex-1">
           <View className="flex-1">
             <View className="border-b border-gray-300 pb-10">
@@ -238,6 +264,7 @@ export default function AddingProductFormScreen() {
               onPress={() =>
                 dispatch({
                   selectedItem: {},
+                  openNewCategory: false,
                   render: true,
                 })
               }
