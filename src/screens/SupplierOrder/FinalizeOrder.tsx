@@ -127,7 +127,7 @@ export default function FinalizeOrderScreen({
 
   const handleOrder = useCallback(async () => {
     const newBillingCart = generateOfflineBillingCart(billingCart, remarks);
-    const {data, success, error} = await updateBillingCart({
+    const {success, error} = await updateBillingCart({
       billingCart: newBillingCart,
       myOrderUrl: '/my-orders',
       portalOrderUrl: '/orders',
@@ -147,7 +147,7 @@ export default function FinalizeOrderScreen({
     billingCart,
     handleCreateOfflinePaymentOrders,
     navigation,
-    requestedDeliveryDate,
+    remarks,
     updateBillingCart,
   ]);
 

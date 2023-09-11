@@ -7,8 +7,9 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import Container from 'components/Container';
 import Animated from 'react-native-reanimated';
 import dummyCover from 'assets/images/dummy_cover.png';
@@ -104,7 +105,7 @@ export default function SupplierProfileScreen({
       value: cutOffTiming,
     },
   ];
-  const imageUrl = photo ? {uri: photo?.url} : dummyCover;
+  const imageUrl = photo ? {uri: photo?.url} : {};
   const _renderAboutItem = useCallback(
     ({item, index}: {item?: any; index: number}) => {
       return (
@@ -152,16 +153,31 @@ export default function SupplierProfileScreen({
     setIsShowMore(!isShowMore);
   }, [isShowMore]);
 
+  const [showMoreCatalogue, setShowMoreCatalogue] = useState(false);
+
+  function toggleShowMore() {
+    setShowMoreCatalogue(!showMoreCatalogue);
+  }
+
+  const productsCatalogue = useMemo(() => {
+    return showMoreCatalogue ? products : products?.slice(0, 5);
+  }, [products, showMoreCatalogue]);
+
   return (
     <View className="flex-1">
-      <StatusBar translucent barStyle={'light-content'} />
+      <StatusBar
+        translucent
+        barStyle={'light-content'}
+        animated={true}
+        backgroundColor="transparent"
+      />
 
       <Animated.Image
         source={imageUrl}
         className="w-screen h-[240px]"
         sharedTransitionTag={`supplier-${name}`}
       />
-      <SafeAreaView className="absolute left-4 top-0 z-50">
+      <SafeAreaView className="absolute left-4 ios:top-0 android:top-10 z-50">
         <BackButton canGoBack goBack={navigation.goBack} />
       </SafeAreaView>
 
@@ -192,13 +208,20 @@ export default function SupplierProfileScreen({
             className="border border-gray-D1D5DB"
             scrollEnabled={false}
             renderItem={_renderCatalogueItem}
-            data={products}
+            data={productsCatalogue}
+            extraData={productsCatalogue}
             keyExtractor={item => item.slug}
             ItemSeparatorComponent={_renderItemSeparator}
           />
-          <Text className="text-red-500 mt-2">See More</Text>
+          {(products || []).length > 5 && (
+            <TouchableOpacity onPress={toggleShowMore}>
+              <Text className="text-red-500 mt-2">
+                {showMoreCatalogue ? 'See Less' : 'See More'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
-        <View className="px-5">
+        <View className="px-5 pb-5">
           <Button
             onPress={() =>
               navigation.navigate('AreCurrentCustomer', {

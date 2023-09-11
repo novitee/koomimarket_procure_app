@@ -128,7 +128,7 @@ export default function OrderDetailScreen({
             key={tab.id}>
             <View className="items-center justify-center flex-row">
               <Text className="text-center font-medium">{tab.label}</Text>
-              {tab.id == 'remarks' && remarks && (
+              {tab.id === 'remarks' && remarks && (
                 <View className="ml-3 rounded-full w-5 h-5 bg-primary items-center justify-center">
                   <Text className="text-white">1</Text>
                 </View>

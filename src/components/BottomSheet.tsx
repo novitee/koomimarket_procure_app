@@ -83,7 +83,7 @@ function BottomSheet(
           <Animated.View
             style={[
               styles.bottomSheetContainer,
-              Platform.OS === 'ios' ? {height: contentHeight} : {},
+              {height: contentHeight},
               rBottomSheetStyle,
             ]}>
             {children}

@@ -22,6 +22,7 @@ import SearchBar from 'components/SearchBar';
 import useSearch from 'hooks/useSearch';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {BackButton} from 'navigations/common';
+import Loading from 'components/Loading';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -97,7 +98,7 @@ function useQueryOrders(searchString: string) {
 }
 export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
   const {searchString, handleSearch} = useSearch();
-  const {data, mutate} = useQueryOrders(searchString);
+  const {data, isLoading, mutate} = useQueryOrders(searchString);
   const {records} = data || {};
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
   const isFocused = useIsFocused();
@@ -150,7 +151,7 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
   return (
     <Container>
       <SearchBar onSearch={handleSearch} />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {}}
         className="flex-row justify-between items-center mt-8 border-y p-3 border-gray-300">
         <Text className="font-bold text-primary">Check Due Invoices</Text>
@@ -158,7 +159,7 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
           className="rotate-180"
           color={colors.primary.DEFAULT}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <FlatList
         keyExtractor={_keyExtractor}
         className="mt-6"
@@ -166,8 +167,9 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
         renderItem={_renderItem}
         data={records || []}
         extraData={records}
-        ListEmptyComponent={EmptyComponent}
+        ListEmptyComponent={isLoading ? null : EmptyComponent}
       />
+      {isLoading && <Loading />}
     </Container>
   );
 }

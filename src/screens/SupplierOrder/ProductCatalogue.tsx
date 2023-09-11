@@ -69,7 +69,7 @@ export default function ProductCatalogueScreen({
   }
 
   return (
-    <Container className="pt-2 pb-0 px-0">
+    <Container className="pt-2 px-0">
       <View className="px-5 mb-4">
         <SearchBar
           onSearch={handleSearch}

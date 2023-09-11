@@ -32,10 +32,12 @@ function SupplierItem({
       ? `${item.productCountByCategory} products`
       : `${item.productCountByCategory} product`;
   return (
-    <TouchableOpacity className=" mt-5 w-full " onPress={onPress}>
+    <TouchableOpacity
+      className=" mt-5 w-full border border-gray-D4D4D8"
+      onPress={onPress}>
       <Animated.Image
         source={imageUrl}
-        className="w-full h-[112px]"
+        className="w-full h-[112px] bg-slate-300 "
         sharedTransitionTag={`supplier-${item.name}`}
       />
 
@@ -44,7 +46,7 @@ function SupplierItem({
           {(item.name || '').charAt(0)}
         </Text>
       </View>
-      <View className="px-4 py-3 border border-t-0 border-gray-D4D4D8">
+      <View className="px-4 py-3 border-t border-gray-D4D4D8">
         <Text className="font-semibold">{item.name}</Text>
         <Text className=" text-blue-500">Discover {discoverText}</Text>
       </View>
@@ -77,7 +79,7 @@ export default function SupplierGroupScreen({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: group.title,
+      headerTitle: group.name.toUpperCase(),
     });
   }, [group, navigation]);
 
