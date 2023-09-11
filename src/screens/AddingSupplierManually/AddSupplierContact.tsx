@@ -176,6 +176,7 @@ export default function AddSupplierContact({
                       <Input
                         defaultValue={email}
                         className="flex-1"
+                        keyboardType="email-address"
                         onChangeText={text => handleChangeEmail(index, text)}
                         // eslint-disable-next-line react/no-unstable-nested-components
                         EndComponent={() =>

@@ -23,6 +23,7 @@ import {useGlobalStore} from 'stores/global';
 import ToggleUpdateProduct from './ToggleUpdateProduct';
 import OrderItem from './OrderItem';
 import useCart from 'hooks/useCart';
+import Loading from 'components/Loading';
 
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
@@ -69,7 +70,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
 
   const {supplierId} = channel || {};
 
-  const {data: dataSupplier} = useQuerySupplier(supplierId);
+  const {data: dataSupplier, isLoading} = useQuerySupplier(supplierId);
   const {company: supplier} = dataSupplier || {};
 
   function reducer(state: any, action: any) {
@@ -101,6 +102,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   useFocusEffect(
     React.useCallback(() => {
       if (isFocused) {
+        refreshCartItems();
         handleSearch('');
       }
     }, [isFocused]),
@@ -112,7 +114,9 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   });
 
   const toAddProduct = useCallback(() => {
-    navigation.navigate('ProductCatalogue', {supplierId});
+    navigation.navigate('ProductCatalogue', {
+      supplierId,
+    });
   }, [navigation]);
 
   const EmptyComponent = useCallback(() => {
@@ -279,13 +283,15 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           ListEmptyComponent={EmptyComponent}
           ItemSeparatorComponent={_renderItemSeparator}
         />
-        <View className="bg-white px-5 pt-2">
-          <Button
-            disabled={!allowCheckout || loading}
-            onPress={handleCheckoutCart}>
-            Next
-          </Button>
-        </View>
+        {(records || []).length > 0 && (
+          <View className="bg-white px-5 pt-2">
+            <Button
+              disabled={!allowCheckout || loading}
+              onPress={handleCheckoutCart}>
+              Next
+            </Button>
+          </View>
+        )}
       </Container>
       <ToggleUpdateProduct
         isOpen={!!selectedItem?.name}
@@ -293,6 +299,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         item={selectedItem}
         onClose={handleClose}
       />
+      {isLoading && <Loading />}
     </>
   );
 }

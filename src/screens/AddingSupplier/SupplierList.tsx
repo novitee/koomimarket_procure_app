@@ -31,7 +31,7 @@ function SupplierItem({
     <TouchableOpacity className="h-[96px] mt-2" onPress={onPress}>
       <ImageBackground
         source={imageUrl}
-        className="item-center justify-center w-full h-full">
+        className="item-center justify-center w-full h-full bg-slate-300">
         <Text className="text-32 font-bold text-white text-center">
           {item.name?.toUpperCase()}
         </Text>

@@ -1,5 +1,5 @@
 import {View, Text} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -16,9 +16,16 @@ export default function CategorySheet({
   onSave?: (values: any) => void;
   onCancel?: () => void;
 }) {
-  const [category, setCategory] = useState(selectedEditCategory || '');
+  const [category, setCategory] = useState(selectedEditCategory);
 
   const isEdit = !!selectedEditCategory;
+
+  useEffect(() => {
+    if (selectedEditCategory && selectedEditCategory !== category) {
+      setCategory(selectedEditCategory);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEditCategory]);
 
   function handleSave() {
     onSave?.(category);

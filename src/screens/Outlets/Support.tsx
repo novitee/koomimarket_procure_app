@@ -4,10 +4,13 @@ import useMe from 'hooks/useMe';
 import Text from 'components/Text';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from 'configs/colors';
-
+import {TouchableOpacity, View} from 'react-native';
+import SendIcon from 'assets/images/send-circle.svg';
 export default function SupportScreen() {
   const {user} = useMe();
   const {fullName} = user?.me || {};
+
+  function gotoWhapsApp() {}
   return (
     <LinearGradient
       className="flex-1"
@@ -20,6 +23,17 @@ export default function SupportScreen() {
           Hi {fullName} {String.fromCodePoint(128075)}
         </Text>
         <Text className="text-32 font-medium">How can we help?</Text>
+
+        <TouchableOpacity className="bg-white" onPress={gotoWhapsApp}>
+          <View>
+            <Text>Send us a message</Text>
+            <Text>We typically reply in a few minutes.</Text>
+            <Text>
+              Our Support hours are Monday - Friday 9am - 6pm (GMT +8)
+            </Text>
+          </View>
+          <SendIcon />
+        </TouchableOpacity>
       </Container>
     </LinearGradient>
   );

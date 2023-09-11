@@ -8,7 +8,7 @@ import ChevronRightIcon from 'assets/images/chevron-right.svg';
 
 const StyledView = styled(
   TouchableOpacity,
-  'pl-4 h-[50px] flex-row items-center border border-gray-300 rounded',
+  'px-4 h-[50px] flex-row items-center border border-gray-300 rounded',
 );
 export interface OptionItem {
   value: string | number;
