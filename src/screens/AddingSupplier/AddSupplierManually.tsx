@@ -36,6 +36,7 @@ export default function AddSupplierManuallyScreen({
     render: false,
     supplierName: '',
     accountNumber: '',
+    supplierContactCode: '65',
     supplierContactNumber: '',
     supplierEmail: '',
     openContact: false,
@@ -54,19 +55,37 @@ export default function AddSupplierManuallyScreen({
     };
   }
 
-  const {openContact, supplierContactNumber} = values;
+  const {
+    openContact,
+    supplierContactNumber,
+    accountNumber,
+    supplierName,
+    supplierEmail,
+    supplierContactCode,
+  } = values;
+
+  const [{loading}, newSupplierContact] = useMutation({
+    url: 'suppliers/add-manually',
+  });
 
   async function handleNext() {
-    // const response = await newSupplier({
-    //   supplierIds: [supplier.id],
-    // });
-    // const {data, success, error} = response;
-    // if (success) {
-    //   navigation.navigate('AddSupplierContact', {supplier: data});
-    // } else {
-    //   Toast.show(error?.message, Toast.LONG);
-    // }
-    // navigation.navigate('AddSupplierContact');
+    const params = {
+      supplierName: supplierName,
+      // "isCustomerPurchased": true,
+      linkedAccountNumber: accountNumber,
+      fullName: supplierName,
+      mobileCode: supplierContactCode,
+      mobileNumber: supplierContactNumber,
+      emails: [supplierEmail],
+      orderCreationMethod: 'BOTH',
+    };
+    const response = await newSupplierContact(params);
+    const {data, success, error} = response;
+    if (!success) {
+      Toast.show('Create Supplier Failed', Toast.LONG);
+      return null;
+    }
+    navigation.navigate('SupplierTabs');
   }
 
   function closeContact() {
