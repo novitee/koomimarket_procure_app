@@ -10,7 +10,7 @@ export default function ProductDetailScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {product} = route.params || {};
-  const {name, photos, productNo, finalPricing, categoryName} = product;
+  const {name, photos, productNo, finalPricing, categories} = product;
   const {currencyCode, pricing, unit} = finalPricing || {};
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -22,10 +22,9 @@ export default function ProductDetailScreen({
     ['Unit', unit],
     ['Product ID', productNo],
     ['Price', toCurrency(pricing, currencyCode)],
-    ['Category', categoryName],
+    ['Category', (categories || []).map((item: any) => item.name).join(', ')],
   ];
 
-  console.log(`product :>>`, product);
   return (
     <Container>
       <Animated.Image

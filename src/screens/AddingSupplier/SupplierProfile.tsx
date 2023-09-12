@@ -12,7 +12,6 @@ import {
 import React, {useCallback, useMemo, useState} from 'react';
 import Container from 'components/Container';
 import Animated from 'react-native-reanimated';
-import dummyCover from 'assets/images/dummy_cover.png';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {BackButton} from 'navigations/common';
 import Button from 'components/Button';
@@ -22,6 +21,8 @@ import CalendarIcon from 'assets/images/calendar.svg';
 import ClockIcon from 'assets/images/clock.svg';
 import colors from 'configs/colors';
 import useQuery from 'libs/swr/useQuery';
+import {toCurrency} from 'utils/format';
+
 const Icons = [
   () => <CurrencyIcon color={colors.primary.DEFAULT} />,
   () => <TruckIcon color={colors.primary.DEFAULT} />,
@@ -52,8 +53,8 @@ function useQueryProducts(slug: string, skip = 0) {
       slug_in: [slug],
     },
     include:
-      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode)',
-    fields: 'id,slug,name',
+      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode),categories(name,slug)',
+    fields: 'id,slug,name,productNo',
   };
   return useQuery([url, params]);
 }
@@ -125,8 +126,8 @@ export default function SupplierProfileScreen({
     ({item}: {item?: any; index: number}) => {
       const {photos, finalPricing} = item || {};
       const photoItem = photos?.[0];
-      const {currencyCode, pricing, unit} = finalPricing || {};
-      const showPricing = `${currencyCode} ${pricing} ${unit}`;
+      const {currencyCode, pricing} = finalPricing || {};
+      const showPricing = toCurrency(pricing, currencyCode);
       const imgUrl = photo ? {uri: photoItem?.url} : {};
       return (
         <View className="p-4 flex-row justify-between">

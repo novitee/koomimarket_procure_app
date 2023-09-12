@@ -1,4 +1,4 @@
-import {ScrollView, View} from 'react-native';
+import {ScrollView, View, LogBox} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import Container from 'components/Container';
 import {SubTitle, Title} from 'components/Text';
@@ -14,6 +14,10 @@ import Toast from 'react-native-simple-toast';
 import ImageUpload from 'components/ImageUpload';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 export default function AddOutletScreen({
   navigation,

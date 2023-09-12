@@ -102,8 +102,6 @@ export default function AddingProductFormScreen() {
   } = values;
 
   const handleChange = useCallback((key: string, item: any) => {
-    console.log(`key :>>`, key);
-    console.log(`item :>>`, item);
     dispatch({[key]: item, render: true});
   }, []);
 
@@ -114,8 +112,6 @@ export default function AddingProductFormScreen() {
       render: true,
     });
   }
-
-  console.log(`images :>>`, images);
 
   return (
     <>

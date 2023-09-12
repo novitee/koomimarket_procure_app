@@ -15,13 +15,6 @@ import {toCurrency} from 'utils/format';
 import {generateOfflineBillingCart} from 'utils/billingCart';
 import Toast from 'react-native-simple-toast';
 
-const dummyData = [
-  {id: 1, name: 'Carrot', price: 0.99, unit: 'KG', quantity: 1},
-  {id: 2, name: 'Tomato', price: 1.49, unit: 'KG', quantity: 1},
-  {id: 3, name: 'Broccoli', price: 1.99, unit: 'KG', quantity: 2},
-  {id: 4, name: 'Spinach', price: 0.89, unit: 'KG', quantity: 2},
-];
-
 export default function FinalizeOrderScreen({
   navigation,
   route,
@@ -76,7 +69,6 @@ export default function FinalizeOrderScreen({
     id: supplierId,
     products: mappingProducts,
   };
-
   // const getReasonableDeliveryTime = async () => {
   //   const {data, success} = await generateReasonableDeliveryTime({
   //     supplier: deliveryInputData,
@@ -196,16 +188,16 @@ export default function FinalizeOrderScreen({
         <Text className="text-20 text-primary font-bold mt-5">
           Order Summary
         </Text>
-        {dummyData.map((item: any, index: number) => (
+        {cartGroup?.cartItems?.map((item: any, index: number) => (
           <View
             className="flex-row items-center py-6 border-b border-gray-400"
             key={index}>
             <Text className="text-30 font-bold w-16 text-center">
-              {item.quantity}
+              {item?.qty}
             </Text>
             <View className="flex-1">
               <Text className="font-bold">{item.name}</Text>
-              <Text className="font-light mt-2">{item.unit}</Text>
+              <Text className="font-light mt-2">{item?.product?.uom}</Text>
             </View>
           </View>
         ))}

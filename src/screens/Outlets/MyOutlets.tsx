@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   View,
+  Image,
+  LogBox,
 } from 'react-native';
 import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useIsFocused} from '@react-navigation/native';
-import {Image} from 'react-native';
-import {LogBox} from 'react-native';
 import {setGlobal} from 'stores/global';
 import useMutation from 'libs/swr/useMutation';
 import {saveAuthData} from 'utils/auth';

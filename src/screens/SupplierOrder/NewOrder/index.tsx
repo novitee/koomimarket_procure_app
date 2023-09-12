@@ -146,49 +146,42 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     });
   }, []);
 
-  const handleChangeItem = useCallback(
-    ({item, qty}: {item: any; qty: any}) => {
-      const newItem = {
-        productId: item.id,
-        qty,
-        uom: item.uom,
-      };
-      const findIndex = cartDetails.findIndex(
-        (cartDetail: any) => cartDetail.productId === item.id,
-      );
-      let newCartDetails = [];
-      if (findIndex === -1) {
-        newCartDetails = [...cartDetails, newItem];
-      } else {
-        newCartDetails = cartDetails.map((cartDetail: any) => {
-          return cartDetail.productId === item.id
-            ? {...cartDetail, qty}
-            : newItem;
-        });
-      }
-      dispatch({cartDetails: newCartDetails, render: true});
-    },
-    [cartDetails],
-  );
+  const handleChangeItem = ({item, qty}: {item: any; qty: any}) => {
+    const newItem = {
+      productId: item.id,
+      qty,
+      uom: item.uom,
+    };
+    const findIndex = cartDetails.findIndex(
+      (cartDetail: any) => cartDetail.productId === item.id,
+    );
+    let newCartDetails = [];
+    if (findIndex === -1) {
+      newCartDetails = [...cartDetails, newItem];
+    } else {
+      newCartDetails = cartDetails.map((cartDetail: any) => {
+        return cartDetail.productId === item.id ? newItem : cartDetail;
+      });
+    }
+    dispatch({cartDetails: newCartDetails, render: true});
+  };
 
-  const _renderItem = useCallback(
-    ({item}: {item?: any}) => {
-      return (
-        <OrderItem
-          item={item}
-          onEdit={() => handleEdit(item)}
-          onPress={(value: number) =>
-            handleChangeItem({
-              item,
-              qty: value,
-            })
-          }
-          supplierId={supplierId}
-        />
-      );
-    },
-    [handleEdit, handleChangeItem, cartDetails],
-  );
+  const _renderItem = useCallback(({item}: {item?: any}) => {
+    return (
+      <OrderItem
+        item={item}
+        onEdit={() => handleEdit(item)}
+        onPress={(value: number) =>
+          handleChangeItem({
+            item,
+            qty: value,
+          })
+        }
+        supplierId={supplierId}
+      />
+    );
+  }, []);
+
   const handleClose = useCallback(
     (refresh = false) => {
       dispatch({
@@ -214,11 +207,8 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     }
   }, [generateCheckoutCart, cartDetails]);
   const minOrderAmount = supplier?.minOrder;
-  const allowCheckout = useMemo(() => {
-    return (
-      cartDetails.length > 0 ** cartDetails.every((item: any) => item.qty > 0)
-    );
-  }, [cartDetails]);
+  const allowCheckout =
+    cartDetails.length > 0 && cartDetails.some((item: any) => item.qty > 0);
 
   return (
     <>
