@@ -113,7 +113,7 @@ export default function EditProfileScreen({
       profile: {
         fullName: fullName,
         email: email,
-        avatar: {...avatar, filename: avatar.fileName, url: avatar.uri},
+        avatar: {...avatar, filename: avatar?.fileName, url: avatar?.uri},
       },
     });
 

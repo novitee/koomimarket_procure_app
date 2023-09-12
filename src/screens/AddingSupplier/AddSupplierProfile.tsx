@@ -1,21 +1,21 @@
 import {View, Text, TouchableOpacity, Linking} from 'react-native';
 import React, {useEffect} from 'react';
 import Container from 'components/Container';
-import ChefIcon from 'assets/images/chef.svg';
-import SupplierIcon from 'assets/images/supplier.svg';
+import OrderFoodIcon from 'assets/images/order-food.svg';
+import TeamBuildingIcon from 'assets/images/team-building.svg';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {SUPPLIER_DASHBOARD_URL} from 'configs/index';
 import {SubTitle, Title} from 'components/Text';
 
 const types = [
   {
-    icon: <ChefIcon />,
+    icon: <OrderFoodIcon />,
     code: 'my_own',
     label: 'I have my own supplier',
     description: 'I want to set up my own supplier listing.',
   },
   {
-    icon: <SupplierIcon />,
+    icon: <TeamBuildingIcon />,
     code: 'explore',
     label: 'Explore Koomi suppliers',
     description:

@@ -10,8 +10,6 @@ import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ScrollView, TouchableOpacity, View, Image} from 'react-native';
 import ImageUpload from 'components/ImageUpload';
-import UserIcon from 'assets/images/user.svg';
-import colors from 'configs/colors';
 import useMe from 'hooks/useMe';
 import Input from 'components/Input';
 import {styled} from 'nativewind';
@@ -23,6 +21,7 @@ import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
 import FormGroup from 'components/Form/FormGroup';
 import Label from 'components/Form/Label';
+import Avatar from 'components/Avatar';
 
 const StyledInput = styled(Input, ' my-2');
 
@@ -65,7 +64,7 @@ export default function EditBusinessScreen({
       });
     }
   }, [currentCompany]);
-
+  console.log('currentCompany :>> ', currentCompany);
   const headerRight = useCallback(() => {
     return (
       <TouchableOpacity onPress={() => setEditMode(!editMode)} hitSlop={5}>
@@ -119,7 +118,7 @@ export default function EditBusinessScreen({
 
     const {success, error} = await updateBusinessProfile({
       company: {
-        photo: {...photo, filename: photo.fileName, url: photo.uri},
+        photo: {...photo, filename: photo?.fileName, url: photo?.uri},
         name: name,
         unitNo: unitNo,
         billingAddress: billingAddress,
@@ -141,7 +140,7 @@ export default function EditBusinessScreen({
           <View className="items-center">
             <ImageUpload
               icon={
-                photo ? (
+                photo?.url ? (
                   <Image
                     resizeMode="cover"
                     resizeMethod="scale"
@@ -149,7 +148,7 @@ export default function EditBusinessScreen({
                     source={{uri: photo.url}}
                   />
                 ) : (
-                  <UserIcon color={colors.gray['71717A']} />
+                  <Avatar name={name} size={162} />
                 )
               }
               onChange={image => {
@@ -162,39 +161,41 @@ export default function EditBusinessScreen({
               editable={editMode}
             />
           </View>
-          <FormGroup>
-            <Label required>Business Name</Label>
-            <StyledInput
-              editable={editMode}
-              onChangeText={text => dispatch({name: text, render: true})}
-              defaultValue={name}
-              placeholder="Full name"
-              className={clsx({
-                'border-red-500': errors.name,
-              })}
-            />
-            <Label required>Billing Address</Label>
-            <StyledInput
-              editable={editMode}
-              onChangeText={handleChangePostalCode}
-              defaultValue={postal}
-              placeholder="Postal Code"
-              className={clsx({
-                'border-red-500': errors.postal,
-              })}
-            />
-            <StyledInput
-              editable={false}
-              defaultValue={billingAddress}
-              placeholder="Billing Address"
-            />
-            <StyledInput
-              editable={editMode}
-              onChangeText={text => dispatch({unitNo: text, render: true})}
-              defaultValue={unitNo}
-              placeholder="Unit Number"
-            />
-          </FormGroup>
+          <View className="mt-7">
+            <FormGroup>
+              <Label required>Business Name</Label>
+              <StyledInput
+                editable={editMode}
+                onChangeText={text => dispatch({name: text, render: true})}
+                defaultValue={name}
+                placeholder="Full name"
+                className={clsx({
+                  'border-red-500': errors.name,
+                })}
+              />
+              <Label required>Billing Address</Label>
+              <StyledInput
+                editable={editMode}
+                onChangeText={handleChangePostalCode}
+                defaultValue={postal}
+                placeholder="Postal Code"
+                className={clsx({
+                  'border-red-500': errors.postal,
+                })}
+              />
+              <StyledInput
+                editable={false}
+                defaultValue={billingAddress}
+                placeholder="Billing Address"
+              />
+              <StyledInput
+                editable={editMode}
+                onChangeText={text => dispatch({unitNo: text, render: true})}
+                defaultValue={unitNo}
+                placeholder="Unit Number"
+              />
+            </FormGroup>
+          </View>
         </ScrollView>
 
         {editMode && (

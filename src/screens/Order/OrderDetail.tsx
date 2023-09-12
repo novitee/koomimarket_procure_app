@@ -162,7 +162,7 @@ export default function OrderDetailScreen({
               </Text>
               <View className="flex-1">
                 <Text className="font-bold">{item.name}</Text>
-                <Text className="font-light mt-2">{item.uom} (S)</Text>
+                <Text className="font-light mt-2">{item.uom}</Text>
               </View>
             </View>
           ))}

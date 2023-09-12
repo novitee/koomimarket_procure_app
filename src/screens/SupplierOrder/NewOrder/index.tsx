@@ -245,7 +245,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
             <View className="bg-gray-100 px-5 py-4 mt-4">
               <Text className="font-medium">{`Minimum Order Amount: ${toCurrency(
                 minOrderAmount,
-                'USD',
+                'SGD',
               )}`}</Text>
               <Text className="text-sm text-gray-500 leading-none mt-2">
                 This supplier has a minimum order value. Additional costs may

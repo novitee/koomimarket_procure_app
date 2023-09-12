@@ -5,6 +5,7 @@ import Button from 'components/Button';
 import BottomSheet from 'components/BottomSheet';
 import Input from 'components/Input';
 import useMutation from 'libs/swr/useMutation';
+import {toCurrency} from 'utils/format';
 export default function ToggleUpdateProduct({
   isOpen,
   supplierId,
@@ -50,9 +51,7 @@ export default function ToggleUpdateProduct({
           <View className="flex-row justify-between mt-10">
             <View className="flex-1">
               <Text className="font-semibold mb-3">Original</Text>
-              <Text className="mt-3">
-                $ {`${item?.pricing} ${item.uom?.toUpperCase()}`} (S)
-              </Text>
+              <Text className="mt-3">{toCurrency(item?.pricing, 'SGD')}</Text>
             </View>
             <View className="flex-1">
               <Text className="font-semibold mb-3">Update to</Text>

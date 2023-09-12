@@ -44,7 +44,6 @@ export default function OrderItem({
           onPress={onEdit}>
           <Text className="text-white">
             {`${toCurrency(item.pricing, 'USD')} ${item.uom?.toUpperCase()}`}{' '}
-            (S)
           </Text>
         </TouchableOpacity>
       </View>

@@ -77,6 +77,7 @@ export const customScreenSupplierTabOptions:
   | undefined = ({navigation}) => {
   return {
     ...customScreenOptions,
+    headerBackVisible: true,
     headerLeft: (props: HeaderBackButtonProps) => (
       <BackButton {...props} goBack={() => navigation.navigate('MyOutlets')} />
     ),

@@ -76,8 +76,8 @@ export default function SendInfo({
         method: 'SEND_PHOTO',
         photos: photos.map((photo: any) => ({
           ...photo,
-          filename: photo.fileName,
-          url: photo.uri,
+          filename: photo?.fileName,
+          url: photo?.uri,
         })),
         comment,
       };
