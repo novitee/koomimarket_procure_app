@@ -149,7 +149,7 @@ export default function AddOutletScreen({
 
   async function handleAddOutlet() {
     const validFields = validateInputs({
-      ...errors,
+      ...values.errors,
       outletName: !outletName,
       postalCode: !postalCode,
       billingAddress: !billingAddress,
