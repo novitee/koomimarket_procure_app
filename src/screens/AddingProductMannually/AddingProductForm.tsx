@@ -20,18 +20,10 @@ import colors from 'configs/colors';
 import BottomSheet from 'components/BottomSheet';
 import ImagePicker from 'components/ImagePicker';
 import Loading from 'components/Loading';
-
-const units = [
-  'Piece(s)',
-  'Kilo(s)',
-  'Packet(s)',
-  'Bottle(s)',
-  'Carton(s)',
-  'Other',
-];
-
-const DEFAULT_CATEGORIES = ['Meat', 'Vegetables'];
-
+import useQuery from 'libs/swr/useQuery';
+import useMutation from 'libs/swr/useMutation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import AddingCategory from './AddingCategory';
 const SGD = () => (
   <View className="h-full items-center justify-center pl-3">
     <Text>SGD</Text>
@@ -40,11 +32,11 @@ const SGD = () => (
 
 function OptionItem({
   onSelect,
-  item,
+  name,
   isSelected,
 }: {
   onSelect?: (selected?: any) => void;
-  item?: any;
+  name?: string;
   isSelected?: boolean;
 }) {
   return (
@@ -61,21 +53,43 @@ function OptionItem({
           'text-white': !!isSelected,
           'text-gray-D1D5DB': !isSelected,
         })}>
-        {item}
+        {name}
       </Text>
     </TouchableOpacity>
   );
 }
-export default function AddingProductFormScreen() {
+export default function AddingProductFormScreen({
+  navigation,
+  route,
+}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     openNewCategory: false,
-    categories: DEFAULT_CATEGORIES,
-    newCategory: '',
     price: '',
     images: [],
   });
+
+  const {data: cartItems, isLoading: isLoadingCartItems} = useQuery([
+    `cart-items/${'chicken'}`,
+    {
+      include: 'categories(name,slug)',
+    },
+  ]);
+
+  const {
+    data: dataUOM,
+    mutate: refreshUOMList,
+    isLoading: isLoadingUOMList,
+  } = useQuery('uom-list');
+  refreshUOMList();
+  const unitOfMeasures = dataUOM?.records || [];
+  const {
+    data: dataCategories,
+    mutate: refreshCategoryList,
+    isLoading: isLoadingCategories,
+  } = useQuery('categories');
+  const categories = dataCategories?.records || [];
 
   function reducer(state: any, action: any) {
     const updatedValues = state;
@@ -91,12 +105,10 @@ export default function AddingProductFormScreen() {
   }
   const {
     productName,
-    unit,
+    unitOfMeasure,
     productId,
     category,
-    categories,
     openNewCategory,
-    newCategory,
     price,
     images,
   } = values;
@@ -105,13 +117,60 @@ export default function AddingProductFormScreen() {
     dispatch({[key]: item, render: true});
   }, []);
 
-  function handleAddNewCategory() {
+  function handleCloseAddingCategory() {
     dispatch({
       openNewCategory: false,
-      categories: [...values.categories, values.newCategory],
       render: true,
     });
   }
+  function handleCreatedCategory(categorySlug: string) {
+    refreshCategoryList();
+    handleChange('category', categorySlug);
+  }
+
+  // async function handleSave() {
+  //   const handleSaveFunc = mode !== "Edit" ? createItem : updateItem
+  //   //create new item
+  //   if (isEmptyErrors(errors)) {
+  //     const imagesInput = images.map((img) => {
+  //       return {
+  //         url: img.imageUrl,
+  //         width: img.imageWidth,
+  //         height: img.imageHeight,
+  //         filename: img.filename,
+  //         contentType: img.contentType,
+  //         signedKey: img.signedKey,
+  //       }
+  //     })
+  //     const params = {
+  //       supplierId: supplierId,
+  //       product: {
+  //         sku: productId,
+  //         name: productName,
+  //         categorySlugs: category ? [category] : [],
+  //         pricing: Number(unitPrice) || 0,
+  //         uom: uom,
+  //         photos: imagesInput,
+  //       },
+  //     }
+
+  //     const {
+  //       data: { data, success, error },
+  //     } = await handleSaveFunc({
+  //       ...params,
+  //     })
+  //     if (success) {
+  //       router.push("/new-order/" + supplierId)
+  //     } else {
+  //       displayMessage({
+  //         type: "error",
+  //         title: "Notification",
+  //         message: convertErrorMessage(error),
+  //       })
+  //     }
+  //     return
+  //   }
+  // }
 
   return (
     <>
@@ -131,12 +190,12 @@ export default function AddingProductFormScreen() {
             <FormGroup>
               <Label required>Unit</Label>
               <View style={styles.gap10} className="w-full flex-row flex-wrap ">
-                {units.map((item, index) => (
+                {unitOfMeasures.map((item: any, index: any) => (
                   <OptionItem
                     key={index}
-                    isSelected={unit === item}
+                    isSelected={unitOfMeasure === item}
                     onSelect={() => handleChange('unit', item)}
-                    item={item}
+                    name={item.unit}
                   />
                 ))}
               </View>
@@ -166,9 +225,9 @@ export default function AddingProductFormScreen() {
                 {categories.map((item: any, index: any) => (
                   <OptionItem
                     key={index}
-                    isSelected={category === item}
-                    onSelect={() => handleChange('category', item)}
-                    item={item}
+                    isSelected={category === item?.slug}
+                    onSelect={() => handleChange('category', item?.slug)}
+                    name={item?.name}
                   />
                 ))}
                 <TouchableOpacity
@@ -230,49 +289,11 @@ export default function AddingProductFormScreen() {
           </View>
         </KeyboardAvoidingView>
       </Container>
-      <BottomSheet isOpen={!!openNewCategory} contentHeight={550}>
-        <View className="pb-10 px-5 pt-5 flex-1">
-          <View className="flex-1">
-            <View className="border-b border-gray-300 pb-10">
-              <Text className="text-primary font-semibold text-xl text-center">
-                Add New Category
-              </Text>
-            </View>
-            <View className="flex-row justify-between mt-10">
-              <FormGroup>
-                <Label required>New Category</Label>
-                <Input
-                  defaultValue={newCategory}
-                  onChangeText={text =>
-                    dispatch({
-                      newCategory: text,
-                      render: true,
-                    })
-                  }
-                />
-              </FormGroup>
-            </View>
-          </View>
-
-          <View className="flex-row">
-            <Button
-              variant="outline"
-              onPress={() =>
-                dispatch({
-                  selectedItem: {},
-                  openNewCategory: false,
-                  render: true,
-                })
-              }
-              className="flex-1">
-              Cancel
-            </Button>
-            <Button onPress={handleAddNewCategory} className="flex-1 ml-2">
-              Save
-            </Button>
-          </View>
-        </View>
-      </BottomSheet>
+      <AddingCategory
+        isOpen={!!openNewCategory}
+        onClose={handleCloseAddingCategory}
+        onSuccess={handleCreatedCategory}
+      />
     </>
   );
 }
