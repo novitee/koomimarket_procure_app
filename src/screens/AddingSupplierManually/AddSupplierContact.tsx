@@ -12,7 +12,7 @@ import Text from 'components/Text';
 import colors from 'configs/colors';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import useMutation, {MutationProps} from 'libs/swr/useMutation';
+import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 const WHATSAPP = 'Whatsapp';
 const EMAIL = 'Email';
@@ -97,12 +97,16 @@ export default function AddSupplierContact({
     }
   }
 
-  const isDisabled = orderCreationMethod === null;
+  const isDisabled =
+    !orderCreationMethod ||
+    (orderCreationMethod === WHATSAPP && !phoneNumber) ||
+    (orderCreationMethod === EMAIL && !emails[0]) ||
+    (orderCreationMethod === BOTH && (!name || !phoneNumber || !emails[0]));
 
   function handleChangePhone(codeValue: string, numberValue: string) {
     dispatch({
-      code: codeValue,
-      number: numberValue,
+      phoneCode: codeValue,
+      phoneNumber: numberValue,
       render: true,
     });
   }
