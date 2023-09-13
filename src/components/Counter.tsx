@@ -52,9 +52,9 @@ function Counter({defaultValue, onChange, max, min = 1}: CounterProps) {
   }
 
   return (
-    <View className="flex-row items-center border border-gray-300 rounded">
+    <View className="flex-row items-center border border-gray-300 rounded ">
       <TouchableOpacity
-        className="flex-row items-center justify-center w-10 h-12  "
+        className="flex-row items-center justify-center w-10 "
         onPress={handleDecrease}>
         <MinusIcon />
       </TouchableOpacity>
@@ -62,13 +62,13 @@ function Counter({defaultValue, onChange, max, min = 1}: CounterProps) {
         value={value.toString()}
         onChangeText={handleChange}
         style={{width: Math.max(50, value.toString().length * 16 + 8)}}
-        inputClassName="text-center px-0 "
-        className="rounded-none border-y-0 "
+        inputClassName="text-center px-0"
+        className="rounded-none border-y-0 h-[60px]"
         keyboardType="decimal-pad"
       />
 
       <TouchableOpacity
-        className="flex-row items-center justify-center w-10 h-12  "
+        className="flex-row items-center justify-center w-10  "
         onPress={handleIncrease}>
         <PlusIcon
           width={24}

@@ -33,7 +33,7 @@ export default function DatePicker({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} contentHeight={350}>
       <View>
-        <View className="flex-row justify-between py-4 px-5 border-b-2 border-gray-E5">
+        <View className="flex-row justify-between py-4 px-5 border-b-2 border-gray-E5 ">
           <TouchableOpacity hitSlop={10} onPress={onClose}>
             <Text>Cancel</Text>
           </TouchableOpacity>
@@ -43,7 +43,7 @@ export default function DatePicker({
             <Text className="text-primary-559BD1">Select</Text>
           </TouchableOpacity>
         </View>
-        <View style={{zIndex: 100000}}>
+        <View className=" z-50">
           <RNDatePicker
             mode="date"
             className="w-full"

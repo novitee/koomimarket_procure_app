@@ -4,14 +4,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import {
-  Dimensions,
-  Modal,
-  Platform,
-  StyleSheet,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import {Dimensions, Modal, StyleSheet, View} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -79,16 +72,14 @@ function BottomSheet(
       visible={openModal}
       onRequestClose={onClose}>
       <View style={styles.centeredView}>
-        <TouchableHighlight>
-          <Animated.View
-            style={[
-              styles.bottomSheetContainer,
-              {height: contentHeight},
-              rBottomSheetStyle,
-            ]}>
-            {children}
-          </Animated.View>
-        </TouchableHighlight>
+        <Animated.View
+          style={[
+            styles.bottomSheetContainer,
+            {height: contentHeight},
+            rBottomSheetStyle,
+          ]}>
+          {children}
+        </Animated.View>
       </View>
     </Modal>
   );
