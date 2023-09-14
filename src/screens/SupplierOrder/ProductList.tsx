@@ -116,10 +116,8 @@ export default function ProductList({
   searchString,
 }: ProductListProps) {
   const {navigate} = useNavigation();
-  const {data: dataProductCategories} = useQueryProductCategories(
-    supplierId,
-    selectedCategory?.id,
-  );
+  const {data: dataProductCategories, mutate: refresh} =
+    useQueryProductCategories(supplierId, selectedCategory?.id);
   const {records: addedProductIds} = dataProductCategories || {};
 
   const {data} = useQueryProducts(

@@ -78,7 +78,12 @@ export default function ProductCatalogueScreen({
         />
       </View>
       <LineButton
-        onPress={() => navigation.navigate('AddingProductType')}
+        onPress={() =>
+          navigation.navigate('AddingProductType', {
+            supplierId,
+            originalScreen: 'ProductCatalogue',
+          })
+        }
         className="border-t border-gray-D4D4D8">
         Add Products Manually
       </LineButton>

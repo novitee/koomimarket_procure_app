@@ -17,13 +17,13 @@ import Input from 'components/Input';
 import clsx from 'libs/clsx';
 import AddIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
-import BottomSheet from 'components/BottomSheet';
 import ImagePicker from 'components/ImagePicker';
-import Loading from 'components/Loading';
 import useQuery from 'libs/swr/useQuery';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AddingCategory from './AddingCategory';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import Toast from 'react-native-simple-toast';
 const SGD = () => (
   <View className="h-full items-center justify-center pl-3">
     <Text>SGD</Text>
@@ -66,42 +66,50 @@ export default function AddingProductFormScreen({
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     openNewCategory: false,
-    price: '',
+    price: 0,
     images: [],
   });
+  const {supplierId, originalScreen} = route.params || {};
 
-  const {data: cartItems, isLoading: isLoadingCartItems} = useQuery([
-    `cart-items/${'chicken'}`,
-    {
-      include: 'categories(name,slug)',
-    },
-  ]);
-
-  const {
-    data: dataUOM,
-    mutate: refreshUOMList,
-    isLoading: isLoadingUOMList,
-  } = useQuery('uom-list');
-  refreshUOMList();
+  const {data: dataUOM, mutate: refreshUOMList} = useQuery('uom-list');
+  const {data: dataCategories, mutate: refreshCategoryList} =
+    useQuery('categories');
   const unitOfMeasures = dataUOM?.records || [];
-  const {
-    data: dataCategories,
-    mutate: refreshCategoryList,
-    isLoading: isLoadingCategories,
-  } = useQuery('categories');
   const categories = dataCategories?.records || [];
 
+  const [{loading: creating}, createProduct] = useMutation({
+    url: 'create-item-manually',
+  });
+
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        refreshUOMList();
+        refreshCategoryList();
+      }
+    }, [isFocused]),
+  );
+
   function reducer(state: any, action: any) {
-    const updatedValues = state;
+    let updatedValues = state;
 
     if (action.render) {
       setCurrentState(1 - currentState);
     }
 
-    return {
+    updatedValues = {
       ...updatedValues,
       ...action,
     };
+
+    updatedValues.errors = {
+      ...updatedValues.errors,
+      price: !updatedValues.price,
+      productName: !updatedValues.productName,
+    };
+
+    return updatedValues;
   }
   const {
     productName,
@@ -111,66 +119,72 @@ export default function AddingProductFormScreen({
     openNewCategory,
     price,
     images,
+    errors = {},
   } = values;
 
   const handleChange = useCallback((key: string, item: any) => {
     dispatch({[key]: item, render: true});
   }, []);
 
-  function handleCloseAddingCategory() {
-    dispatch({
-      openNewCategory: false,
-      render: true,
-    });
-  }
-  function handleCreatedCategory(categorySlug: string) {
-    refreshCategoryList();
-    handleChange('category', categorySlug);
-  }
+  const handleToggleAddingCategory = useCallback((openNewCategory: boolean) => {
+    dispatch({openNewCategory, render: true});
+  }, []);
 
-  // async function handleSave() {
-  //   const handleSaveFunc = mode !== "Edit" ? createItem : updateItem
-  //   //create new item
-  //   if (isEmptyErrors(errors)) {
-  //     const imagesInput = images.map((img) => {
-  //       return {
-  //         url: img.imageUrl,
-  //         width: img.imageWidth,
-  //         height: img.imageHeight,
-  //         filename: img.filename,
-  //         contentType: img.contentType,
-  //         signedKey: img.signedKey,
-  //       }
-  //     })
-  //     const params = {
-  //       supplierId: supplierId,
-  //       product: {
-  //         sku: productId,
-  //         name: productName,
-  //         categorySlugs: category ? [category] : [],
-  //         pricing: Number(unitPrice) || 0,
-  //         uom: uom,
-  //         photos: imagesInput,
-  //       },
-  //     }
+  const handleCreatedCategory = useCallback(
+    (categorySlug: string) => {
+      refreshCategoryList();
+      handleChange('category', categorySlug);
+    },
+    [handleChange, refreshCategoryList],
+  );
 
-  //     const {
-  //       data: { data, success, error },
-  //     } = await handleSaveFunc({
-  //       ...params,
-  //     })
-  //     if (success) {
-  //       router.push("/new-order/" + supplierId)
-  //     } else {
-  //       displayMessage({
-  //         type: "error",
-  //         title: "Notification",
-  //         message: convertErrorMessage(error),
-  //       })
-  //     }
-  //     return
-  //   }
-  // }
+  async function handleSave() {
+    if (
+      !productName ||
+      !unitOfMeasure ||
+      !price ||
+      !category ||
+      images.length < 1
+    ) {
+      Toast.show('Please fill in all required fields', Toast.LONG);
+      return;
+    }
+
+    const imagesInput = images.map((img: any) => ({
+      url: img.uri,
+      width: img.width,
+      height: img.height,
+      filename: img.fileName,
+      contentType: img.type,
+      signedKey: img.signedKey,
+    }));
+
+    const params = {
+      supplierId: supplierId,
+      product: {
+        sku: productId,
+        name: productName,
+        categorySlugs: [category].filter(Boolean),
+        pricing: price,
+        uom: unitOfMeasure,
+        photos: imagesInput,
+      },
+    };
+    const response = await createProduct(params);
+    const {data, success, error} = response;
+
+    if (success) {
+      if (originalScreen) {
+        navigation.navigate(originalScreen, {
+          supplierId,
+        });
+      } else {
+        Toast.show('Product added successfully', Toast.LONG);
+      }
+    } else {
+      Toast.show(error.message, Toast.LONG);
+    }
+  }
 
   return (
     <>
@@ -185,6 +199,9 @@ export default function AddingProductFormScreen({
                   handleChange('productName', text)
                 }
                 placeholder="e.g. Chicken"
+                className={clsx({
+                  'border-red-500': errors.productName,
+                })}
               />
             </FormGroup>
             <FormGroup>
@@ -193,15 +210,15 @@ export default function AddingProductFormScreen({
                 {unitOfMeasures.map((item: any, index: any) => (
                   <OptionItem
                     key={index}
-                    isSelected={unitOfMeasure === item}
-                    onSelect={() => handleChange('unit', item)}
+                    isSelected={unitOfMeasure === item?.unit}
+                    onSelect={() => handleChange('unitOfMeasure', item?.unit)}
                     name={item.unit}
                   />
                 ))}
               </View>
             </FormGroup>
             <FormGroup>
-              <Label required>Product ID</Label>
+              <Label>Product ID</Label>
               <Input
                 value={productId}
                 onChangeText={(text: string) => handleChange('productId', text)}
@@ -209,7 +226,7 @@ export default function AddingProductFormScreen({
               />
             </FormGroup>
             <FormGroup>
-              <Label required>Price</Label>
+              <Label>Price</Label>
 
               <Input
                 StartComponent={SGD}
@@ -217,6 +234,9 @@ export default function AddingProductFormScreen({
                 onChangeText={(text: string) => handleChange('price', text)}
                 placeholder="e.g. 12345"
                 keyboardType="numeric"
+                className={clsx({
+                  'border-red-500': errors.price,
+                })}
               />
             </FormGroup>
             <FormGroup>
@@ -235,9 +255,7 @@ export default function AddingProductFormScreen({
                     'h-9 px-4 flex-row items-center rounded border border-gray-D1D5DB':
                       true,
                   })}
-                  onPress={() =>
-                    dispatch({openNewCategory: true, render: true})
-                  }>
+                  onPress={() => handleToggleAddingCategory(true)}>
                   <AddIcon color={colors.gray.D1D5DB} />
                   <Text className={'text-gray-D1D5DB ml-2'}>New Category</Text>
                 </TouchableOpacity>
@@ -285,13 +303,15 @@ export default function AddingProductFormScreen({
             </FormGroup>
           </ScrollView>
           <View className="px-5">
-            <Button>Add Products</Button>
+            <Button loading={creating} onPress={handleSave}>
+              Add Products
+            </Button>
           </View>
         </KeyboardAvoidingView>
       </Container>
       <AddingCategory
         isOpen={!!openNewCategory}
-        onClose={handleCloseAddingCategory}
+        onClose={() => handleToggleAddingCategory(false)}
         onSuccess={handleCreatedCategory}
       />
     </>

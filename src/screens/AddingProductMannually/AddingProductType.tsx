@@ -8,6 +8,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 // const options = [];
 export default function AddingProductTypeScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   return (
     <Container>
@@ -29,7 +30,11 @@ export default function AddingProductTypeScreen({
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddProductsManuallyForm')}
+          onPress={() =>
+            navigation.navigate('AddProductsManuallyForm', {
+              ...route?.params,
+            })
+          }
           className="border-[3px] border-gray-D1D5DB rounded-xl flex-row items-center mt-4 min-h-[160px] px-5">
           <View className="mr-5">
             <Pencil />
