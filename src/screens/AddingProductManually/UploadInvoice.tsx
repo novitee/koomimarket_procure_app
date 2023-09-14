@@ -11,8 +11,12 @@ import Button from 'components/Button';
 import AddIcon from 'assets/images/plus.svg';
 import colors from 'configs/colors';
 import ImagePicker from 'components/ImagePicker';
-
-export default function UploadInvoiceScreen() {
+import useMutation from 'libs/swr/useMutation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import Toast from 'react-native-simple-toast';
+export default function UploadInvoiceScreen({
+  navigation,
+}: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -33,6 +37,22 @@ export default function UploadInvoiceScreen() {
   }
 
   const {images} = values;
+
+  const [{loading}, uploadInvoice] = useMutation({
+    url: 'upload-invoice',
+  });
+
+  function handleSend() {
+    const {data, success, error} = uploadInvoice({
+      images,
+    });
+    navigation.navigate('CompleteUploadInvoice');
+    // if (success) {
+    //   navigation.navigate('CompleteUploadInvoice');
+    // } else {
+    //   Toast.show(error.message);
+    // }
+  }
 
   return (
     <Container>
@@ -80,7 +100,12 @@ export default function UploadInvoiceScreen() {
       <Text className="font-bold text-primary text-center mb-3">
         after send invoice, admin will receive email
       </Text>
-      <Button>Send</Button>
+      <Button
+        loading={loading}
+        onPress={handleSend}
+        disabled={images.length === 0}>
+        Send
+      </Button>
     </Container>
   );
 }

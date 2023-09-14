@@ -34,9 +34,10 @@ import SupplierProfileScreen from 'screens/AddingSupplier/SupplierProfile';
 import AreCurrentCustomerScreen from 'screens/AddingSupplier/AreCurrentCustomer';
 import ProductCatalogueScreen from 'screens/SupplierOrder/ProductCatalogue';
 import NewOrderScreen from 'screens/SupplierOrder/NewOrder';
-import AddingProductTypeScreen from 'screens/AddingProductMannually/AddingProductType';
-import UploadInvoiceScreen from 'screens/AddingProductMannually/UploadInvoice';
-import AddingProductFormScreen from 'screens/AddingProductMannually/AddingProductForm';
+import AddingProductTypeScreen from 'screens/AddingProductManually/AddingProductType';
+import UploadInvoiceScreen from 'screens/AddingProductManually/UploadInvoice';
+import CompleteUploadInvoiceScreen from 'screens/AddingProductManually/CompleteUpload';
+import AddingProductFormScreen from 'screens/AddingProductManually/AddingProductForm';
 import ProductDetailScreen from 'screens/SupplierOrder/ProductDetail';
 import ManageOrderListScreen from 'screens/ManageOrderList';
 import SelectScreen from 'screens/SelectScreen';
@@ -243,6 +244,14 @@ export default function MainNavigator(): JSX.Element {
           component={UploadInvoiceScreen}
           options={{
             headerTitle: 'Upload a Past Invoice',
+          }}
+        />
+
+        <Stack.Screen
+          name="CompleteUploadInvoice"
+          component={CompleteUploadInvoiceScreen}
+          options={{
+            headerShown: false,
           }}
         />
 
