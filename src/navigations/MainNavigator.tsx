@@ -97,7 +97,13 @@ export default function MainNavigator(): JSX.Element {
           name="MyOutlets"
           component={MyOutletsScreen}
         />
-        <Stack.Screen name="AddOutlet" component={AddOutletScreen} />
+        <Stack.Screen
+          name="AddOutlet"
+          options={{
+            headerTitle: 'Add Outlet',
+          }}
+          component={AddOutletScreen}
+        />
         <Stack.Screen
           name="KoomiSupport"
           options={{
@@ -114,7 +120,13 @@ export default function MainNavigator(): JSX.Element {
           }}
           component={EditProfileScreen}
         />
-        <Stack.Screen name="EditBusiness" component={EditBusinessScreen} />
+        <Stack.Screen
+          name="EditBusiness"
+          component={EditBusinessScreen}
+          options={{
+            headerTitle: 'Edit Outlet',
+          }}
+        />
       </Stack.Group>
       {/* SupplerTabs */}
 

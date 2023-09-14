@@ -25,6 +25,7 @@ export default function AddingCategory({isOpen, onClose, onSuccess}: Props) {
     });
     if (success) {
       onSuccess(data?.category?.slug);
+      setNewCategory('');
       onClose();
     } else {
       Toast.show(error.message || message, Toast.LONG);

@@ -8,22 +8,17 @@ import React, {
 import Container from 'components/Container';
 import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {ScrollView, TouchableOpacity, View, Image} from 'react-native';
-import ImageUpload from 'components/ImageUpload';
+import {Image, TouchableOpacity, View} from 'react-native';
 import useMe from 'hooks/useMe';
-import Input from 'components/Input';
-import {styled} from 'nativewind';
-import Button from 'components/Button';
-import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
+
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
-import usePostalCode from 'hooks/usePostalCode';
-import clsx from 'libs/clsx';
-import FormGroup from 'components/Form/FormGroup';
-import Label from 'components/Form/Label';
-import Avatar from 'components/Avatar';
 
-const StyledInput = styled(Input, ' my-2');
+import LocationIcon from 'assets/images/map-marker.svg';
+import MailIcon from 'assets/images/mail.svg';
+import OutletForm from './OutletForm';
+import ImageUpload from 'components/ImageUpload';
+import Avatar from 'components/Avatar';
 
 export default function EditBusinessScreen({
   navigation,
@@ -31,7 +26,6 @@ export default function EditBusinessScreen({
   const [editMode, setEditMode] = useState(false);
   const {user} = useMe();
   const {currentCompany} = user || {};
-  const {loading: loadingPostal, handlePostalCodeChange} = usePostalCode();
   const [{loading}, updateBusinessProfile] = useMutation({
     url: 'me/business-profile',
     method: 'PATCH',
@@ -51,20 +45,22 @@ export default function EditBusinessScreen({
       ...action,
     };
   }
-  const {name, postal, billingAddress, unitNo, photo, errors = {}} = values;
+
+  console.log(`currentCompany  :>>`, currentCompany);
+
+  const {outletName, billingAddress, postalCode, unitNo, photo} = values;
 
   useEffect(() => {
     if (currentCompany) {
       dispatch({
-        name: currentCompany?.name,
-        postal: currentCompany?.postal,
+        outletName: currentCompany?.name,
+        postalCode: currentCompany?.postal,
         billingAddress: currentCompany?.billingAddress,
         unitNo: currentCompany?.unitNo,
         photo: currentCompany?.photo,
       });
     }
   }, [currentCompany]);
-  console.log('currentCompany :>> ', currentCompany);
   const headerRight = useCallback(() => {
     return (
       <TouchableOpacity onPress={() => setEditMode(!editMode)} hitSlop={5}>
@@ -81,48 +77,14 @@ export default function EditBusinessScreen({
     });
   }, [headerRight, navigation]);
 
-  const handleChangePostalCode = useCallback(
-    async (text: string) => {
-      const address = await handlePostalCodeChange(text);
-      if (address) {
-        dispatch({
-          billingAddress: address,
-          postal: text,
-          render: true,
-        });
-      }
-    },
-    [handlePostalCodeChange],
-  );
-
-  const validateInputs = useCallback((errors: {[key: string]: boolean}) => {
-    dispatch({errors, render: true});
-    return Object.keys(errors).reduce((acc: boolean, key: string) => {
-      if (errors[key]) {
-        Toast.show('Please fill in all required fields', Toast.SHORT);
-        return false;
-      }
-      return acc;
-    }, true);
-  }, []);
-
-  async function handleSave() {
-    const validFields = validateInputs({
-      ...errors,
-      name: !name,
-      postal: !postal,
-    });
-    if (!validFields) {
-      return;
-    }
-
+  async function handleSave(paramValues: any) {
     const {success, error} = await updateBusinessProfile({
       company: {
         photo: {...photo, filename: photo?.fileName, url: photo?.uri},
-        name: name,
-        unitNo: unitNo,
-        billingAddress: billingAddress,
-        postal: postal,
+        name: paramValues?.outletName,
+        unitNo: paramValues?.unitNo,
+        billingAddress: paramValues?.billingAddress,
+        postal: paramValues?.postalCode,
       },
     });
 
@@ -135,9 +97,9 @@ export default function EditBusinessScreen({
 
   return (
     <Container className="px-0">
-      <KeyboardAvoidingView>
-        <ScrollView className="flex-1 px-5">
-          <View className="items-center">
+      {!editMode && (
+        <View className="mt-7 px-5">
+          <View className="items-center  mb-8">
             <ImageUpload
               icon={
                 photo?.url ? (
@@ -148,64 +110,45 @@ export default function EditBusinessScreen({
                     source={{uri: photo.url}}
                   />
                 ) : (
-                  <Avatar name={name} size={162} />
+                  <Avatar name={outletName} size={162} />
                 )
               }
-              onChange={image => {
-                if (Array.isArray(image)) {
-                  dispatch({photo: image[0], render: true});
-                } else {
-                  dispatch({photo: image, render: true});
-                }
-              }}
-              editable={editMode}
+              onChange={() => {}}
+              editable={false}
             />
           </View>
-          <View className="mt-7">
-            <FormGroup>
-              <Label required>Business Name</Label>
-              <StyledInput
-                editable={editMode}
-                onChangeText={text => dispatch({name: text, render: true})}
-                defaultValue={name}
-                placeholder="Full name"
-                className={clsx({
-                  'border-red-500': errors.name,
-                })}
-              />
-              <Label required>Billing Address</Label>
-              <StyledInput
-                editable={editMode}
-                onChangeText={handleChangePostalCode}
-                defaultValue={postal}
-                placeholder="Postal Code"
-                className={clsx({
-                  'border-red-500': errors.postal,
-                })}
-              />
-              <StyledInput
-                editable={false}
-                defaultValue={billingAddress}
-                placeholder="Billing Address"
-              />
-              <StyledInput
-                editable={editMode}
-                onChangeText={text => dispatch({unitNo: text, render: true})}
-                defaultValue={unitNo}
-                placeholder="Unit Number"
-              />
-            </FormGroup>
-          </View>
-        </ScrollView>
+          <Text className="font-bold">{outletName}</Text>
 
-        {editMode && (
-          <View className="px-5">
-            <Button loading={loading || loadingPostal} onPress={handleSave}>
-              Save
-            </Button>
+          <View className="flex-row mt-5 w-full">
+            <View className="h-10 w-11 rounded-md bg-primary justify-center items-center">
+              <MailIcon />
+            </View>
+            <View className="ml-4 flex-1">
+              <Text className="text-sm font-semibold">Billing Address</Text>
+              <Text className="text-sm">
+                {[billingAddress, postalCode, unitNo].join(' ')}
+              </Text>
+            </View>
           </View>
-        )}
-      </KeyboardAvoidingView>
+          {/* <View className="flex-row">
+                <View className="h-10 w-11 rounded-md bg-primary justify-center items-center">
+                  <LocationIcon color="white" />
+                </View>
+                <View className="ml-4">
+                  <Text>Billing Address</Text>
+                  <Text>{[billingAddress, postal, unitNo].join(' ')}</Text>
+                </View>
+              </View> */}
+        </View>
+      )}
+      {editMode && (
+        <OutletForm
+          editMode={editMode}
+          initialValues={values}
+          onSave={handleSave}
+          loading={loading}
+        />
+      )}
     </Container>
   );
 }

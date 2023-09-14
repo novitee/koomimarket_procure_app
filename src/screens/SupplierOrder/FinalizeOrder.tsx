@@ -32,7 +32,7 @@ export default function FinalizeOrderScreen({
   const [{}, updateDeliveryDate] = useMutation({
     url: 'update-delivery-date',
   });
-  const [{}, updateBillingCart] = useMutation({
+  const [{loading}, updateBillingCart] = useMutation({
     url: 'update-billing-cart',
   });
   const [{}, createOfflinePaymentOrders] = useMutation({
@@ -211,6 +211,7 @@ export default function FinalizeOrderScreen({
 
       <Button
         onPress={handleOrder}
+        loading={loading}
         disabled={!requestedDeliveryDate || !remarks}>
         Tap to Order
       </Button>
