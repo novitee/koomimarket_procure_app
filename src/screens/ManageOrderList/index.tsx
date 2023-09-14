@@ -9,7 +9,6 @@ import React, {useCallback, useReducer, useState} from 'react';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import CategorySheet from './CategorySheet';
-import {PRODUCTS} from 'configs/data';
 import EditIcon from 'assets/images/edit.svg';
 import CheckBox from 'components/CheckBox';
 import {toggleValueInArray} from 'utils/common';
@@ -20,6 +19,7 @@ import {BackButton} from 'navigations/common';
 import TrashIcon from 'assets/images/trash.svg';
 import colors from 'configs/colors';
 import RemoveItemSheet from './RemoveItemSheet';
+import useQuery from 'libs/swr/useQuery';
 const REMOVE_ITEMS = 'REMOVE_ITEMS';
 const SAVE_CATEGORY = 'SAVE_CATEGORY';
 const REMOVE_CATEGORY = 'REMOVE_CATEGORY';
@@ -46,18 +46,36 @@ function ProductItem({
   );
 }
 
+function useQueryCartItems({supplierId}: {supplierId: string}) {
+  const url = supplierId ? 'get-cart-items' : undefined;
+  const params = {
+    first: 20,
+    skip: 0,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    filter: {supplierId},
+    fields: 'id,name,slug',
+  };
+  return useQuery([url, params]);
+}
+
 export default function ManageOrderListScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
+
+  const {supplierId} = route?.params || {};
+
+  const {data: categoryData, mutate: refreshCategories} = useQuery([
+    'filter-categories',
+    {supplierId},
+  ]);
+  const categories = categoryData?.records || [];
+
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    productSections: [
-      {
-        category: 'Uncategorized',
-        data: PRODUCTS,
-      },
-    ],
     selectedIds: [],
     showSheet: null,
     selectedEditItem: null,
@@ -76,8 +94,19 @@ export default function ManageOrderListScreen({
       ...action,
     };
   }
-  const {showSheet, selectedEditItem, selectedEditCategory, productSections} =
-    values;
+  const {showSheet, selectedEditItem, selectedEditCategory} = values;
+
+  const {data: productData, isValidating: loadingProduct} = useQueryCartItems({
+    supplierId,
+  });
+
+  const products = productData?.records || [];
+  const productSections = categories.map((category: any) => ({
+    category: {name: category.name, slug: category.slug},
+    data: products.filter(
+      (product: any) => product?.category?.slug === category.slug,
+    ),
+  }));
 
   const handleEdit = useCallback((item: any) => {
     dispatch({
@@ -133,13 +162,19 @@ export default function ManageOrderListScreen({
   );
 
   const _renderSectionHeader = useCallback(
-    ({section: {category}}: {section: any}) => {
+    ({
+      section: {
+        category: {name, slug},
+      },
+    }: {
+      section: any;
+    }) => {
       return (
         <View className="flex-row justify-between items-center bg-gray-200 px-2.5 py-3">
-          <Text className="text-xl font-semibold">{category}</Text>
-          {category !== 'Uncategorized' && (
+          <Text className="text-xl font-semibold">{name}</Text>
+          {name !== 'Uncategorized' && (
             <TouchableOpacity
-              onPress={() => handleEditCategory(category)}
+              onPress={() => handleEditCategory(slug)}
               className="px-5"
               hitSlop={10}>
               <Text className="text-primary">Edit</Text>
@@ -161,37 +196,6 @@ export default function ManageOrderListScreen({
     }
     return null;
   }, []);
-
-  function handleSaveCategory(newCategory: string) {
-    if (values.selectedEditCategory) {
-      const index = values.productSections.findIndex(
-        (item: any) => values.selectedEditCategory === item.category,
-      );
-      const clonedProductSections = [...values.productSections];
-      if (index > -1) {
-        clonedProductSections[index].category = newCategory;
-      }
-      dispatch({
-        productSections: clonedProductSections,
-        showSheet: null,
-        selectedEditCategory: '',
-        render: true,
-      });
-    } else {
-      dispatch({
-        productSections: [
-          ...productSections,
-          {
-            category: newCategory,
-            data: [],
-          },
-        ],
-        showSheet: null,
-        selectedEditCategory: '',
-        render: true,
-      });
-    }
-  }
 
   function handleSaveEditItem(item: any) {
     const clonedProductSections = [...values.productSections];
@@ -237,25 +241,26 @@ export default function ManageOrderListScreen({
     console.log(`values.selectedIds :>>`, values.selectedIds);
   }
 
-  function closeSheet() {
+  function closeSheet(refresh = false) {
+    if (refresh) {
+      refreshCategories();
+    }
     dispatch({showSheet: null, render: true});
   }
-
-  const categories = productSections.map((i: any) => i.category);
 
   return (
     <>
       <Container className="px-0">
         <View>
           <ScrollView horizontal className="p-5">
-            {categories.map((cat: string) => (
+            {categories.map((category: any) => (
               <Button
-                key={cat}
+                key={category?.id}
                 size="md"
                 fullWidth={false}
                 className="mr-4"
                 variant="outline">
-                {cat}
+                {category?.name}
               </Button>
             ))}
             <Button
@@ -283,28 +288,22 @@ export default function ManageOrderListScreen({
       <CategorySheet
         isOpen={showSheet === SAVE_CATEGORY}
         selectedEditCategory={selectedEditCategory}
-        onCancel={closeSheet}
-        onSave={handleSaveCategory}
-        onRemove={item => {
-          dispatch({
-            selectedEditCategory: item,
-            showSheet: REMOVE_CATEGORY,
-            render: true,
-          });
-        }}
+        onClose={closeSheet}
       />
       <EditItemSheet
         categories={categories}
         isOpen={!!selectedEditItem}
         selectedItem={selectedEditItem}
-        onCancel={() =>
+        onClose={() =>
           dispatch({
             selectedEditItem: null,
             selectedEditCategory: '',
             render: true,
           })
         }
-        onSave={handleSaveEditItem}
+        itemSlug={selectedEditItem?.slug}
+        supplierId={supplierId}
+        // onSave={handleSaveEditItem}
       />
       <RemoveCategorySheet
         isOpen={showSheet === REMOVE_CATEGORY}

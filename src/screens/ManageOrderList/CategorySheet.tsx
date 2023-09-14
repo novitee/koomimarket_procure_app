@@ -4,23 +4,38 @@ import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
 import Input from 'components/Input';
 import Label from 'components/Form/Label';
-
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 export default function CategorySheet({
   isOpen,
   selectedEditCategory,
-  onCancel,
-  onRemove,
-  onSave,
+  onClose,
 }: {
   isOpen?: boolean;
   selectedEditCategory?: any;
-  onSave?: (values: any) => void;
-  onRemove?: (category: string) => void;
-  onCancel?: () => void;
+  onClose: (refresh?: boolean) => void;
 }) {
   const [category, setCategory] = useState(selectedEditCategory);
   const bottomSheetRef = useRef<any>(null);
   const isEdit = !!selectedEditCategory;
+
+  const [{loading}, createCategory] = useMutation({url: 'categories'});
+  const [{loading: removeLoading}, removeCategory] = useMutation({
+    url: 'categories',
+    method: 'DELETE',
+  });
+
+  async function handleSubmit() {
+    const {data, success, error, message} = await createCategory({
+      category: {name: category},
+    });
+    if (success) {
+      setCategory('');
+      onClose(true);
+    } else {
+      Toast.show(error.message || message, Toast.LONG);
+    }
+  }
 
   useEffect(() => {
     if (selectedEditCategory && selectedEditCategory !== category) {
@@ -29,15 +44,18 @@ export default function CategorySheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEditCategory]);
 
-  function handleSave() {
-    onSave?.(category);
-    setCategory('');
-  }
-
   function handleRemove() {
     bottomSheetRef.current.close();
-    onRemove?.(selectedEditCategory);
+    const {data, success, error, message} = removeCategory({
+      category: {name: selectedEditCategory},
+    });
+    if (success) {
+      onClose(true);
+    } else {
+      Toast.show(error.message || message, Toast.LONG);
+    }
   }
+
   return (
     <BottomSheet ref={bottomSheetRef} isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
@@ -68,12 +86,15 @@ export default function CategorySheet({
         </View>
 
         <View className="flex-row">
-          <Button variant="outline" onPress={onCancel} className="flex-1">
+          <Button
+            variant="outline"
+            onPress={() => onClose()}
+            className="flex-1">
             Cancel
           </Button>
           <Button
             disabled={!category}
-            onPress={handleSave}
+            onPress={handleSubmit}
             className="flex-1 ml-2">
             Save
           </Button>

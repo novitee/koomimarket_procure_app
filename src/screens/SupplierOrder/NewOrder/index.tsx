@@ -238,7 +238,11 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
                 My Order List
               </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate('ManageOrderList')}>
+                onPress={() =>
+                  navigation.navigate('ManageOrderList', {
+                    supplierId,
+                  })
+                }>
                 <Text className="text-primary">Manage List</Text>
               </TouchableOpacity>
             </View>

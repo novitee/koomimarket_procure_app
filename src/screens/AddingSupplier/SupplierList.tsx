@@ -43,7 +43,7 @@ function SupplierItem({
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {searchString, handleSearch} = useSearch();
+  // const {searchString, handleSearch} = useSearch();
 
   const url = 'app/categories';
 
@@ -51,7 +51,7 @@ export default function SupplierListScreen({
     url,
     {
       first: 100,
-      searchString,
+      // searchString,
       fields: 'id,name,depth,parent,position,slug,tags',
       include: 'photo(url)',
       orderBy: {position: 'asc'},
@@ -90,7 +90,7 @@ export default function SupplierListScreen({
 
   return (
     <Container className="pt-0">
-      <SearchBar onSearch={handleSearch} />
+      {/* <SearchBar onSearch={handleSearch} /> */}
 
       <FlatList
         className="flex-1"

@@ -5,31 +5,79 @@ import Button from 'components/Button';
 import Input from 'components/Input';
 import Label from 'components/Form/Label';
 import Select from 'components/Select';
-
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 export default function EditItemSheet({
   isOpen,
-  onCancel,
+  onClose,
   onSave,
   selectedItem,
   categories,
+  itemSlug,
+  supplierId,
 }: {
   isOpen?: boolean;
   selectedItem?: any;
   onSave?: (values: any) => void;
-  onCancel?: () => void;
+  onClose: () => void;
   categories?: any[];
+  itemSlug: string;
+  supplierId: string;
 }) {
   const [item, setItem] = useState(selectedItem);
   const bottomSheetRef = useRef<any>(null);
 
-  function handleSave() {
-    onSave?.(item);
-  }
+  const [{loading: updateItemLoading}, updateItem] = useMutation({
+    method: 'PATCH',
+    url: `/api/v1/procure-storefront/update-item/${itemSlug}`,
+  });
+
   useEffect(() => {
     if (!item && selectedItem) {
       setItem(selectedItem);
     }
   }, [item, selectedItem]);
+
+  // async function handleSave() {
+  //   // const handleSaveFunc = mode !== "Edit" ? createItem : updateItem
+  //   //create new item
+  //   if (isEmptyErrors(errors)) {
+  //     const imagesInput = images.map((img) => {
+  //       return {
+  //         url: img.imageUrl,
+  //         width: img.imageWidth,
+  //         height: img.imageHeight,
+  //         filename: img.filename,
+  //         contentType: img.contentType,
+  //         signedKey: img.signedKey,
+  //       }
+  //     })
+  //     const params = {
+  //       supplierId: supplierId,
+  //       product: {
+  //         sku: productId,
+  //         name: productName,
+  //         categorySlugs: category ? [category] : [],
+  //         pricing: Number(unitPrice) || 0,
+  //         uom: uom,
+  //         photos: imagesInput,
+  //       },
+  //     }
+
+  //     const {
+  //       data: { data, success, error, message },
+  //     } = await updateItem(params)
+  //     if (success) {
+  //       onClose()
+  //     } else {
+  //       Toast.show(error?.message || message, Toast.LONG)
+  //     }
+  //   }
+  // }
+
+  function handleSave() {
+    onSave?.(item);
+  }
 
   const categoriesOptions = (categories || []).map(cat => ({
     value: cat,
@@ -82,7 +130,7 @@ export default function EditItemSheet({
         </View>
 
         <View className="flex-row">
-          <Button variant="outline" onPress={onCancel} className="flex-1">
+          <Button variant="outline" onPress={onClose} className="flex-1">
             Cancel
           </Button>
           <Button onPress={handleSave} className="flex-1 ml-2">
