@@ -4,6 +4,8 @@ import Container from 'components/Container';
 import Button from 'components/Button';
 import Input from 'components/Input';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import Label from 'components/Form/Label';
+import ProgressBar from 'components/ProgressBar';
 
 export default function AddSupplierName({
   navigation,
@@ -14,13 +16,17 @@ export default function AddSupplierName({
     navigation.navigate('AddSupplierPurpose', {supplierName: name});
   }
   return (
-    <Container>
-      <View className="flex-1">
-        <Input onChangeText={setName} placeholder="Supplier Name" />
-      </View>
-      <Button onPress={handleNext} disabled={!name}>
-        Next
-      </Button>
-    </Container>
+    <>
+      <ProgressBar total={5} step={1} tag="AddSupplierManually" />
+      <Container>
+        <View className="flex-1">
+          <Label required>Enter your supplier name</Label>
+          <Input onChangeText={setName} placeholder="Supplier Name" />
+        </View>
+        <Button onPress={handleNext} disabled={!name}>
+          Next
+        </Button>
+      </Container>
+    </>
   );
 }

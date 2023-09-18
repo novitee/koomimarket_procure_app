@@ -25,6 +25,8 @@ import AddingCategory from './AddingCategory';
 import AddingUOM from './AddingUOM';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
+import CloseCircleIcon from 'assets/images/check_no_active.svg';
+
 const SGD = () => (
   <View className="h-full items-center justify-center pl-3">
     <Text>SGD</Text>
@@ -200,6 +202,13 @@ export default function AddingProductFormScreen({
     }
   }
 
+  function removeImage(uri: string) {
+    dispatch({
+      images: images.filter((i: any) => i.uri !== uri),
+      render: true,
+    });
+  }
+
   return (
     <>
       <Container className="px-0">
@@ -313,13 +322,19 @@ export default function AddingProductFormScreen({
               <View className="flex-row w-full flex-wrap pt-3 gap-4">
                 {images.map((image: any) => {
                   return (
-                    <Image
-                      key={image.uri}
-                      source={{uri: image.uri}}
-                      resizeMode="cover"
-                      resizeMethod="scale"
-                      className="w-32 h-32 rounded-lg"
-                    />
+                    <View key={image.uri}>
+                      <Image
+                        source={{uri: image.uri}}
+                        resizeMode="cover"
+                        resizeMethod="scale"
+                        className="w-32 h-32 rounded-lg bg-slate-200"
+                      />
+                      <TouchableOpacity
+                        className="absolute -right-2 -top-2 z-50 bg-white rounded-full"
+                        onPress={() => removeImage(image.uri)}>
+                        <CloseCircleIcon width={24} height={24} />
+                      </TouchableOpacity>
+                    </View>
                   );
                 })}
               </View>

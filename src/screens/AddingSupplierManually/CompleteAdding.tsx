@@ -12,11 +12,11 @@ export default function CompleteAdding({
     navigation.navigate('SupplierTabs');
   }
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Name of Supplier',
-    });
-  }, [navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: 'Name of Supplier',
+  //   });
+  // }, [navigation]);
 
   return (
     <Container>

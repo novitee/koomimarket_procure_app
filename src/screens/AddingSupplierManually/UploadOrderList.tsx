@@ -4,6 +4,7 @@ import Container from 'components/Container';
 import Button from 'components/Button';
 import clsx from 'libs/clsx';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import ProgressBar from 'components/ProgressBar';
 
 const options = [
   {
@@ -32,30 +33,35 @@ export default function UploadOrderList({
     });
   }
   return (
-    <Container>
-      <View className="flex-1 justify-center">
-        {options.map((option: any) => (
+    <>
+      <ProgressBar total={5} step={4} tag="AddSupplierManually" />
+
+      <Container>
+        <View className="flex-1 justify-center">
+          {options.map((option: any) => (
+            <TouchableOpacity
+              className={clsx({
+                'rounded-xl items-center justify-center mb-8 p-4': true,
+                'border-gray-400 border': option.type !== type,
+                'border-primary border-[3px]': option.type === type,
+              })}
+              onPress={() => setType(option.type)}
+              key={option.title}>
+              <Text className="font-bold text-18">{option.title}</Text>
+              <Text className="text-center mt-2">{option.description}</Text>
+            </TouchableOpacity>
+          ))}
           <TouchableOpacity
-            className={clsx({
-              'rounded-xl items-center justify-center mb-8 p-4': true,
-              'border-gray-400 border': option.type !== type,
-              'border-primary border-[3px]': option.type === type,
-            })}
-            onPress={() => setType(option.type)}
-            key={option.title}>
-            <Text className="font-bold text-18">{option.title}</Text>
-            <Text className="text-center mt-2">{option.description}</Text>
+            onPress={() => navigation.navigate('CompleteAdding')}>
+            <Text className="text-center text-primary text-lg">
+              I will do it later
+            </Text>
           </TouchableOpacity>
-        ))}
-        <TouchableOpacity onPress={() => navigation.navigate('CompleteAdding')}>
-          <Text className="text-center text-primary text-lg">
-            I will do it later
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Button disabled={!type} onPress={toSendInfo}>
-        Next
-      </Button>
-    </Container>
+        </View>
+        <Button disabled={!type} onPress={toSendInfo}>
+          Next
+        </Button>
+      </Container>
+    </>
   );
 }
