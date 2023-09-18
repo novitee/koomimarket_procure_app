@@ -2,16 +2,33 @@ import {View, Text} from 'react-native';
 import React from 'react';
 import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
-
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 export default function RemoveItemSheet({
   isOpen,
   onCancel,
-  onConfirm,
+  selectedItemIds,
 }: {
-  isOpen?: boolean;
-  onConfirm?: (values: any) => void;
-  onCancel?: () => void;
+  isOpen: boolean;
+  onCancel: (refresh?: boolean) => void;
+  selectedItemIds?: any[];
 }) {
+  const [{loading: removeLoading}, removeItem] = useMutation({
+    method: 'DELETE',
+    url: 'items',
+  });
+
+  async function onConfirm() {
+    const {data, success, error, message} = await removeItem({
+      productIds: selectedItemIds,
+    });
+    if (success) {
+      onCancel(true);
+    } else {
+      Toast.show(error.message || message, Toast.LONG);
+    }
+  }
+
   return (
     <BottomSheet isOpen={isOpen} contentHeight={550} onClose={onCancel}>
       <View className="pb-10 px-5 pt-5 flex-1">
@@ -29,10 +46,16 @@ export default function RemoveItemSheet({
         </View>
 
         <View className="flex-row">
-          <Button variant="outline" onPress={onCancel} className="flex-1">
+          <Button
+            variant="outline"
+            onPress={() => onCancel()}
+            className="flex-1">
             Cancel
           </Button>
-          <Button onPress={onConfirm} className="flex-1 ml-2">
+          <Button
+            loading={removeLoading}
+            onPress={onConfirm}
+            className="flex-1 ml-2">
             Remove
           </Button>
         </View>

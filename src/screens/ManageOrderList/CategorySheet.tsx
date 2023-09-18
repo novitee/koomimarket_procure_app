@@ -10,50 +10,45 @@ export default function CategorySheet({
   isOpen,
   selectedEditCategory,
   onClose,
+  handleRemoveCategory,
 }: {
   isOpen?: boolean;
   selectedEditCategory?: any;
   onClose: (refresh?: boolean) => void;
+  handleRemoveCategory: () => void;
 }) {
   const [category, setCategory] = useState(selectedEditCategory);
   const bottomSheetRef = useRef<any>(null);
   const isEdit = !!selectedEditCategory;
-
   const [{loading}, createCategory] = useMutation({url: 'categories'});
-  const [{loading: removeLoading}, removeCategory] = useMutation({
-    url: 'categories',
-    method: 'DELETE',
+  const [{loading: updateLoading}, updateCategory] = useMutation({
+    url: `categories/${selectedEditCategory?.id}`,
+    method: 'PATCH',
   });
 
+  useEffect(() => {
+    if (selectedEditCategory && selectedEditCategory?.name !== category) {
+      setCategory(selectedEditCategory?.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEditCategory]);
+
   async function handleSubmit() {
-    const {data, success, error, message} = await createCategory({
-      category: {name: category},
-    });
+    const mutation = isEdit ? updateCategory : createCategory;
+    const response = await mutation({category: {name: category}});
+    const {data, success, error, message} = response;
+    console.log('response :>> ', response);
     if (success) {
-      setCategory('');
+      setCategory(null);
       onClose(true);
     } else {
       Toast.show(error.message || message, Toast.LONG);
     }
   }
 
-  useEffect(() => {
-    if (selectedEditCategory && selectedEditCategory !== category) {
-      setCategory(selectedEditCategory);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEditCategory]);
-
   function handleRemove() {
     bottomSheetRef.current.close();
-    const {data, success, error, message} = removeCategory({
-      category: {name: selectedEditCategory},
-    });
-    if (success) {
-      onClose(true);
-    } else {
-      Toast.show(error.message || message, Toast.LONG);
-    }
+    handleRemoveCategory();
   }
 
   return (

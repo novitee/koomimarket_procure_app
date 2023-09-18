@@ -10,7 +10,6 @@ import Toast from 'react-native-simple-toast';
 export default function EditItemSheet({
   isOpen,
   onClose,
-  onSave,
   selectedItem,
   categories,
   itemSlug,
@@ -18,72 +17,63 @@ export default function EditItemSheet({
 }: {
   isOpen?: boolean;
   selectedItem?: any;
-  onSave?: (values: any) => void;
-  onClose: () => void;
+  onClose: (refresh?: boolean) => void;
   categories?: any[];
   itemSlug: string;
   supplierId: string;
 }) {
-  const [item, setItem] = useState(selectedItem);
+  const initialItem = {productName: '', category: ''};
+  const [item, setItem] = useState(initialItem);
   const bottomSheetRef = useRef<any>(null);
 
   const [{loading: updateItemLoading}, updateItem] = useMutation({
     method: 'PATCH',
-    url: `/api/v1/procure-storefront/update-item/${itemSlug}`,
+    url: `update-item/${itemSlug}`,
   });
 
   useEffect(() => {
-    if (!item && selectedItem) {
-      setItem(selectedItem);
+    if (selectedItem) {
+      setItem({
+        productName: selectedItem?.name,
+        category: selectedItem?.category?.slug,
+      });
     }
-  }, [item, selectedItem]);
+  }, [selectedItem]);
 
-  // async function handleSave() {
-  //   // const handleSaveFunc = mode !== "Edit" ? createItem : updateItem
-  //   //create new item
-  //   if (isEmptyErrors(errors)) {
-  //     const imagesInput = images.map((img) => {
-  //       return {
-  //         url: img.imageUrl,
-  //         width: img.imageWidth,
-  //         height: img.imageHeight,
-  //         filename: img.filename,
-  //         contentType: img.contentType,
-  //         signedKey: img.signedKey,
-  //       }
-  //     })
-  //     const params = {
-  //       supplierId: supplierId,
-  //       product: {
-  //         sku: productId,
-  //         name: productName,
-  //         categorySlugs: category ? [category] : [],
-  //         pricing: Number(unitPrice) || 0,
-  //         uom: uom,
-  //         photos: imagesInput,
-  //       },
-  //     }
+  const {productName, category} = item || {};
 
-  //     const {
-  //       data: { data, success, error, message },
-  //     } = await updateItem(params)
-  //     if (success) {
-  //       onClose()
-  //     } else {
-  //       Toast.show(error?.message || message, Toast.LONG)
-  //     }
-  //   }
-  // }
+  const canUpdate = (() => {
+    return (
+      productName &&
+      category &&
+      (productName !== selectedItem?.name ||
+        category !== selectedItem?.category?.slug)
+    );
+  })();
 
-  function handleSave() {
-    onSave?.(item);
+  async function handleSave() {
+    if (canUpdate) {
+      const params = {
+        supplierId: supplierId,
+        product: {
+          name: productName,
+          categorySlugs: [category],
+        },
+      };
+
+      const response = await updateItem(params);
+      const {data, success, error, message} = response;
+      if (success) {
+        onClose(true);
+      } else {
+        Toast.show(error?.message || message, Toast.LONG);
+      }
+    }
   }
-
   const categoriesOptions = (categories || []).map(cat => ({
-    value: cat,
-    label: cat,
+    label: cat.name,
+    value: cat.slug,
   }));
-
   return (
     <BottomSheet ref={bottomSheetRef} isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
@@ -97,11 +87,11 @@ export default function EditItemSheet({
             <View>
               <Label required>Product Name</Label>
               <Input
-                defaultValue={item?.name}
+                defaultValue={productName}
                 onChangeText={text =>
                   setItem({
                     ...item,
-                    name: text,
+                    productName: text,
                   })
                 }
               />
@@ -111,10 +101,7 @@ export default function EditItemSheet({
 
               <Select
                 onChange={(newCat: any) => {
-                  setItem({
-                    ...item,
-                    category: newCat.value,
-                  });
+                  setItem({...item, category: newCat.value});
                   if (bottomSheetRef.current) {
                     bottomSheetRef.current.open();
                   }
@@ -122,7 +109,7 @@ export default function EditItemSheet({
                 onOpen={() => bottomSheetRef.current?.close()}
                 onBack={() => bottomSheetRef.current?.open()}
                 title={'Select Category'}
-                value={{value: item?.category}}
+                value={{value: category}}
                 options={categoriesOptions}
               />
             </View>
@@ -130,10 +117,17 @@ export default function EditItemSheet({
         </View>
 
         <View className="flex-row">
-          <Button variant="outline" onPress={onClose} className="flex-1">
+          <Button
+            variant="outline"
+            onPress={() => onClose()}
+            className="flex-1">
             Cancel
           </Button>
-          <Button onPress={handleSave} className="flex-1 ml-2">
+          <Button
+            loading={updateItemLoading}
+            onPress={handleSave}
+            disabled={!canUpdate}
+            className="flex-1 ml-2">
             Save
           </Button>
         </View>

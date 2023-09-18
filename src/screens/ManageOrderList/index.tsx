@@ -28,15 +28,17 @@ function ProductItem({
   item,
   onEdit,
   onSelect,
+  selected,
 }: {
   item?: any;
   onEdit?: () => void;
   onSelect: () => void;
+  selected: boolean;
 }) {
   return (
     <View className="flex-row items-center justify-between p-4 border-b border-gray-400">
       <View className="flex-row items-center">
-        <CheckBox onChange={onSelect} />
+        <CheckBox onChange={onSelect} defaultValue={selected} />
         <Text className="font-bold">{item.name}</Text>
       </View>
       <TouchableOpacity className="p-2" onPress={onEdit}>
@@ -73,13 +75,12 @@ export default function ManageOrderListScreen({
     {supplierId},
   ]);
   const categories = categoryData?.records || [];
-
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     selectedIds: [],
     showSheet: null,
     selectedEditItem: null,
-    selectedEditCategory: '',
+    selectedEditCategory: null,
   });
 
   function reducer(state: any, action: any) {
@@ -96,15 +97,15 @@ export default function ManageOrderListScreen({
   }
   const {showSheet, selectedEditItem, selectedEditCategory} = values;
 
-  const {data: productData, isValidating: loadingProduct} = useQueryCartItems({
+  const {data: productData, mutate: refreshCartItems} = useQueryCartItems({
     supplierId,
   });
 
   const products = productData?.records || [];
   const productSections = categories.map((category: any) => ({
-    category: {name: category.name, slug: category.slug},
+    category: {name: category.name, id: category.id},
     data: products.filter(
-      (product: any) => product?.category?.slug === category.slug,
+      (product: any) => product?.category?._id === category.id,
     ),
   }));
 
@@ -143,6 +144,7 @@ export default function ManageOrderListScreen({
       dispatch({
         selectedIds: newSelectedIds,
         render: true,
+        CheckBox,
       });
     },
     [navigation, values.selectedIds],
@@ -155,26 +157,24 @@ export default function ManageOrderListScreen({
           onEdit={() => handleEdit(item)}
           onSelect={() => handleSelect(item)}
           item={item}
+          selected={values.selectedIds.includes(item.id)}
         />
       );
     },
-    [handleEdit, handleSelect],
+    [handleEdit, handleSelect, values.selectedIds],
   );
 
   const _renderSectionHeader = useCallback(
-    ({
-      section: {
-        category: {name, slug},
-      },
-    }: {
-      section: any;
-    }) => {
+    ({section}: {section: any}) => {
+      const {
+        category: {name, id},
+      } = section || {};
       return (
         <View className="flex-row justify-between items-center bg-gray-200 px-2.5 py-3">
           <Text className="text-xl font-semibold">{name}</Text>
           {name !== 'Uncategorized' && (
             <TouchableOpacity
-              onPress={() => handleEditCategory(slug)}
+              onPress={() => handleEditCategory(section.category)}
               className="px-5"
               hitSlop={10}>
               <Text className="text-primary">Edit</Text>
@@ -197,50 +197,6 @@ export default function ManageOrderListScreen({
     return null;
   }, []);
 
-  function handleSaveEditItem(item: any) {
-    const clonedProductSections = [...values.productSections];
-    const index = values.productSections.findIndex(
-      (section: any) => section.category === item.category,
-    );
-
-    if (index !== -1) {
-      clonedProductSections[index].data.push(item);
-      clonedProductSections[0].data = clonedProductSections[0].data.filter(
-        (p: any) => p.id !== item.id,
-      );
-    }
-    dispatch({
-      selectedEditItem: null,
-      productSections: clonedProductSections,
-      render: true,
-    });
-  }
-
-  function handleRemoveCategory() {
-    const index = values.productSections.findIndex(
-      (section: any) => section.category === values.selectedEditCategory,
-    );
-
-    if (index !== -1) {
-      const clonedProductSections = [...values.productSections];
-      clonedProductSections[0].data = [
-        ...clonedProductSections[0].data,
-        ...clonedProductSections[index].data,
-      ];
-      clonedProductSections.splice(index, 1);
-      dispatch({
-        selectedEditCategory: '',
-        productSections: clonedProductSections,
-        showSheet: null,
-        render: true,
-      });
-    }
-  }
-
-  function handleRemoveItems() {
-    console.log(`values.selectedIds :>>`, values.selectedIds);
-  }
-
   function closeSheet(refresh = false) {
     if (refresh) {
       refreshCategories();
@@ -248,6 +204,16 @@ export default function ManageOrderListScreen({
     dispatch({showSheet: null, render: true});
   }
 
+  function handleCloseEditItemSheet(refresh = false) {
+    if (refresh) {
+      refreshCartItems();
+    }
+    dispatch({
+      selectedEditItem: null,
+      selectedEditCategory: null,
+      render: true,
+    });
+  }
   return (
     <>
       <Container className="px-0">
@@ -289,31 +255,36 @@ export default function ManageOrderListScreen({
         isOpen={showSheet === SAVE_CATEGORY}
         selectedEditCategory={selectedEditCategory}
         onClose={closeSheet}
+        handleRemoveCategory={() =>
+          dispatch({showSheet: REMOVE_CATEGORY, render: true})
+        }
       />
       <EditItemSheet
         categories={categories}
         isOpen={!!selectedEditItem}
         selectedItem={selectedEditItem}
-        onClose={() =>
-          dispatch({
-            selectedEditItem: null,
-            selectedEditCategory: '',
-            render: true,
-          })
-        }
+        onClose={handleCloseEditItemSheet}
         itemSlug={selectedEditItem?.slug}
         supplierId={supplierId}
-        // onSave={handleSaveEditItem}
       />
       <RemoveCategorySheet
         isOpen={showSheet === REMOVE_CATEGORY}
         onCancel={closeSheet}
-        onConfirm={handleRemoveCategory}
+        selectedEditCategory={selectedEditCategory}
       />
       <RemoveItemSheet
         isOpen={showSheet === REMOVE_ITEMS}
-        onCancel={closeSheet}
-        onConfirm={handleRemoveItems}
+        onCancel={(refresh?: boolean) => {
+          dispatch({selectedIds: []});
+          closeSheet(refresh);
+          navigation.setOptions({
+            // eslint-disable-next-line react/no-unstable-nested-components
+            headerLeft: () => (
+              <BackButton canGoBack goBack={navigation.goBack} />
+            ),
+          });
+        }}
+        selectedItemIds={values.selectedIds}
       />
     </>
   );
