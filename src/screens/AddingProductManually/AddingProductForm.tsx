@@ -22,6 +22,7 @@ import useQuery from 'libs/swr/useQuery';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import AddingCategory from './AddingCategory';
+import AddingUOM from './AddingUOM';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
 const SGD = () => (
@@ -66,6 +67,7 @@ export default function AddingProductFormScreen({
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     openNewCategory: false,
+    openNewUOM: false,
     price: 0,
     images: [],
   });
@@ -117,6 +119,7 @@ export default function AddingProductFormScreen({
     productId,
     category,
     openNewCategory,
+    openNewUOM,
     price,
     images,
     errors = {},
@@ -130,6 +133,10 @@ export default function AddingProductFormScreen({
     dispatch({openNewCategory, render: true});
   }, []);
 
+  const handleToggleAddingUOM = useCallback((openNewUOM: boolean) => {
+    dispatch({openNewUOM, render: true});
+  }, []);
+
   const handleCreatedCategory = useCallback(
     (categorySlug: string) => {
       refreshCategoryList();
@@ -138,6 +145,13 @@ export default function AddingProductFormScreen({
     [handleChange, refreshCategoryList],
   );
 
+  const handleCreatedUOM = useCallback(
+    (unitOfMeasure: string) => {
+      refreshUOMList();
+      handleChange('unitOfMeasure', unitOfMeasure);
+    },
+    [handleChange, refreshUOMList],
+  );
   async function handleSave() {
     if (
       !productName ||
@@ -215,6 +229,15 @@ export default function AddingProductFormScreen({
                     name={item.unit}
                   />
                 ))}
+                <TouchableOpacity
+                  className={clsx({
+                    'h-9 px-4 flex-row items-center rounded border border-gray-D1D5DB':
+                      true,
+                  })}
+                  onPress={() => handleToggleAddingUOM(true)}>
+                  <AddIcon color={colors.gray.D1D5DB} />
+                  <Text className={'text-gray-D1D5DB ml-2'}>New UOM</Text>
+                </TouchableOpacity>
               </View>
             </FormGroup>
             <FormGroup>
@@ -230,7 +253,7 @@ export default function AddingProductFormScreen({
 
               <Input
                 StartComponent={SGD}
-                value={price}
+                value={price?.toString()}
                 onChangeText={(text: string) => handleChange('price', text)}
                 placeholder="e.g. 12345"
                 keyboardType="numeric"
@@ -313,6 +336,11 @@ export default function AddingProductFormScreen({
         isOpen={!!openNewCategory}
         onClose={() => handleToggleAddingCategory(false)}
         onSuccess={handleCreatedCategory}
+      />
+      <AddingUOM
+        isOpen={!!openNewUOM}
+        onClose={() => handleToggleAddingUOM(false)}
+        onSuccess={handleCreatedUOM}
       />
     </>
   );
