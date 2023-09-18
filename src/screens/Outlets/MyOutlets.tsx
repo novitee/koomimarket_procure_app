@@ -19,7 +19,6 @@ import {setGlobal} from 'stores/global';
 import useMutation from 'libs/swr/useMutation';
 import {saveAuthData} from 'utils/auth';
 import Loading from 'components/Loading';
-
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -36,10 +35,19 @@ function OutletItem({
     <TouchableOpacity
       onPress={onPress}
       className="flex-row rounded-lg bg-gray-E0E0E4/20 p-5 mb-4">
-      <Image
-        className="w-[72px] h-[72px] bg-gray-400 rounded-lg overflow-hidden"
-        source={{uri: photo?.url}}
-      />
+      {photo?.url ? (
+        <Image
+          className="w-[72px] h-[72px] bg-gray-400 rounded-lg overflow-hidden"
+          source={{uri: photo?.url}}
+        />
+      ) : (
+        <View className="items-center justify-center bg-gray-D4D4D8 overflow-hidden w-[72px] h-[72px] rounded-lg">
+          <Text className="font-bold" style={{fontSize: Math.max(12, 72 / 2)}}>
+            {(name || '').charAt(0)}
+          </Text>
+        </View>
+      )}
+
       <View className="flex-1 ml-4">
         <Text className="font-bold text-18">{name}</Text>
         <Text className="font-light mt-2">{deliveryAddress}</Text>
