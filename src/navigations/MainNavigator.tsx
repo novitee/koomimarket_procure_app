@@ -209,7 +209,7 @@ export default function MainNavigator(): JSX.Element {
         <Stack.Screen
           name="UploadOrderList"
           options={{
-            headerTitle: 'Upload Order List',
+            headerTitle: 'Add Supplier Manually',
           }}
           component={UploadOrderList}
         />

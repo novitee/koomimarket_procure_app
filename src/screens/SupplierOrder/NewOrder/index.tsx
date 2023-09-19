@@ -274,7 +274,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           renderItem={_renderItem}
           data={records || []}
           extraData={records}
-          ListEmptyComponent={EmptyComponent}
+          ListEmptyComponent={isLoading ? null : EmptyComponent}
           ItemSeparatorComponent={_renderItemSeparator}
         />
         {(records || []).length > 0 && (

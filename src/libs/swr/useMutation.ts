@@ -98,6 +98,7 @@ function useMutation({
             : 'application/json',
         },
       })) as any;
+
       if (!resp.success) {
         throw resp;
       }
@@ -114,7 +115,7 @@ function useMutation({
         ...resp,
       };
     } catch (error: any) {
-      const message = convertErrorMessage(error['errors'] || error);
+      const message = convertErrorMessage(error.errors || error);
       dispatch({
         type: REQUEST_FAIL,
         payload: error,
@@ -135,7 +136,10 @@ function useMutation({
 }
 
 function convertErrorMessage(error: any): string {
-  const errorDetails = error['details'];
+  if (error.statusCode === 404) {
+    return 'Invalid endpoint';
+  }
+  const errorDetails = error.details;
   if (errorDetails && typeof errorDetails !== 'string') {
     if (Object.keys(errorDetails).length > 0) {
       if (typeof Object.values(errorDetails)[0] == 'object') {
@@ -149,7 +153,9 @@ function convertErrorMessage(error: any): string {
       }
     }
     return error.message;
-  } else return error.message;
+  }
+
+  return error.message;
 }
 
 export default useMutation;

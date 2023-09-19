@@ -20,6 +20,7 @@ import TrashIcon from 'assets/images/trash.svg';
 import colors from 'configs/colors';
 import RemoveItemSheet from './RemoveItemSheet';
 import useQuery from 'libs/swr/useQuery';
+import Loading from 'components/Loading';
 const REMOVE_ITEMS = 'REMOVE_ITEMS';
 const SAVE_CATEGORY = 'SAVE_CATEGORY';
 const REMOVE_CATEGORY = 'REMOVE_CATEGORY';
@@ -70,10 +71,11 @@ export default function ManageOrderListScreen({
 
   const {supplierId} = route?.params || {};
 
-  const {data: categoryData, mutate: refreshCategories} = useQuery([
-    'filter-categories',
-    {supplierId},
-  ]);
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    mutate: refreshCategories,
+  } = useQuery(['filter-categories', {supplierId}]);
   const categories = categoryData?.records || [];
   const [values, dispatch] = useReducer(reducer, {
     render: false,
@@ -97,7 +99,11 @@ export default function ManageOrderListScreen({
   }
   const {showSheet, selectedEditItem, selectedEditCategory} = values;
 
-  const {data: productData, mutate: refreshCartItems} = useQueryCartItems({
+  const {
+    data: productData,
+    isLoading,
+    mutate: refreshCartItems,
+  } = useQueryCartItems({
     supplierId,
   });
 
@@ -167,7 +173,7 @@ export default function ManageOrderListScreen({
   const _renderSectionHeader = useCallback(
     ({section}: {section: any}) => {
       const {
-        category: {name, id},
+        category: {name},
       } = section || {};
       return (
         <View className="flex-row justify-between items-center bg-gray-200 px-2.5 py-3">
@@ -219,9 +225,9 @@ export default function ManageOrderListScreen({
       <Container className="px-0">
         <View>
           <ScrollView horizontal className="p-5">
-            {categories.map((category: any) => (
+            {categories.map((category: any, index: any) => (
               <Button
-                key={category?.id}
+                key={index}
                 size="md"
                 fullWidth={false}
                 className="mr-4"
@@ -245,11 +251,12 @@ export default function ManageOrderListScreen({
         <SectionList
           className="flex-1"
           sections={productSections}
-          keyExtractor={(item, index) => item + index}
+          keyExtractor={(item, index) => item?.id + index}
           renderItem={_renderItem}
           renderSectionHeader={_renderSectionHeader}
           renderSectionFooter={_renderSectionFooter}
         />
+        {(isLoading || isCategoryLoading) && <Loading />}
       </Container>
       <CategorySheet
         isOpen={showSheet === SAVE_CATEGORY}

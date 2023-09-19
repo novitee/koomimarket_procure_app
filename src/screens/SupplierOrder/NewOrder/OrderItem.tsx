@@ -40,7 +40,7 @@ export default function OrderItem({
       <View className="flex-shrink-1 w-1/2">
         <Text className="text-sm font-bold ">{item.name}</Text>
         <TouchableOpacity
-          className="p-2 bg-primary rounded mt-2"
+          className="flex-row items-center px-2 bg-primary rounded mt-1 flex-1 self-start"
           onPress={onEdit}>
           <Text className="text-white">
             {`${toCurrency(item.pricing, 'USD')} ${item.uom?.toUpperCase()}`}{' '}

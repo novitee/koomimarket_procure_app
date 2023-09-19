@@ -24,6 +24,7 @@ import dayjs from 'dayjs';
 import colors from 'configs/colors';
 import useSearch from 'hooks/useSearch';
 import {BackButton} from 'navigations/common';
+import Loading from 'components/Loading';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -95,7 +96,11 @@ export default function SupplierScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.searchString]);
 
-  const {data, mutate: refreshChannels} = useQuery([
+  const {
+    data,
+    isLoading,
+    mutate: refreshChannels,
+  } = useQuery([
     '/channels',
     {
       first: 100,
@@ -128,7 +133,17 @@ export default function SupplierScreen({
     if (currentOutlet) {
       navigation.setOptions({
         // eslint-disable-next-line react/no-unstable-nested-components
-        headerLeft: () => <BackButton canGoBack goBack={navigation.goBack} />,
+        headerLeft: () => (
+          <BackButton
+            canGoBack
+            goBack={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'MyOutlets'}],
+              })
+            }
+          />
+        ),
         headerTitle: currentOutlet?.name,
       });
     }
@@ -199,7 +214,7 @@ export default function SupplierScreen({
   const {records} = data || {};
 
   return (
-    <Container className="pt-4 px-0">
+    <Container className="pt-4 px-0 pb-2">
       <SearchBar
         className="px-5"
         onSearch={handleSearch}
@@ -223,7 +238,11 @@ export default function SupplierScreen({
         data={records || []}
         extraData={records}
         ListEmptyComponent={
-          searchString ? EmptySearchComponent : EmptyComponent
+          isLoading
+            ? null
+            : searchString
+            ? EmptySearchComponent
+            : EmptyComponent
         }
         ItemSeparatorComponent={_renderItemSeparator}
       />
@@ -239,6 +258,7 @@ export default function SupplierScreen({
           </Button>
         </View>
       )}
+      {isLoading && <Loading />}
     </Container>
   );
 }

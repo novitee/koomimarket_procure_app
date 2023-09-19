@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import Loading from 'components/Loading';
 
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
@@ -47,7 +48,7 @@ export default function SupplierListScreen({
 
   const url = 'app/categories';
 
-  const {data} = useQuery([
+  const {data, isLoading} = useQuery([
     url,
     {
       first: 100,
@@ -98,8 +99,9 @@ export default function SupplierListScreen({
         renderItem={_renderItem}
         data={records || []}
         extraData={records}
-        ListEmptyComponent={EmptyComponent}
+        ListEmptyComponent={isLoading ? null : EmptyComponent}
       />
+      {isLoading && <Loading />}
     </Container>
   );
 }

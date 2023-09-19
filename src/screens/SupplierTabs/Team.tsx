@@ -25,7 +25,17 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
     if (currentOutlet) {
       navigation.setOptions({
         // eslint-disable-next-line react/no-unstable-nested-components
-        headerLeft: () => <BackButton canGoBack goBack={navigation.goBack} />,
+        headerLeft: () => (
+          <BackButton
+            canGoBack
+            goBack={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'MyOutlets'}],
+              })
+            }
+          />
+        ),
         headerTitle: currentOutlet?.name,
       });
     }

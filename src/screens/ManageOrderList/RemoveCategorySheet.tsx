@@ -18,7 +18,7 @@ export default function RemoveCategorySheet({
     method: 'DELETE',
   });
   async function handleRemove() {
-    const {data, success, error, message} = await removeCategory();
+    const {success, error, message} = await removeCategory();
     if (success) {
       onCancel(true);
     } else {
