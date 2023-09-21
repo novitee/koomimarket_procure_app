@@ -104,7 +104,7 @@ export default function ProductCatalogueScreen({
       <View className="bg-white px-5 pt-2">
         <Button
           disabled={selectedProductIds.length === 0}
-          onPress={handleSave}>{`Save Product ${
+          onPress={handleSave}>{`Add Product ${
           selectedProductIds.length > 0 ? `(${selectedProductIds.length})` : ''
         }`}</Button>
       </View>

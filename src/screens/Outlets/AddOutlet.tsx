@@ -17,7 +17,6 @@ export default function AddOutletScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {params} = route || {};
-  const {refreshOutlet} = params || {};
 
   const [{loading}, addOutlet] = useMutation({
     url: 'me/outlets/add',
@@ -27,7 +26,6 @@ export default function AddOutletScreen({
     const response = await addOutlet(paramValues);
     const {success, message, errors} = response || {};
     if (success) {
-      refreshOutlet?.();
       navigation.goBack();
     } else {
       Toast.show(message || errors?.name, Toast.LONG);

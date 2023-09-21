@@ -13,6 +13,8 @@ import SearchIcon from 'assets/images/search_2.svg';
 import BottomSheet from 'components/BottomSheet';
 import ContactList from 'components/ContactList';
 import CloseCircleIcon from 'assets/images/close-circle.svg';
+import {validateEmail} from 'utils/validate';
+import clsx from 'libs/clsx';
 
 const options = [
   {
@@ -35,7 +37,7 @@ export default function AddSupplierManuallyScreen({
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     supplierName: '',
-    accountNumber: '',
+    linkedAccountNumber: '',
     supplierContactCode: '65',
     supplierContactNumber: '',
     supplierEmail: '',
@@ -43,7 +45,7 @@ export default function AddSupplierManuallyScreen({
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
+    let updatedValues = state;
 
     if (action.render) {
       setCurrentState(1 - currentState);
@@ -58,10 +60,11 @@ export default function AddSupplierManuallyScreen({
   const {
     openContact,
     supplierContactNumber,
-    accountNumber,
+    linkedAccountNumber,
     supplierName,
     supplierEmail,
     supplierContactCode,
+    errors = {},
   } = values;
 
   const [{loading}, newSupplierContact] = useMutation({
@@ -69,21 +72,31 @@ export default function AddSupplierManuallyScreen({
   });
 
   async function handleNext() {
+    if (
+      !validateInputs({
+        ...values.errors,
+        supplierName: !supplierName,
+        linkedAccountNumber: !linkedAccountNumber,
+        supplierContactNumber: !supplierContactNumber,
+        supplierEmail: !supplierEmail || !validateEmail(supplierEmail),
+      })
+    )
+      return;
     const params = {
-      supplierName: supplierName,
-      // "isCustomerPurchased": true,
-      linkedAccountNumber: accountNumber,
+      supplierName,
+      linkedAccountNumber,
       fullName: supplierName,
       mobileCode: supplierContactCode,
       mobileNumber: supplierContactNumber,
       emails: [supplierEmail],
       orderCreationMethod: 'BOTH',
     };
+
     const response = await newSupplierContact(params);
     const {data, success, error} = response;
     if (!success) {
       Toast.show('Create Supplier Failed', Toast.LONG);
-      return null;
+      return;
     }
     navigation.navigate('SupplierTabs');
   }
@@ -99,6 +112,20 @@ export default function AddSupplierManuallyScreen({
       render: true,
     });
   }
+  function onChangeFields(fields: {[key: string]: string | boolean | object}) {
+    dispatch({...fields, render: true});
+  }
+
+  function validateInputs(errors: {[key: string]: boolean}) {
+    onChangeFields({errors});
+    return Object.keys(errors).reduce((acc: boolean, key: string) => {
+      if (errors[key]) {
+        Toast.show('Please fill in all required fields', Toast.SHORT);
+        return false;
+      }
+      return acc;
+    }, true);
+  }
 
   return (
     <>
@@ -109,14 +136,39 @@ export default function AddSupplierManuallyScreen({
               <Label required>Supplier Name</Label>
               <Input
                 placeholder="e.g Chicken Factory Supplies Pte Ltd"
-                onChangeText={text => dispatch({supplierName: text})}
+                onChangeText={text =>
+                  onChangeFields({
+                    supplierName: text,
+                    errors: {
+                      ...errors,
+                      supplierName: !text,
+                    },
+                  })
+                }
+                className={clsx({
+                  'mb-4': true,
+                  'border-red-500': errors.supplierName,
+                })}
               />
             </FormGroup>
             <FormGroup>
               <Label required>Your Customer Account Number (Optional)</Label>
               <Input
                 placeholder="e.g 10245"
-                onChangeText={text => dispatch({accountNumber: text})}
+                // onChangeText={text => dispatch({linkedAccountNumber: text})}
+                onChangeText={text =>
+                  onChangeFields({
+                    linkedAccountNumber: text,
+                    errors: {
+                      ...errors,
+                      linkedAccountNumber: !text,
+                    },
+                  })
+                }
+                className={clsx({
+                  'mb-4': true,
+                  'border-red-500': errors.linkedAccountNumber,
+                })}
               />
             </FormGroup>
             <FormGroup>
@@ -124,7 +176,19 @@ export default function AddSupplierManuallyScreen({
               <Input
                 placeholder="e.g 65 1234 5678"
                 defaultValue={supplierContactNumber}
-                onChangeText={text => dispatch({supplierContactNumber: text})}
+                onChangeText={text =>
+                  onChangeFields({
+                    supplierContactNumber: text,
+                    errors: {
+                      ...errors,
+                      supplierContactNumber: !text,
+                    },
+                  })
+                }
+                className={clsx({
+                  'mb-4': true,
+                  'border-red-500': errors.supplierContactNumber,
+                })}
                 // eslint-disable-next-line react/no-unstable-nested-components
                 EndComponent={() => (
                   <TouchableOpacity
@@ -139,12 +203,26 @@ export default function AddSupplierManuallyScreen({
               <Label required>Supplier Email</Label>
               <Input
                 placeholder="e.g john@mail.com"
-                onChangeText={text => dispatch({supplierEmail: text})}
+                onChangeText={text =>
+                  onChangeFields({
+                    supplierEmail: text,
+                    errors: {
+                      ...errors,
+                      supplierEmail: !text || !validateEmail(text),
+                    },
+                  })
+                }
+                className={clsx({
+                  'mb-4': true,
+                  'border-red-500': errors.supplierEmail,
+                })}
               />
             </FormGroup>
           </ScrollView>
           <View className="px-5">
-            <Button onPress={handleNext}>Add Supplier</Button>
+            <Button loading={loading} onPress={handleNext}>
+              Add Supplier
+            </Button>
           </View>
         </KeyboardAvoidingView>
       </Container>

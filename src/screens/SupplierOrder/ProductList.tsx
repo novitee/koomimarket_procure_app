@@ -48,7 +48,7 @@ function ProductItem({
       <View className="flex-1">
         <Text className="font-semibold text-gray-900">{name}</Text>
         <Text className="mt-3 text-sm text-gray-500">
-          {toCurrency(pricing, currencyCode)} {unit}
+          {toCurrency(pricing || item.pricing, currencyCode || 'SGD')} {unit}
         </Text>
         <TouchableOpacity
           className="mt-3"
@@ -65,6 +65,7 @@ function ProductItem({
       <TouchableOpacity
         hitSlop={10}
         onPress={() => onSelect?.(item)}
+        disabled={isAdded}
         className="ml-3 flex-shrink-1">
         {isAdded ? (
           <View className=" h-8 items-center justify-center rounded-full ">
@@ -102,8 +103,8 @@ function useQueryProducts(
     searchString,
     filter: {supplierId},
     include:
-      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode)',
-    fields: 'id,slug,name,productNo',
+      'photos(url,filename,height,width,contentType),finalPricing(unit,pricing,currencyCode),categories(id,name)',
+    fields: 'id,slug,name,productNo,pricing,uom',
   };
   return useQuery([url, params]);
 }

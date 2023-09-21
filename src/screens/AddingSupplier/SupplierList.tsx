@@ -44,15 +44,12 @@ function SupplierItem({
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  // const {searchString, handleSearch} = useSearch();
-
   const url = 'app/categories';
 
   const {data, isLoading} = useQuery([
     url,
     {
       first: 100,
-      // searchString,
       fields: 'id,name,depth,parent,position,slug,tags',
       include: 'photo(url)',
       orderBy: {position: 'asc'},

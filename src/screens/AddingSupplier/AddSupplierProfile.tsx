@@ -30,7 +30,7 @@ export default function AddSupplierProfileScreen({
 
   function navigateTo(code: string) {
     if (code === 'my_own') {
-      navigate('AddSupplierManually');
+      navigate('AddSupplierName');
     } else if (code === 'explore') {
       navigate('SupplierList');
     }

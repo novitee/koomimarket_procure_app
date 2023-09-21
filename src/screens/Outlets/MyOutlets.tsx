@@ -14,7 +14,7 @@ import {
 import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {setGlobal} from 'stores/global';
 import useMutation from 'libs/swr/useMutation';
 import {saveAuthData} from 'utils/auth';
@@ -72,7 +72,16 @@ export default function MyOutletsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const {data, isLoading, mutate} = useQueryOutlets();
-  useIsFocused();
+  // useIsFocused();
+
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        mutate();
+      }
+    }, [isFocused]),
+  );
 
   const [{loading}, setOutlet] = useMutation({
     method: 'PATCH',
@@ -80,9 +89,7 @@ export default function MyOutletsScreen({
   });
 
   const toAddOutlet = useCallback(() => {
-    navigation.navigate('AddOutlet', {
-      refreshOutlet: mutate,
-    });
+    navigation.navigate('AddOutlet');
   }, [mutate, navigation]);
 
   const handleSelectOutlet = useCallback(

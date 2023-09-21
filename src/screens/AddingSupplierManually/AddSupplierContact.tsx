@@ -220,7 +220,11 @@ export default function AddSupplierContact({
             )}
           </ScrollView>
 
-          <Button onPress={handleNext} disabled={isDisabled} className="mt-4">
+          <Button
+            loading={loading}
+            onPress={handleNext}
+            disabled={isDisabled}
+            className="mt-4">
             Next
           </Button>
         </KeyboardAvoidingView>
