@@ -30,8 +30,8 @@ export default function AreCurrentCustomerScreen({
 
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    purchasedSupplier: null,
-    accountNumber: '',
+    isCustomerPurchased: null,
+    linkedAccountNumber: '',
   });
 
   function reducer(state: any, action: any) {
@@ -47,22 +47,26 @@ export default function AreCurrentCustomerScreen({
     };
   }
 
-  const {purchasedSupplier} = values;
+  const {isCustomerPurchased, linkedAccountNumber} = values;
 
   async function handleNext() {
     const response = await newSupplier({
-      supplierIds: [supplier.id],
+      supplierInfo: {
+        supplierId: supplier.id,
+        isCustomerPurchased: isCustomerPurchased,
+        linkedAccountNumber: linkedAccountNumber,
+      },
     });
     const {data, success, error} = response;
     if (success) {
-      navigation.navigate('AddSupplierContact', {supplier: data});
+      navigation.navigate('SupplierTabs');
     } else {
       Toast.show(error?.message, Toast.LONG);
     }
     // navigation.navigate('AddSupplierContact');
   }
 
-  const isDisabled = purchasedSupplier === null;
+  const isDisabled = isCustomerPurchased === null;
   return (
     <Container>
       <View className="flex-1">
@@ -73,17 +77,19 @@ export default function AreCurrentCustomerScreen({
               key={option.label}
               className="flex-1"
               variant={
-                option.id === purchasedSupplier ? 'primary' : 'secondary'
+                option.id === isCustomerPurchased ? 'primary' : 'secondary'
               }
-              onPress={() => dispatch({purchasedSupplier: option.id})}>
+              onPress={() => dispatch({isCustomerPurchased: option.id})}>
               {option.label}
             </Button>
           ))}
         </View>
-        {!!purchasedSupplier && (
+        {!!isCustomerPurchased && (
           <FormGroup className="mt-10">
             <Label>Your Customer Account Number (Optional)</Label>
-            <Input onChangeText={text => dispatch({accountNumber: text})} />
+            <Input
+              onChangeText={text => dispatch({linkedAccountNumber: text})}
+            />
           </FormGroup>
         )}
       </View>
