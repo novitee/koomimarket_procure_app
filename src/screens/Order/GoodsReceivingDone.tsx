@@ -13,7 +13,21 @@ export default function GoodsReceivingDone({
       <Text className="text-gray-700 font-medium mt-4">
         We’ll notify your feedback to the supplier.
       </Text>
-      <Button className="mt-6" onPress={() => navigation.pop(3)}>
+      <Button
+        className="mt-6"
+        onPress={() =>
+          navigation.reset({
+            index: 1,
+            routes: [
+              {
+                name: 'SupplierTabs',
+                params: {
+                  screen: 'Order',
+                },
+              },
+            ],
+          })
+        }>
         Got it
       </Button>
     </Container>

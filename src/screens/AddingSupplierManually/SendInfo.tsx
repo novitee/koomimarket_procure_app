@@ -15,6 +15,7 @@ import colors from 'configs/colors';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import ProgressBar from 'components/ProgressBar';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type ManualOrderOptions = {
   method: string;
@@ -53,6 +54,7 @@ export default function SendInfo({
     render: false,
     photos: [],
     comment: '',
+    copied: false,
   });
 
   function reducer(state: any, action: any) {
@@ -103,6 +105,7 @@ export default function SendInfo({
     dispatch({photos: assets, render: true});
   }
 
+  console.log(`values :>>`, values);
   return (
     <>
       <ProgressBar total={5} step={5} tag="AddSupplierManually" />
@@ -122,8 +125,13 @@ export default function SendInfo({
                   className="rounded-l-lg rounded-r-none h-full flex-1"
                   inputClassName="text-primary font-semibold"
                 />
-                <Button className="w-20 h-full px-0 rounded-l-none rounded-r-lg border-primary">
-                  Copy
+                <Button
+                  onPress={() => {
+                    Clipboard.setString('SUPPORT_EMAIL');
+                    dispatch({copied: true, render: true});
+                  }}
+                  className="w-20 h-full px-0 rounded-l-none rounded-r-lg border-primary">
+                  {values.copied ? 'Copied!' : 'Copy'}
                 </Button>
               </View>
             </View>

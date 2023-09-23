@@ -12,6 +12,7 @@ export default function DateInput({
   defaultValue,
   headerTitle,
   onChange,
+  ...props
 }: DateInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState(defaultValue);
@@ -34,6 +35,7 @@ export default function DateInput({
         <CalendarIcon />
       </TouchableOpacity>
       <DatePicker
+        {...props}
         onConfirm={handleConfirm}
         defaultValue={date}
         headerTitle={headerTitle}

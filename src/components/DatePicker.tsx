@@ -2,10 +2,12 @@ import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import BottomSheet from './BottomSheet';
-import RNDatePicker from 'react-native-date-picker';
+import RNDatePicker, {
+  DatePickerProps as RNDatePickerProps,
+} from 'react-native-date-picker';
 import Text from './Text';
 
-export interface DatePickerProps {
+export interface DatePickerProps extends Omit<RNDatePickerProps, 'date'> {
   isOpen?: boolean;
   onClose?: () => void;
   headerTitle?: string;
@@ -19,6 +21,7 @@ export default function DatePicker({
   headerTitle,
   defaultValue,
   onConfirm,
+  ...props
 }: DatePickerProps) {
   const [date, setDate] = useState(
     defaultValue ? dayjs(defaultValue).toDate() : new Date(),
@@ -45,6 +48,7 @@ export default function DatePicker({
         </View>
         <View className=" z-50">
           <RNDatePicker
+            {...props}
             mode="date"
             className="w-full"
             textColor="#000000"

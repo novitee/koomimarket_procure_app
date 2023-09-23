@@ -16,7 +16,7 @@ export default function DoneOrderScreen({
   return (
     <View className="bg-primary/30 flex-1  overflow-hidden">
       <Container containerClassName="bg-transparent" className="bg-transparent">
-        <Text className="text-30 text-center font-medium">You order to</Text>
+        <Text className="text-30 text-center font-medium">Your order to</Text>
         <Text className="text-30 text-center font-semibold text-primary uppercase">
           {supplierName}
         </Text>
@@ -61,8 +61,15 @@ export default function DoneOrderScreen({
           className="mt-8"
           onPress={() =>
             navigation.reset({
-              index: 0,
-              routes: [{name: 'SupplierTabs'}],
+              index: 1,
+              routes: [
+                {
+                  name: 'SupplierTabs',
+                  params: {
+                    screen: 'Order',
+                  },
+                },
+              ],
             })
           }>
           Done

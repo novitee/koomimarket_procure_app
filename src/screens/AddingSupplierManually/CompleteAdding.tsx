@@ -22,13 +22,16 @@ export default function CompleteAdding({
     <Container>
       <View className="items-center justify-center flex-1">
         <Text className="text-48 text-primary font-bold text-center">
-          We are on it!
+          Voila!
         </Text>
-        <Text className="text-center text-18 text-gray-700 mt-2">
-          Your chat will be ready in 24 hours and you will be notified.
+        <Text className="text-center text-18 text-gray-700 mt-10">
+          Successfully added your supplier to the Supplier Listing.
+        </Text>
+        <Text className="text-center text-18 text-gray-700 mt-10">
+          You may now proceed to place an order with this supplier.
         </Text>
       </View>
-      <Button onPress={handleBack}>Back to Home</Button>
+      <Button onPress={handleBack}>Back to Supplier Listing Page</Button>
     </Container>
   );
 }

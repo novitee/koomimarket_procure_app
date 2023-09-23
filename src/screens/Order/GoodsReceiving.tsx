@@ -151,7 +151,6 @@ export default function GoodsReceivingScreen({
     let lineItemParams = convertLineItemsToParams();
     const response = await checkGoodsReceived({lineItems: lineItemParams});
     const {data, success, error, message} = response || {};
-
     if (!success) {
       Toast.show(error?.message, Toast.LONG);
       return;

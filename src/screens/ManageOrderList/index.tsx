@@ -239,7 +239,13 @@ export default function ManageOrderListScreen({
               size="md"
               fullWidth={false}
               variant="outline"
-              onPress={() => dispatch({showSheet: SAVE_CATEGORY, render: true})}
+              onPress={() =>
+                dispatch({
+                  showSheet: SAVE_CATEGORY,
+                  selectedEditCategory: null,
+                  render: true,
+                })
+              }
               className="mr-4 border-gray-400">
               <Text className="text-gray-400 font-semibold">
                 Add New Category

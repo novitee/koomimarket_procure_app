@@ -13,7 +13,8 @@ import colors from 'configs/colors';
 import ImagePicker from 'components/ImagePicker';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Toast from 'react-native-simple-toast';
+import CloseCircleIcon from 'assets/images/check_no_active.svg';
+
 export default function UploadInvoiceScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
@@ -54,6 +55,13 @@ export default function UploadInvoiceScreen({
     // }
   }
 
+  function removeImage(uri: string) {
+    dispatch({
+      images: images.filter((i: any) => i.uri !== uri),
+      render: true,
+    });
+  }
+
   return (
     <Container>
       <View className="flex-1">
@@ -85,21 +93,24 @@ export default function UploadInvoiceScreen({
         <View className="flex-row w-full flex-wrap pt-5 gap-4">
           {images.map((image: any) => {
             return (
-              <Image
-                key={image.uri}
-                source={{uri: image.uri}}
-                resizeMode="cover"
-                resizeMethod="scale"
-                className="w-40 h-40 bg-slate-300 rounded-lg"
-              />
+              <View key={image.uri}>
+                <Image
+                  source={{uri: image.uri}}
+                  resizeMode="cover"
+                  resizeMethod="scale"
+                  className="w-40 h-40 bg-slate-300 rounded-lg"
+                />
+                <TouchableOpacity
+                  className="absolute -right-2 -top-2 z-50 bg-white rounded-full"
+                  onPress={() => removeImage(image.uri)}>
+                  <CloseCircleIcon width={24} height={24} />
+                </TouchableOpacity>
+              </View>
             );
           })}
         </View>
       </View>
 
-      <Text className="font-bold text-primary text-center mb-3">
-        after send invoice, admin will receive email
-      </Text>
       <Button
         loading={loading}
         onPress={handleSend}

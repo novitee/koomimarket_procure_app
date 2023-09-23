@@ -37,6 +37,9 @@ export default function UploadOrderList({
       <ProgressBar total={5} step={4} tag="AddSupplierManually" />
 
       <Container>
+        <Text className="font-medium">
+          Upload your order list in either image / email format.
+        </Text>
         <View className="flex-1 justify-center">
           {options.map((option: any) => (
             <TouchableOpacity

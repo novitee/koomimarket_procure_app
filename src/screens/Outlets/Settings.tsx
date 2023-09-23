@@ -79,16 +79,20 @@ export default function SettingsScreen({
       <TouchableOpacity
         onPress={() => navigate('EditProfile')}
         className="flex-row items-center mt-8 p-4">
-        <View className="flex-row items-center flex-1">
+        <View className="flex-row items-center flex-1 ">
           <Avatar url={me?.avatar?.url} name={me?.fullName} />
-          <Text className="ml-4 text-32 font-medium">{me?.fullName}</Text>
+          <Text className="ml-4 text-32 font-medium flex-1">
+            {me?.fullName}
+          </Text>
         </View>
-        <ChevronRightIcon color={colors.chevron} />
+        <View>
+          <ChevronRightIcon color={colors.chevron} />
+        </View>
       </TouchableOpacity>
       <Divider />
       {currentCompany && (
         <>
-          <Text className="px-4">Business</Text>
+          <Text className="px-4 font-semibold">Business</Text>
           <TouchableOpacity
             onPress={() => navigate('EditBusiness')}
             className="flex-row items-center mt-2 p-4">
@@ -97,7 +101,7 @@ export default function SettingsScreen({
                 url={currentCompany?.photo?.url}
                 name={currentCompany?.name}
               />
-              <Text className="ml-4 text-32 font-medium">
+              <Text className="ml-4 text-16 font-medium">
                 {currentCompany?.name}
               </Text>
             </View>
@@ -106,7 +110,7 @@ export default function SettingsScreen({
           <Divider />
         </>
       )}
-      <View className="px-4 gap-y-4 mt-4">
+      <View className="px-4 gap-y-8 mt-1">
         {menus.map(menu => {
           return (
             <TouchableOpacity

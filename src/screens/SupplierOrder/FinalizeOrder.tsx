@@ -175,6 +175,7 @@ export default function FinalizeOrderScreen({
           <DateInput
             defaultValue={requestedDeliveryDate}
             onChange={handleUpdateDeliveryDate}
+            minimumDate={dayjs().toDate()}
           />
         </FormGroup>
         <FormGroup>

@@ -90,11 +90,11 @@ export default function GoodsReceivingIssue({
     <Container>
       <View className="flex-row items-center py-6  bg-gray-EEF3FD">
         <Text className="text-30 font-bold w-16 text-center">
-          {lineItem.quantity}
+          {lineItem.qty}
         </Text>
         <View className="flex-1">
           <Text className="font-bold">{lineItem.name}</Text>
-          <Text className="font-light mt-2">{lineItem.unit}</Text>
+          <Text className="font-light mt-2">{lineItem.uom}</Text>
         </View>
       </View>
       <KeyboardAvoidingView>

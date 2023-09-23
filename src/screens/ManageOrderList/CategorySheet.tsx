@@ -27,7 +27,7 @@ export default function CategorySheet({
   });
 
   useEffect(() => {
-    if (selectedEditCategory && selectedEditCategory?.name !== category) {
+    if (selectedEditCategory?.name !== category) {
       setCategory(selectedEditCategory?.name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
