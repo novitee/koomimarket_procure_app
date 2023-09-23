@@ -81,7 +81,6 @@ export default function ProductCatalogueScreen({
         onPress={() =>
           navigation.navigate('AddingProductType', {
             supplierId,
-            originalScreen: 'ProductCatalogue',
           })
         }
         className="border-t border-gray-D4D4D8">

@@ -14,13 +14,13 @@ import useQuery from 'libs/swr/useQuery';
 import {toCurrency} from 'utils/format';
 import {generateOfflineBillingCart} from 'utils/billingCart';
 import Toast from 'react-native-simple-toast';
+import {useDebounce} from 'hooks/useDebounce';
 
 export default function FinalizeOrderScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const supplierName = 'Vegetable Farm';
-  const {billingCartId} = route.params || {};
+  const {billingCartId, supplier} = route.params || {};
 
   const {data} = useQuery(
     billingCartId ? `get-billing-cart/${billingCartId}` : undefined,
@@ -69,25 +69,22 @@ export default function FinalizeOrderScreen({
     id: supplierId,
     products: mappingProducts,
   };
-  // const getReasonableDeliveryTime = async () => {
-  //   const {data, success} = await generateReasonableDeliveryTime({
-  //     supplier: deliveryInputData,
-  //   });
-  //   if (success) {
-  //     dispatch({
-  //       reasonableDeliveryTime: data?.deliveryDates,
-  //       // render: true,
-  //     });
-  //   }
-  // };
-  // getReasonableDeliveryTime();
-  // console.log('reasonableDeliveryTime :>> ', reasonableDeliveryTime);
-
-  // useEffect(() => {
-  //   if (!!deliveryInputData) {
-  //     getReasonableDeliveryTime();
-  //   }
-  // }, [deliveryInputData]);
+  const getReasonableDeliveryTime = async () => {
+    const {data, success} = await generateReasonableDeliveryTime({
+      supplier: deliveryInputData,
+    });
+    if (success) {
+      dispatch({
+        reasonableDeliveryTime: data?.deliveryDates,
+        render: true,
+      });
+    }
+  };
+  useEffect(() => {
+    if (!!deliveryInputData.id) {
+      getReasonableDeliveryTime();
+    }
+  }, [deliveryInputData.id]);
 
   const handleUpdateDeliveryDate = useCallback(
     async (date: Date) => {
@@ -143,13 +140,21 @@ export default function FinalizeOrderScreen({
     updateBillingCart,
   ]);
 
+  const debounce = useDebounce({
+    callback: (text: string) => dispatch({remarks: text, render: true}),
+  });
+
+  const handleOnInput = (text: string) => {
+    debounce(text);
+  };
+
   return (
     <Container>
       <Text className="text-30 font-bold text-primary">
         Purchase Order With
       </Text>
       <View className="bg-primary p-2.5 mt-3">
-        <Text className="text-white text-30 font-bold">{supplierName}</Text>
+        <Text className="text-white text-30 font-bold">{supplier?.name}</Text>
       </View>
       <View className="h-10  mt-2">
         {requestedDeliveryDate && (
@@ -181,7 +186,7 @@ export default function FinalizeOrderScreen({
             textAlignVertical={'top'}
             className="h-[100px]"
             scrollEnabled={false}
-            onChangeText={text => dispatch({remarks: text, render: true})}
+            onChangeText={handleOnInput}
           />
         </FormGroup>
 
@@ -212,7 +217,7 @@ export default function FinalizeOrderScreen({
       <Button
         onPress={handleOrder}
         loading={loading}
-        disabled={!requestedDeliveryDate || !remarks}>
+        disabled={!requestedDeliveryDate}>
         Tap to Order
       </Button>
     </Container>

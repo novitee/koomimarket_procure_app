@@ -55,5 +55,6 @@ export const generateOfflineBillingCart = (
     shippingAddress: null,
     billingAddress: null,
     offlinePaymentMethod: 'COD',
+    remarks: remark,
   };
 };

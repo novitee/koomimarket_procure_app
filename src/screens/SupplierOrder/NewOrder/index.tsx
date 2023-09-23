@@ -16,7 +16,9 @@ import ToggleUpdateProduct from './ToggleUpdateProduct';
 import OrderItem from './OrderItem';
 import useCart from 'hooks/useCart';
 import Loading from 'components/Loading';
-
+import ChevronRightIcon from 'assets/images/chevron-right.svg';
+import colors from 'configs/colors';
+import Toast from 'react-native-simple-toast';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -45,7 +47,7 @@ function useQueryCartItems({supplierId = '', searchString = ''}) {
 function useQuerySupplier(id: string) {
   const url = `suppliers/${id}`;
   const params = {
-    fields: 'id,minOrder',
+    fields: 'id,minOrder,name',
   };
   return useQuery([url, params]);
 }
@@ -104,11 +106,20 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     searchString,
   });
 
-  const toAddProduct = useCallback(() => {
-    navigation.navigate('ProductCatalogue', {
-      supplierId,
-    });
-  }, [navigation]);
+  const toAddProduct = useCallback(
+    (isManual = false) => {
+      if (isManual) {
+        navigation.navigate('AddingProductType', {
+          supplierId,
+        });
+      } else {
+        navigation.navigate('ProductCatalogue', {
+          supplierId,
+        });
+      }
+    },
+    [navigation],
+  );
 
   const EmptyComponent = useCallback(() => {
     return (
@@ -132,7 +143,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           </>
         )}
 
-        <Button className="mt-4" onPress={toAddProduct}>
+        <Button className="mt-4" onPress={() => toAddProduct()}>
           Add Products
         </Button>
       </View>
@@ -206,14 +217,17 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   const {records} = data || {};
 
   const handleCheckoutCart = useCallback(async () => {
-    const {data} = await generateCheckoutCart({
+    const {data, error, success, message} = await generateCheckoutCart({
       supplierId,
       items: cartDetails,
     });
-    if (data) {
+    if (success) {
       navigation.navigate('FinalizeOrder', {
         billingCartId: data.billingCart?.id,
+        supplier,
       });
+    } else {
+      Toast.show(error?.message || message, Toast.LONG);
     }
   }, [generateCheckoutCart, cartDetails]);
   const minOrderAmount = supplier?.minOrder;
@@ -230,19 +244,19 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         />
         {!!records && records.length > 0 && (
           <View className="mt-5">
-            {/* <TouchableOpacity
-              className="flex-row justify-between items-center mx-5 mb-4 px-2 py-2 border-y border-gray-D4D4D8"
-              onPress={toAddProduct}>
+            <TouchableOpacity
+              className="flex-row justify-between items-center mx-5 mb-4 py-4 px-2 border-y border-gray-D4D4D8"
+              onPress={() => toAddProduct(true)}>
               <Text className="font-semibold text-primary">
                 Add Product Manually
               </Text>
               <ChevronRightIcon
-                width={28}
-                height={28}
+                width={20}
+                height={20}
                 color={colors.primary.DEFAULT}
                 strokeWidth={2}
               />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <View className="flex-row justify-between items-center px-5">
               <Text className="text-primary font-bold text-2xl">
                 My Order List

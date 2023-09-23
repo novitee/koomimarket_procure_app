@@ -15,8 +15,25 @@ export default function AddingProductTypeScreen({
       <Text>Choose a way to add products to your order list:</Text>
       <View className="justify-center flex-1">
         <TouchableOpacity
-          onPress={() => navigation.navigate('UploadInvoice')}
+          onPress={() =>
+            navigation.navigate('AddProductsManuallyForm', {
+              ...route?.params,
+            })
+          }
           className="border-[3px] border-gray-D1D5DB rounded-xl flex-row items-center min-h-[160px] px-5">
+          <View className="mr-5">
+            <Pencil />
+          </View>
+          <View className="flex-1">
+            <Text className="font-bold mb-4">Manually add products</Text>
+            <Text className="font-medium">
+              Add product by typing in its name and unit.
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('UploadInvoice')}
+          className="border-[3px] border-gray-D1D5DB rounded-xl flex-row items-center mt-4 min-h-[160px] px-5">
           <View className="mr-5">
             <Camera />
           </View>
@@ -26,23 +43,6 @@ export default function AddingProductTypeScreen({
             </Text>
             <Text className="font-medium">
               We’ll add your products for you in less than 24 hours.
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('AddProductsManuallyForm', {
-              ...route?.params,
-            })
-          }
-          className="border-[3px] border-gray-D1D5DB rounded-xl flex-row items-center mt-4 min-h-[160px] px-5">
-          <View className="mr-5">
-            <Pencil />
-          </View>
-          <View className="flex-1">
-            <Text className="font-bold mb-4">Manually add products</Text>
-            <Text className="font-medium">
-              Add product by typing in its name and unit.
             </Text>
           </View>
         </TouchableOpacity>

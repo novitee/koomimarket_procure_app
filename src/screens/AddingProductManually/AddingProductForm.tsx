@@ -73,7 +73,7 @@ export default function AddingProductFormScreen({
     price: 0,
     images: [],
   });
-  const {supplierId, originalScreen} = route.params || {};
+  const {supplierId} = route.params || {};
 
   const {data: dataUOM, mutate: refreshUOMList} = useQuery('uom-list');
   const {data: dataCategories, mutate: refreshCategoryList} =
@@ -190,13 +190,9 @@ export default function AddingProductFormScreen({
     const {data, success, error} = response;
 
     if (success) {
-      if (originalScreen) {
-        navigation.navigate(originalScreen, {
-          supplierId,
-        });
-      } else {
-        Toast.show('Product added successfully', Toast.LONG);
-      }
+      navigation.navigate('NewOrder', {
+        supplierId,
+      });
     } else {
       Toast.show(error.message, Toast.LONG);
     }
