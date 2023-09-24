@@ -134,7 +134,11 @@ export default function MyOutletsScreen({
       <FlatList
         keyExtractor={_keyExtractor}
         className="mt-6"
-        contentContainerStyle={styles.flatListContentStyle}
+        contentContainerStyle={
+          !!records && records.length > 0
+            ? styles.flatListContentStyle
+            : styles.flatListEmptyStyle
+        }
         renderItem={_renderItem}
         data={records || []}
         extraData={records}
@@ -150,6 +154,9 @@ export default function MyOutletsScreen({
 
 const styles = StyleSheet.create({
   flatListContentStyle: {
+    paddingBottom: 20,
+  },
+  flatListEmptyStyle: {
     flex: 1,
   },
 });

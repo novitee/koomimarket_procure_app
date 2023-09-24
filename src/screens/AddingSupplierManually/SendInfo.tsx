@@ -127,7 +127,7 @@ export default function SendInfo({
                 />
                 <Button
                   onPress={() => {
-                    Clipboard.setString('SUPPORT_EMAIL');
+                    Clipboard.setString(SUPPORT_EMAIL);
                     dispatch({copied: true, render: true});
                   }}
                   className="w-20 h-full px-0 rounded-l-none rounded-r-lg border-primary">
