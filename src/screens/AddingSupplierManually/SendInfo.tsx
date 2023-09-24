@@ -105,7 +105,6 @@ export default function SendInfo({
     dispatch({photos: assets, render: true});
   }
 
-  console.log(`values :>>`, values);
   return (
     <>
       <ProgressBar total={5} step={5} tag="AddSupplierManually" />
