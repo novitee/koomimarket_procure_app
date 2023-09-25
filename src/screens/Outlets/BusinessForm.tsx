@@ -1,7 +1,6 @@
 import {ScrollView, View, LogBox, Image} from 'react-native';
 import React, {useReducer, useState} from 'react';
 import {SubTitle} from 'components/Text';
-import CheckBox from 'components/CheckBox';
 import Button from 'components/Button';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import FormGroup from 'components/Form/FormGroup';
@@ -31,7 +30,11 @@ export default function BusinessForm({
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    ...initialValues,
+    companyName: initialValues.companyName,
+    billingAddress: initialValues.billingAddress,
+    billingPostal: initialValues.postalCode,
+    unitNo: initialValues.unitNo,
+    photo: initialValues.photo,
   });
 
   const {handlePostalCodeChange} = usePostalCode();
@@ -47,31 +50,20 @@ export default function BusinessForm({
   }
 
   const {
-    outletName,
+    companyName,
     billingPostal,
     billingAddress,
     unitNo,
-    deliveryAddress,
-    deliveryPostalCode,
-    deliveryUnitNo,
-    sameAsBillingAddress,
     photo,
     errors = {},
   } = values;
 
-  function onChangeText(text: string, field: string) {
-    dispatch({[field]: text, render: true});
-  }
   function onChangeFields(fields: {[key: string]: string | boolean | object}) {
     dispatch({...fields, render: true});
   }
 
   function handleChangeUnitNo(text: string) {
-    if (sameAsBillingAddress) {
-      onChangeFields({unitNo: text, deliveryUnitNo: text});
-    } else {
-      onChangeFields({unitNo: text});
-    }
+    onChangeFields({unitNo: text});
   }
 
   async function handleChangePostalCode(text: string) {
@@ -86,47 +78,6 @@ export default function BusinessForm({
       },
     } as any;
 
-    if (sameAsBillingAddress) {
-      changeFields = {
-        ...changeFields,
-        deliveryPostalCode: text,
-        deliveryAddress: address,
-        errors: {
-          ...errors,
-          ...changeFields.errors,
-          deliveryPostalCode: !text,
-          deliveryAddress: !address,
-        },
-      };
-    }
-    onChangeFields(changeFields);
-  }
-
-  async function handleChangeDeliveryPostalCode(text: string) {
-    const address = await handlePostalCodeChange(text);
-    onChangeFields({
-      deliveryPostalCode: text,
-      deliveryAddress: address,
-      errors: {
-        ...errors,
-        deliveryPostalCode: !text,
-        deliveryAddress: !address,
-      },
-    });
-  }
-
-  function handleSetSameAsBillingAddress(value: boolean) {
-    let changeFields = {
-      sameAsBillingAddress: value,
-    } as any;
-    if (value) {
-      changeFields = {
-        ...changeFields,
-        deliveryAddress: billingAddress,
-        deliveryUnitNo: unitNo,
-        deliveryPostalCode: billingPostal,
-      };
-    }
     onChangeFields(changeFields);
   }
 
@@ -147,14 +98,12 @@ export default function BusinessForm({
     onChangeFields({photo: {url: uri, signedKey}});
   }
 
-  async function handleAddOutlet() {
+  async function handleSubmit() {
     const validFields = validateInputs({
       ...values.errors,
-      outletName: !outletName,
+      companyName: !companyName,
       billingPostal: !billingPostal,
       billingAddress: !billingAddress,
-      deliveryPostalCode: !deliveryPostalCode,
-      deliveryAddress: !deliveryAddress,
     });
 
     if (!validFields) {
@@ -162,15 +111,11 @@ export default function BusinessForm({
     }
 
     const params = {
-      name: outletName,
+      name: companyName,
       postal: billingPostal,
       billingPostal: billingPostal,
       billingAddress: billingAddress,
-      deliveryAddress: deliveryAddress,
-      deliveryPostal: deliveryPostalCode,
-      isSameBillingAddress: sameAsBillingAddress,
       unitNo: unitNo,
-      deliveryUnitNo: deliveryUnitNo,
       photo: photo,
       mobileCode: 'none',
       mobileNumber: 'none',
@@ -197,7 +142,7 @@ export default function BusinessForm({
                     source={{uri: photo.url}}
                   />
                 ) : (
-                  <Avatar name={outletName} size={162} />
+                  <Avatar name={companyName} size={162} />
                 )
               ) : null
             }
@@ -206,17 +151,17 @@ export default function BusinessForm({
           />
         </View>
         <FormGroup>
-          <Label required>Outlet Name</Label>
+          <Label required>Business Name</Label>
           <Input
-            value={outletName}
+            value={companyName}
             onChangeText={text =>
               onChangeFields({
-                outletName: text,
-                errors: {...errors, outletName: !text},
+                companyName: text,
+                errors: {...errors, companyName: !text},
               })
             }
             className={clsx({
-              'border-red-500': errors.outletName,
+              'border-red-500': errors.companyName,
             })}
             placeholder="e.g. Ah Gao’s Cafe"
           />
@@ -248,45 +193,10 @@ export default function BusinessForm({
             placeholder="Unit Number"
           />
         </FormGroup>
-        <FormGroup>
-          <Label required>Delivery Address</Label>
-          <CheckBox
-            label="Same as billing address"
-            containerClassName="my-4"
-            defaultValue={sameAsBillingAddress}
-            onChange={handleSetSameAsBillingAddress}
-          />
-          <Input
-            value={deliveryPostalCode}
-            onChangeText={text => handleChangeDeliveryPostalCode(text)}
-            placeholder="e.g. 645678"
-            className={clsx({
-              'mb-4': true,
-              'border-red-500': errors.deliveryPostalCode,
-            })}
-            keyboardType="numeric"
-            editable={!sameAsBillingAddress}
-          />
-          <Input
-            value={deliveryAddress}
-            placeholder="Delivery Address"
-            className={clsx({
-              'mb-4': true,
-              'border-red-500': errors.deliveryAddress,
-            })}
-            editable={false}
-          />
-          <Input
-            value={deliveryUnitNo}
-            onChangeText={text => onChangeText(text, 'deliveryUnitNo')}
-            placeholder="Unit Number"
-            editable={!sameAsBillingAddress}
-          />
-        </FormGroup>
       </ScrollView>
       <View className=" pt-4 px-5">
-        <Button loading={loading} onPress={handleAddOutlet}>
-          {editMode ? 'Update Outlet' : 'Create Outlet'}
+        <Button loading={loading} onPress={handleSubmit}>
+          {editMode ? 'Update Business' : 'Create Business'}
         </Button>
       </View>
     </KeyboardAvoidingView>

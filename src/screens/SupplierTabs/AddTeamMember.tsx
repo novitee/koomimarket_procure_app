@@ -3,31 +3,28 @@ import React, {useLayoutEffect, useState} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import {styled} from 'nativewind';
-import UserIcon from 'assets/images/user.svg';
-import colors from 'configs/colors';
 import ContactList from 'components/ContactList';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-
+import {useGlobalStore} from 'stores/global';
+import useQuery from 'libs/swr/useQuery';
+import useMutation from 'libs/swr/useMutation';
+import ContactOnKoomiList from './ContactOnKoomiList';
+import Toast from 'react-native-simple-toast';
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
-
-// function ContactItem({data}: any) {
-//   return (
-//     <TouchableOpacity className="flex-row items-center mt-4">
-//       <View className="w-14 h-14 bg-gray-E0E0E4 rounded-full items-center justify-center">
-//         <UserIcon width={24} height={24} color={colors.chevron} />
-//       </View>
-//       <View className="ml-4">
-//         <Text className="font-semibold">{data.name}</Text>
-//         <Text>{data.phone}</Text>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// }
 
 export default function AddTeamMemberScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
+  const outlet = useGlobalStore(state => state.currentOutlet);
+  const {
+    data: {records: companyMembers},
+  } = useQuery(`me/outlets/${outlet?.id}/companyMembers`) || {};
+
+  const [{loading}, inviteMemberOutlet] = useMutation({
+    method: 'POST',
+    url: `/api/v1/procure-storefront/me/outlets/${outlet?.id}/members/invite`,
+  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,9 +37,28 @@ export default function AddTeamMemberScreen({
     });
   }, [navigation]);
 
-  function handleAdd() {}
+  async function handleAdd() {
+    console.log('selectedMembers :>> ', selectedMembers);
+    const params = {
+      user: {
+        email: null,
+        mobileCode: '+65',
+        mobileNumber: null,
+        fullName: '',
+        role: 'MEMBER',
+      },
+    };
+
+    const {data, success, error, message} = await inviteMemberOutlet(params);
+    if (!success) {
+      Toast.show(error?.message || message, Toast.LONG);
+      return;
+    }
+    navigation.goBack();
+  }
 
   function handleSelectMembers(newMember: any) {
+    console.log('newMember :>> ', newMember);
     const index = selectedMembers.findIndex(
       (item: any) => item.phoneNumber === newMember.phoneNumber,
     );
@@ -59,13 +75,14 @@ export default function AddTeamMemberScreen({
 
   return (
     <Container className="px-0">
-      {/* <Text className="text-gray-600 font-bold ml-3">Contacts On Koomi</Text>
+      <Text className="text-gray-600 font-bold ml-3">Contacts On Koomi</Text>
       <View className="px-6">
-        {contacts.map(contact => {
-          return <ContactItem key={contact.name} data={contact} />;
-        })}
+        <ContactOnKoomiList
+          onSelect={handleSelectMembers}
+          users={companyMembers}
+        />
       </View>
-      <Divider /> */}
+      <Divider />
       <Text className="text-gray-600 font-bold ml-3">Invite to Koomi</Text>
       <View className="px-6 flex-1">
         <ContactList onSelect={handleSelectMembers} multiSelect />

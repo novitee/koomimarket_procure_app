@@ -230,7 +230,7 @@ export default function OutletForm({
           />
         </FormGroup>
         <FormGroup>
-          <Label required>Business Address</Label>
+          <Label required>Billing Address</Label>
           <Input
             value={postalCode}
             onChangeText={handleChangePostalCode}
