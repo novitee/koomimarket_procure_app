@@ -17,7 +17,7 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-export default function OutletForm({
+export default function BusinessForm({
   onSave,
   loading,
   editMode,
@@ -31,15 +31,7 @@ export default function OutletForm({
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    outletName: initialValues.name,
-    postalCode: initialValues.postal,
-    billingAddress: initialValues.billingAddress,
-    unitNo: initialValues.unitNo,
-    deliveryAddress: initialValues.deliveryAddress,
-    deliveryPostalCode: initialValues.deliveryPostal,
-    deliveryUnitNo: initialValues.deliveryUnitNo,
-    sameAsBillingAddress: initialValues.isSameBillingAddress,
-    photo: initialValues.photo,
+    ...initialValues,
   });
 
   const {handlePostalCodeChange} = usePostalCode();
@@ -56,7 +48,7 @@ export default function OutletForm({
 
   const {
     outletName,
-    postalCode,
+    billingPostal,
     billingAddress,
     unitNo,
     deliveryAddress,
@@ -85,11 +77,11 @@ export default function OutletForm({
   async function handleChangePostalCode(text: string) {
     const address = await handlePostalCodeChange(text);
     let changeFields = {
-      postalCode: text,
+      billingPostal: text,
       billingAddress: address,
       errors: {
         ...errors,
-        postalCode: !text,
+        billingPostal: !text,
         billingAddress: !address,
       },
     } as any;
@@ -132,7 +124,7 @@ export default function OutletForm({
         ...changeFields,
         deliveryAddress: billingAddress,
         deliveryUnitNo: unitNo,
-        deliveryPostalCode: postalCode,
+        deliveryPostalCode: billingPostal,
       };
     }
     onChangeFields(changeFields);
@@ -159,7 +151,7 @@ export default function OutletForm({
     const validFields = validateInputs({
       ...values.errors,
       outletName: !outletName,
-      postalCode: !postalCode,
+      billingPostal: !billingPostal,
       billingAddress: !billingAddress,
       deliveryPostalCode: !deliveryPostalCode,
       deliveryAddress: !deliveryAddress,
@@ -171,8 +163,8 @@ export default function OutletForm({
 
     const params = {
       name: outletName,
-      postal: postalCode,
-      billingPostal: postalCode,
+      postal: billingPostal,
+      billingPostal: billingPostal,
       billingAddress: billingAddress,
       deliveryAddress: deliveryAddress,
       deliveryPostal: deliveryPostalCode,
@@ -232,12 +224,12 @@ export default function OutletForm({
         <FormGroup>
           <Label required>Business Address</Label>
           <Input
-            value={postalCode}
+            value={billingPostal}
             onChangeText={handleChangePostalCode}
             placeholder="e.g. 645678"
             className={clsx({
               'mb-4': true,
-              'border-red-500': errors.postalCode,
+              'border-red-500': errors.billingPostal,
             })}
             keyboardType="numeric"
           />

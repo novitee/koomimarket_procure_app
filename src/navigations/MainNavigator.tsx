@@ -13,6 +13,7 @@ import {HeaderBackButtonProps} from '@react-navigation/native-stack/lib/typescri
 
 import SupplerTabNavigator from './SupplerTabNavigator';
 import MyOutletsScreen from 'screens/Outlets/MyOutlets';
+import EditOutletScreen from 'screens/Outlets/EditOutlet';
 import SettingsScreen from 'screens/Outlets/Settings';
 import SupportScreen from 'screens/Outlets/Support';
 import AddOutletScreen from 'screens/Outlets/AddOutlet';
@@ -116,13 +117,20 @@ export default function MainNavigator(): JSX.Element {
         <Stack.Screen
           name="EditProfile"
           options={{
-            headerTitle: 'Edit Profile',
+            headerTitle: 'My Profile',
           }}
           component={EditProfileScreen}
         />
         <Stack.Screen
           name="EditBusiness"
           component={EditBusinessScreen}
+          options={{
+            headerTitle: 'My Business',
+          }}
+        />
+        <Stack.Screen
+          name="EditOutlet"
+          component={EditOutletScreen}
           options={{
             headerTitle: 'Edit Outlet',
           }}

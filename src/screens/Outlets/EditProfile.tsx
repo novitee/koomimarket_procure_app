@@ -100,6 +100,7 @@ export default function EditProfileScreen({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: headerRight,
+      headerTitle: editMode ? 'Edit Profile' : 'My Profile',
     });
   }, [headerRight, navigation]);
 

@@ -10,26 +10,29 @@ import Text from 'components/Text';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Image, TouchableOpacity, View} from 'react-native';
 import useMe from 'hooks/useMe';
-
 import useMutation from 'libs/swr/useMutation';
+import useQuery from 'libs/swr/useQuery';
 import Toast from 'react-native-simple-toast';
-
-import LocationIcon from 'assets/images/map-marker.svg';
 import MailIcon from 'assets/images/mail.svg';
-import OutletForm from './OutletForm';
+import BusinessForm from './BusinessForm';
 import ImageUpload from 'components/ImageUpload';
 import Avatar from 'components/Avatar';
+import OutletBusinessList from 'components/OutletBusinessList';
+const Divider = () => <View className="h-[1px] w-full bg-gray-D1D5DB my-2" />;
 
 export default function EditBusinessScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const [editMode, setEditMode] = useState(false);
   const {user} = useMe();
+
   const {currentCompany} = user || {};
   const [{loading}, updateBusinessProfile] = useMutation({
     url: 'me/business-profile',
     method: 'PATCH',
   });
+  const {data: outletsData} = useQuery('me/outlets');
+  const {records: outlets} = outletsData || {};
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {});
 
@@ -46,14 +49,12 @@ export default function EditBusinessScreen({
     };
   }
 
-  console.log(`currentCompany  :>>`, currentCompany);
-
-  const {outletName, billingAddress, postalCode, unitNo, photo} = values;
+  const {companyName, billingAddress, postalCode, unitNo, photo} = values;
 
   useEffect(() => {
     if (currentCompany) {
       dispatch({
-        outletName: currentCompany?.name,
+        companyName: currentCompany?.name,
         postalCode: currentCompany?.postal,
         billingAddress: currentCompany?.billingAddress,
         unitNo: currentCompany?.unitNo,
@@ -74,17 +75,18 @@ export default function EditBusinessScreen({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: headerRight,
+      headerTitle: editMode ? 'Edit Business' : 'My Business',
     });
   }, [headerRight, navigation]);
 
-  async function handleSave(paramValues: any) {
+  async function handleSave() {
     const {success, error} = await updateBusinessProfile({
       company: {
         photo: {...photo, filename: photo?.fileName, url: photo?.uri},
-        name: paramValues?.outletName,
-        unitNo: paramValues?.unitNo,
-        billingAddress: paramValues?.billingAddress,
-        postal: paramValues?.postalCode,
+        name: companyName,
+        unitNo: unitNo,
+        billingAddress: billingAddress,
+        postal: postalCode,
       },
     });
 
@@ -94,55 +96,58 @@ export default function EditBusinessScreen({
     }
     navigation.goBack();
   }
-
   return (
     <Container className="px-0">
       {!editMode && (
-        <View className="mt-7 px-5">
-          <View className="items-center  mb-8">
-            <ImageUpload
-              icon={
-                photo?.url ? (
-                  <Image
-                    resizeMode="cover"
-                    resizeMethod="scale"
-                    className="w-full h-full overflow-hidden rounded-full"
-                    source={{uri: photo.url}}
-                  />
-                ) : (
-                  <Avatar name={outletName} size={162} />
-                )
-              }
-              onChange={() => {}}
-              editable={false}
-            />
-          </View>
-          <Text className="font-bold">{outletName}</Text>
+        <View className="mt-7">
+          <View className="px-5">
+            <View className="items-center mb-8">
+              <ImageUpload
+                icon={
+                  photo?.url ? (
+                    <Image
+                      resizeMode="cover"
+                      resizeMethod="scale"
+                      className="w-full h-full overflow-hidden rounded-full"
+                      source={{uri: photo.url}}
+                    />
+                  ) : (
+                    <Avatar name={companyName} size={162} />
+                  )
+                }
+                onChange={() => {}}
+                editable={false}
+              />
+            </View>
+            <Text className="font-bold">{companyName}</Text>
 
-          <View className="flex-row mt-5 w-full">
-            <View className="h-10 w-11 rounded-md bg-primary justify-center items-center">
-              <MailIcon />
-            </View>
-            <View className="ml-4 flex-1">
-              <Text className="text-sm font-semibold">Billing Address</Text>
-              <Text className="text-sm">
-                {[billingAddress, postalCode, unitNo].join(' ')}
-              </Text>
+            <View className="flex-row mt-5 w-full mb-6">
+              <View className="h-10 w-11 rounded-md bg-primary justify-center items-center">
+                <MailIcon />
+              </View>
+              <View className="ml-4 flex-1">
+                <Text className="text-sm font-semibold">Billing Address</Text>
+                <Text className="text-sm">
+                  {[billingAddress, postalCode, unitNo].join(' ')}
+                </Text>
+              </View>
             </View>
           </View>
-          {/* <View className="flex-row">
-                <View className="h-10 w-11 rounded-md bg-primary justify-center items-center">
-                  <LocationIcon color="white" />
-                </View>
-                <View className="ml-4">
-                  <Text>Billing Address</Text>
-                  <Text>{[billingAddress, postal, unitNo].join(' ')}</Text>
-                </View>
-              </View> */}
+          <View className="px-5">
+            <Divider />
+            <Text className="font-bold">Outlet Name</Text>
+          </View>
+
+          <OutletBusinessList
+            outlets={outlets || []}
+            onSelect={item => {
+              navigation.navigate('EditOutlet', {outlet: item});
+            }}
+          />
         </View>
       )}
       {editMode && (
-        <OutletForm
+        <BusinessForm
           editMode={editMode}
           initialValues={values}
           onSave={handleSave}

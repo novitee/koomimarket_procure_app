@@ -15,5 +15,6 @@ module.exports = {
     D4D4D8: '#D4D4D8',
     D1D5DB: '#D1D5DB',
     '6B7280': '#6B7280',
+    '9CA3AF': '#9CA3AF',
   },
 };
