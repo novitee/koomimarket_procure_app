@@ -10,6 +10,9 @@ import useQuery from 'libs/swr/useQuery';
 import useMutation from 'libs/swr/useMutation';
 import ContactOnKoomiList from './ContactOnKoomiList';
 import Toast from 'react-native-simple-toast';
+import Button from 'components/Button';
+import AccountPlus from 'assets/images/account-plus.svg';
+
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
 
 export default function AddTeamMemberScreen({
@@ -17,9 +20,8 @@ export default function AddTeamMemberScreen({
 }: NativeStackScreenProps<any>) {
   const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
   const outlet = useGlobalStore(state => state.currentOutlet);
-  const {
-    data: {records: companyMembers},
-  } = useQuery(`me/outlets/${outlet?.id}/companyMembers`) || {};
+  const {data} = useQuery(`me/outlets/${outlet?.id}/companyMembers`);
+  const companyMembers = data?.records || [];
 
   const [{loading}, inviteMemberOutlet] = useMutation({
     method: 'POST',
@@ -71,6 +73,10 @@ export default function AddTeamMemberScreen({
     } else {
       setSelectedMembers([...selectedMembers, newMember]);
     }
+  }
+
+  function handleInviteNewMember() {
+    navigation.navigate('InviteNewMember');
   }
 
   return (

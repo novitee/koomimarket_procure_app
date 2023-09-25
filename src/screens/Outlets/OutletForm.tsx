@@ -32,11 +32,11 @@ export default function OutletForm({
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     outletName: initialValues.name,
-    postalCode: initialValues.postal,
     billingAddress: initialValues.billingAddress,
     unitNo: initialValues.unitNo,
     deliveryAddress: initialValues.deliveryAddress,
     deliveryPostalCode: initialValues.deliveryPostal,
+    postalCode: initialValues.postal,
     deliveryUnitNo: initialValues.deliveryUnitNo,
     sameAsBillingAddress: initialValues.isSameBillingAddress,
     photo: initialValues.photo,
@@ -171,11 +171,11 @@ export default function OutletForm({
 
     const params = {
       name: outletName,
-      postal: postalCode,
       billingPostal: postalCode,
       billingAddress: billingAddress,
       deliveryAddress: deliveryAddress,
       deliveryPostal: deliveryPostalCode,
+      postal: deliveryPostalCode,
       isSameBillingAddress: sameAsBillingAddress,
       unitNo: unitNo,
       deliveryUnitNo: deliveryUnitNo,

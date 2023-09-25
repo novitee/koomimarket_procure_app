@@ -26,6 +26,7 @@ import UploadOrderList from 'screens/AddingSupplierManually/UploadOrderList';
 import CompleteAdding from 'screens/AddingSupplierManually/CompleteAdding';
 import SendInfo from 'screens/AddingSupplierManually/SendInfo';
 import AddTeamMemberScreen from 'screens/SupplierTabs/AddTeamMember';
+import InviteNewMemberScreen from 'screens/SupplierTabs/InviteNew';
 import {TouchableOpacity} from 'react-native';
 import Text from 'components/Text';
 import {ParamListBase, RouteProp} from '@react-navigation/native';
@@ -148,7 +149,13 @@ export default function MainNavigator(): JSX.Element {
         options={customScreenMemberOptions}
         component={AddTeamMemberScreen}
       />
-
+      <Stack.Screen
+        name="InviteNewMember"
+        options={{
+          headerTitle: 'Invite New Member',
+        }}
+        component={InviteNewMemberScreen}
+      />
       {/* AddingSupplier */}
       <Stack.Group>
         <Stack.Screen

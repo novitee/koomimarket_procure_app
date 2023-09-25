@@ -109,11 +109,9 @@ export default function BusinessForm({
     if (!validFields) {
       return;
     }
-
     const params = {
       name: companyName,
       postal: billingPostal,
-      billingPostal: billingPostal,
       billingAddress: billingAddress,
       unitNo: unitNo,
       photo: photo,

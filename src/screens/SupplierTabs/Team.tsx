@@ -12,6 +12,7 @@ import AccountPlus from 'assets/images/account-plus.svg';
 import useMe from 'hooks/useMe';
 import {BackButton} from 'navigations/common';
 import useQuery from 'libs/swr/useQuery';
+
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
 
 export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
@@ -19,9 +20,8 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
   const {navigate} = navigation;
   const {user} = useMe();
   const {me} = user || {};
-  const {
-    data: {records: members},
-  } = useQuery(`me/outlets/${currentOutlet?.id}/members`) || {};
+  const {data} = useQuery(`me/outlets/${currentOutlet?.id}/members`);
+  const members = data?.records || [];
   useLayoutEffect(() => {
     if (currentOutlet) {
       navigation.setOptions({
@@ -55,7 +55,7 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
     },
     [],
   );
-  console.log('me :>> ', me);
+
   return (
     <Container className="px-0">
       {/* <Divider className="mt-10" /> */}

@@ -79,22 +79,16 @@ export default function EditBusinessScreen({
     });
   }, [headerRight, navigation]);
 
-  async function handleSave() {
+  async function handleSave(params: any) {
     const {success, error} = await updateBusinessProfile({
-      company: {
-        photo: {...photo, filename: photo?.fileName, url: photo?.uri},
-        name: companyName,
-        unitNo: unitNo,
-        billingAddress: billingAddress,
-        postal: postalCode,
-      },
+      company: params,
     });
 
     if (!success) {
       Toast.show(error.message, Toast.LONG);
       return;
     }
-    navigation.goBack();
+    setEditMode(false);
   }
   return (
     <Container className="px-0">
