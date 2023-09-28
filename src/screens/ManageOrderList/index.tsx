@@ -14,6 +14,7 @@ import CheckBox from 'components/CheckBox';
 import {toggleValueInArray} from 'utils/common';
 import EditItemSheet from './EditItemSheet';
 import RemoveCategorySheet from './RemoveCategorySheet';
+import AddCategoryItemSheet from './AddCategoryItemSheet';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {BackButton} from 'navigations/common';
 import TrashIcon from 'assets/images/trash.svg';
@@ -21,9 +22,11 @@ import colors from 'configs/colors';
 import RemoveItemSheet from './RemoveItemSheet';
 import useQuery from 'libs/swr/useQuery';
 import Loading from 'components/Loading';
+
 const REMOVE_ITEMS = 'REMOVE_ITEMS';
 const SAVE_CATEGORY = 'SAVE_CATEGORY';
 const REMOVE_CATEGORY = 'REMOVE_CATEGORY';
+const ADD_CATEGORY_ITEM = 'ADD_CATEGORY_ITEM';
 
 function ProductItem({
   item,
@@ -109,7 +112,7 @@ export default function ManageOrderListScreen({
 
   const products = productData?.records || [];
   const productSections = categories.map((category: any) => ({
-    category: {name: category.name, id: category.id},
+    category: {name: category.name, id: category.id, slug: category.slug},
     data: products.filter(
       (product: any) => product?.category?._id === category.id,
     ),
@@ -126,6 +129,14 @@ export default function ManageOrderListScreen({
     dispatch({
       selectedEditCategory: item,
       showSheet: SAVE_CATEGORY,
+      render: true,
+    });
+  }, []);
+
+  const handleAddCategoryItem = useCallback((category: any) => {
+    dispatch({
+      selectedEditCategory: category,
+      showSheet: ADD_CATEGORY_ITEM,
       render: true,
     });
   }, []);
@@ -192,22 +203,36 @@ export default function ManageOrderListScreen({
     [handleEditCategory],
   );
 
-  const _renderSectionFooter = useCallback(({section}: {section: any}) => {
-    if (section.data.length === 0) {
-      return (
-        <View className="flex-row justify-center items-center bg-white px-4 py-6 border-b border-gray-400">
-          <Text className="font-normal text-gray-400">Add items here</Text>
-        </View>
-      );
-    }
-    return null;
-  }, []);
+  const _renderSectionFooter = useCallback(
+    ({section}: {section: any}) => {
+      if (section.data.length === 0) {
+        return (
+          <TouchableOpacity
+            onPress={() => handleAddCategoryItem(section.category)}
+            className="px-5"
+            hitSlop={10}>
+            <View className="flex-row justify-center items-center bg-white px-4 py-6 border-b border-gray-400">
+              <Text className="font-normal text-gray-400">Add items here</Text>
+            </View>
+          </TouchableOpacity>
+        );
+      }
+      return null;
+    },
+    [handleAddCategoryItem],
+  );
 
   function closeSheet(refresh = false) {
     if (refresh) {
       refreshCategories();
+      refreshCartItems();
     }
-    dispatch({showSheet: null, render: true});
+    dispatch({
+      showSheet: null,
+      selectedEditItem: null,
+      selectedEditCategory: null,
+      render: true,
+    });
   }
 
   function handleCloseEditItemSheet(refresh = false) {
@@ -282,7 +307,7 @@ export default function ManageOrderListScreen({
       />
       <RemoveCategorySheet
         isOpen={showSheet === REMOVE_CATEGORY}
-        onCancel={closeSheet}
+        onCancel={(refresh?: boolean) => closeSheet(refresh)}
         selectedEditCategory={selectedEditCategory}
       />
       <RemoveItemSheet
@@ -298,6 +323,14 @@ export default function ManageOrderListScreen({
           });
         }}
         selectedItemIds={values.selectedIds}
+      />
+      <AddCategoryItemSheet
+        isOpen={showSheet === ADD_CATEGORY_ITEM}
+        onClose={(refresh?: boolean) => closeSheet(refresh)}
+        items={products.filter(
+          (product: any) => product?.category?.slug === 'uncategorized',
+        )}
+        selectedEditCategory={selectedEditCategory}
       />
     </>
   );

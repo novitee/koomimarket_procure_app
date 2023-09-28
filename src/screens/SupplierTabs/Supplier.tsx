@@ -36,7 +36,8 @@ function SupplierItem({
   item?: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {name, createdAt, lastMessage, channelMembers} = item || {};
+  const {name, createdAt, lastMessage, channelMembers, lastOrderAt} =
+    item || {};
   const supplierChannelMember = channelMembers.find(
     (channelMember: any) => channelMember.objectType === 'SUPPLIER',
   );
@@ -51,9 +52,11 @@ function SupplierItem({
       <View className="flex-1 justify-center ml-4">
         <Text className="font-bold text-18">{name}</Text>
         {!isPendingSetup && (
-          <Text className="font-light text-xs mt-2">{`Added at ${dayjs(
-            createdAt,
-          ).format('MM/DD/YYYY')}`}</Text>
+          <Text className="font-light text-xs mt-2">
+            {lastOrderAt
+              ? `Last Ordered: ${dayjs(lastOrderAt).format('MM/DD/YYYY')}`
+              : `Added at ${dayjs(createdAt).format('MM/DD/YYYY')}`}
+          </Text>
         )}
         {isPendingSetup && (
           <Text className="font-light  text-xs mt-2">
@@ -115,6 +118,8 @@ export default function SupplierScreen({
       include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
     },
   ]);
+
+  const {records} = data || {};
 
   useFocusEffect(
     React.useCallback(() => {
@@ -210,8 +215,6 @@ export default function SupplierScreen({
     },
     [handleSelectSupplier],
   );
-
-  const {records} = data || {};
 
   return (
     <Container className="pt-4 px-0 pb-2">
