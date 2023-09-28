@@ -37,7 +37,6 @@ export default function CategorySheet({
     const mutation = isEdit ? updateCategory : createCategory;
     const response = await mutation({category: {name: category}});
     const {data, success, error, message} = response;
-    console.log('response :>> ', response);
     if (success) {
       setCategory(null);
       onClose(true);

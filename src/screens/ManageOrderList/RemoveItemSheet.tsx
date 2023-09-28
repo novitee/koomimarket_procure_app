@@ -13,13 +13,13 @@ export default function RemoveItemSheet({
   onCancel: (refresh?: boolean) => void;
   selectedItemIds?: any[];
 }) {
-  const [{loading: removeLoading}, removeItem] = useMutation({
+  const [{loading: removeLoading}, removeItems] = useMutation({
     method: 'DELETE',
     url: 'items',
   });
 
   async function onConfirm() {
-    const {data, success, error, message} = await removeItem({
+    const {data, success, error, message} = await removeItems({
       productIds: selectedItemIds,
     });
     if (success) {

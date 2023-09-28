@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from 'react';
+import React from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import {View} from 'react-native';
@@ -11,13 +11,6 @@ export default function CompleteAdding({
   function handleBack() {
     navigation.navigate('SupplierTabs');
   }
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: 'Name of Supplier',
-  //   });
-  // }, [navigation]);
-
   return (
     <Container>
       <View className="items-center justify-center flex-1">
