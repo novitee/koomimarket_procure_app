@@ -111,12 +111,18 @@ export default function ManageOrderListScreen({
   });
 
   const products = productData?.records || [];
-  const productSections = categories.map((category: any) => ({
-    category: {name: category.name, id: category.id, slug: category.slug},
-    data: products.filter(
-      (product: any) => product?.category?._id === category.id,
-    ),
-  }));
+  const productSections = categories
+    .map((category: any) => ({
+      category: {name: category.name, id: category.id, slug: category.slug},
+      data: products.filter(
+        (product: any) => product?.category?._id === category.id,
+      ),
+    }))
+    .filter((section: any) => {
+      return !(
+        section.category.slug === 'uncategorized' && section.data.length === 0
+      );
+    });
 
   const handleEdit = useCallback((item: any) => {
     dispatch({
@@ -229,8 +235,6 @@ export default function ManageOrderListScreen({
     }
     dispatch({
       showSheet: null,
-      selectedEditItem: null,
-      selectedEditCategory: null,
       render: true,
     });
   }
@@ -250,16 +254,26 @@ export default function ManageOrderListScreen({
       <Container className="px-0">
         <View>
           <ScrollView horizontal className="p-5">
-            {categories.map((category: any, index: any) => (
-              <Button
-                key={index}
-                size="md"
-                fullWidth={false}
-                className="mr-4"
-                variant="outline">
-                {category?.name}
-              </Button>
-            ))}
+            {categories.map((category: any, index: any) => {
+              if (
+                productSections.find(
+                  (section: any) => section.category.id === category.id,
+                )
+              ) {
+                return (
+                  <Button
+                    key={index}
+                    size="md"
+                    fullWidth={false}
+                    className="mr-4"
+                    variant="outline">
+                    {category?.name}
+                  </Button>
+                );
+              } else {
+                return null;
+              }
+            })}
             <Button
               size="md"
               fullWidth={false}
