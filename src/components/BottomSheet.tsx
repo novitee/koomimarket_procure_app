@@ -40,7 +40,9 @@ function BottomSheet(
 
   useEffect(() => {
     if (isOpen && isOpen !== openModal) {
-      setOpenModal(true);
+      setTimeout(() => {
+        setOpenModal(true);
+      }, 100);
     } else {
       setTimeout(() => {
         setOpenModal(false);

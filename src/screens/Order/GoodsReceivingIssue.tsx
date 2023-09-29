@@ -84,7 +84,7 @@ export default function GoodsReceivingIssue({
     dispatch({photos: assets, render: true});
   }
 
-  function handlePickImage(onPick: () => void | undefined) {
+  function handlePickImage(onPick: (() => void) | undefined) {
     if (values.showedNotice) {
       onPick?.();
     } else {
