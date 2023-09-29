@@ -226,7 +226,7 @@ export default function OutletForm({
             className={clsx({
               'border-red-500': errors.outletName,
             })}
-            placeholder="e.g. Ah Gao’s Cafe"
+            placeholder="E.g. John Doe Cafe"
           />
         </FormGroup>
         <FormGroup>
@@ -234,7 +234,7 @@ export default function OutletForm({
           <Input
             value={postalCode}
             onChangeText={handleChangePostalCode}
-            placeholder="e.g. 645678"
+            placeholder="Postal Code"
             className={clsx({
               'mb-4': true,
               'border-red-500': errors.postalCode,
@@ -267,7 +267,7 @@ export default function OutletForm({
           <Input
             value={deliveryPostalCode}
             onChangeText={text => handleChangeDeliveryPostalCode(text)}
-            placeholder="e.g. 645678"
+            placeholder="Postal Code"
             className={clsx({
               'mb-4': true,
               'border-red-500': errors.deliveryPostalCode,

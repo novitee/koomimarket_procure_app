@@ -161,7 +161,7 @@ export default function BusinessForm({
             className={clsx({
               'border-red-500': errors.companyName,
             })}
-            placeholder="e.g. Ah Gao’s Cafe"
+            placeholder="E.g. John Doe Cafe"
           />
         </FormGroup>
         <FormGroup>
@@ -169,7 +169,7 @@ export default function BusinessForm({
           <Input
             value={billingPostal}
             onChangeText={handleChangePostalCode}
-            placeholder="e.g. 645678"
+            placeholder="Postal Code"
             className={clsx({
               'mb-4': true,
               'border-red-500': errors.billingPostal,

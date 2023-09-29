@@ -18,21 +18,17 @@ import Input from 'components/Input';
 import ImagePicker from 'components/ImagePicker';
 import PlusIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
+import {useModal} from 'libs/modal';
 const reasonOptions = [
   {
-    id: 1,
-    name: 'Missing',
-    value: 'MISSING',
-  },
-  {
     id: 2,
-    name: 'Spoil',
-    value: 'SPOIL',
+    name: 'Wrong Quantity',
+    value: 'WRONG_QUANTITY',
   },
   {
     id: 3,
-    name: 'Wrong Amount',
-    value: 'WRONG_AMOUNT',
+    name: 'Poor Quantity',
+    value: 'POOR_QUANTITY',
   },
   {
     id: 4,
@@ -47,9 +43,12 @@ export default function GoodsReceivingIssue({
   const {lineItem, onUpdateIssue} = route.params || {};
 
   const [currentState, setCurrentState] = useState(0);
+  const {showModal, closeModal} = useModal();
+
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     reason: null,
+    showedNotice: false,
   });
 
   function reducer(state: any, action: any) {
@@ -84,6 +83,27 @@ export default function GoodsReceivingIssue({
   function handleSelectPhoto(assets: any) {
     dispatch({photos: assets, render: true});
   }
+
+  function handlePickImage(onPick: () => void | undefined) {
+    if (values.showedNotice) {
+      onPick?.();
+    } else {
+      dispatch({showedNotice: true});
+      showModal({
+        title: '',
+        message:
+          "Please ensure you include photo(s) of the received item when telling us an issue. Without visual evidence of the product, we won't be able to proceed with your report.",
+        onConfirm: () => {
+          closeModal();
+          onPick?.();
+        },
+        modifiers: {
+          confirmTitle: 'Got it',
+        },
+      });
+    }
+  }
+
   const {reason, requestTroubleQuantity, photos} = values;
 
   return (
@@ -118,11 +138,15 @@ export default function GoodsReceivingIssue({
             ))}
           </View>
           <View className="mt-5">
-            {reason?.id === 3 && (
+            {(reason?.id === 2 || reason?.id === 3) && (
               <FormGroup>
-                <Label required>Enter the amount delivered </Label>
+                <Label required>
+                  {reason?.id === 2
+                    ? 'Enter no. of items with wrong quantity'
+                    : 'Enter no. of poor quality items'}
+                </Label>
                 <Input
-                  placeholder="e.g. 1"
+                  placeholder="e.g. 0.8kg"
                   value={requestTroubleQuantity}
                   onChangeText={(text: string) =>
                     dispatch({requestTroubleQuantity: text, render: true})
@@ -132,6 +156,7 @@ export default function GoodsReceivingIssue({
                 />
               </FormGroup>
             )}
+
             {reason && (
               <FormGroup>
                 <Label required>Leave a comment</Label>
@@ -152,7 +177,7 @@ export default function GoodsReceivingIssue({
                 <ImagePicker onChange={handleSelectPhoto}>
                   {({onPick, progress}) => (
                     <TouchableOpacity
-                      onPress={onPick}
+                      onPress={() => handlePickImage(onPick)}
                       className="w-full h-[50px] bg-white flex-row relative border border-gray-300 rounded items-center justify-center ">
                       {!!progress && progress > 0 && progress < 100 ? (
                         <ActivityIndicator size={'large'} />
