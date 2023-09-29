@@ -198,7 +198,7 @@ export default function GoodsReceivingIssue({
                       <Image
                         resizeMode="cover"
                         resizeMethod="scale"
-                        className="w-40 h-40 overflow-hidden rounded-full"
+                        className="w-40 h-40 overflow-hidden"
                         key={image.uri}
                         source={{uri: image.uri}}
                       />
