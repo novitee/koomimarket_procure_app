@@ -17,7 +17,11 @@ function LineItem({
   const {name, qty, uom, deliveryCheck} = item || {};
   const deliveryCheckReason =
     deliveryCheck?.status === 'TROUBLED' && deliveryCheck?.reason;
-  const value = deliveryCheck?.status === 'TROUBLED' ? 'no' : 'yes';
+  const value = deliveryCheck?.status
+    ? deliveryCheck?.status === 'TROUBLED'
+      ? 'no'
+      : 'yes'
+    : undefined;
   return (
     <View className="flex-row items-center py-6 border-b border-gray-400">
       <Text className="text-30 font-bold w-16 text-center">{qty}</Text>
@@ -80,7 +84,12 @@ export default function GoodsReceivingScreen({
       console.log(value);
       if (value === 'no') {
         navigation.navigate('GoodsReceivingIssue', {
-          lineItem: item,
+          lineItem: {
+            ...item,
+            deliveryCheck: {
+              status: 'TROUBLED',
+            },
+          },
           onUpdateIssue: handleUpdateIssue,
         });
       } else if (value === 'yes') {
@@ -88,7 +97,10 @@ export default function GoodsReceivingScreen({
           (lineItem: any) => item.id === lineItem.id,
         );
         const newLineItemData = [...lineItemData];
-        newLineItemData[itemIndex].issue = null;
+        newLineItemData[itemIndex].status = null;
+        newLineItemData[itemIndex].deliveryCheck = {
+          status: 'NOTHING',
+        };
         dispatch({lineItemData: newLineItemData, render: true});
       }
     },
