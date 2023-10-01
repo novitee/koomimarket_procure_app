@@ -15,7 +15,9 @@ export default function DoneOrderScreen({
   const supplierName = supplierInfo?.name;
   return (
     <View className="bg-primary/30 flex-1  overflow-hidden">
-      <Container containerClassName="bg-transparent" className="bg-transparent">
+      <Container
+        containerClassName="bg-transparent"
+        className="bg-transparent  pt-14">
         <Text className="text-30 text-center font-medium">Your order to</Text>
         <Text className="text-30 text-center font-semibold text-primary uppercase">
           {supplierName}
@@ -41,6 +43,8 @@ export default function DoneOrderScreen({
               </Text>
             </View>
             <View className="flex-row justify-between py-3 ">
+              <Text className="font-medium">Order Date</Text>
+
               <Text className="font-medium">
                 {dayjs(orderedAt).format('DD/MM/YYYY')}
               </Text>

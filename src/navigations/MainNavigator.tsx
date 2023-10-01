@@ -50,6 +50,7 @@ import GoodsReceivingScreen from 'screens/Order/GoodsReceiving';
 import GoodsReceivingIssue from 'screens/Order/GoodsReceivingIssue';
 import GoodsReceivingDone from 'screens/Order/GoodsReceivingDone';
 import AddSupplierProfileScreen from 'screens/AddingSupplier/AddSupplierProfile';
+import CalendarListScreen from 'screens/CalendarListScreen';
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
@@ -338,6 +339,10 @@ export default function MainNavigator(): JSX.Element {
           presentation: 'modal',
         }}>
         <Stack.Screen name="SelectScreen" component={SelectScreen} />
+        <Stack.Screen
+          name="CalendarListScreen"
+          component={CalendarListScreen}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );

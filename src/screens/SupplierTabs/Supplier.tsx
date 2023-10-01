@@ -25,6 +25,7 @@ import colors from 'configs/colors';
 import useSearch from 'hooks/useSearch';
 import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
+import clsx from 'libs/clsx';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -47,7 +48,13 @@ function SupplierItem({
     type === 'group_notification' && text === 'Pending Setup';
 
   return (
-    <View className="flex-row items-center rounded-lg  p-5">
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={isPendingSetup}
+      className={clsx({
+        'flex-row items-center rounded-lg p-5': true,
+        'bg-slate-50': isPendingSetup,
+      })}>
       <Avatar url={imageUrl} size={64} name={name} />
       <View className="flex-1 justify-center ml-4">
         <Text className="font-bold text-18">{name}</Text>
@@ -64,14 +71,7 @@ function SupplierItem({
           </Text>
         )}
       </View>
-      {!isPendingSetup && (
-        <TouchableOpacity hitSlop={10} onPress={onPress} className="p-5">
-          <View className="w-8 h-8 items-center justify-center rounded-full border-[3px] border-primary">
-            <AddIcon color={colors.primary.DEFAULT} strokeWidth="3" />
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
+    </TouchableOpacity>
   );
 }
 

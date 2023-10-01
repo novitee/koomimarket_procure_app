@@ -15,6 +15,7 @@ import {toCurrency} from 'utils/format';
 import {generateOfflineBillingCart} from 'utils/billingCart';
 import Toast from 'react-native-simple-toast';
 import {useDebounce} from 'hooks/useDebounce';
+import CalendarInput from 'components/CalendarInput';
 
 export default function FinalizeOrderScreen({
   navigation,
@@ -87,7 +88,7 @@ export default function FinalizeOrderScreen({
   }, [deliveryInputData.id]);
 
   const handleUpdateDeliveryDate = useCallback(
-    async (date: Date) => {
+    async (date: string) => {
       const {data, success} = await updateDeliveryDate({
         cartGroup: {
           billingCartId,
@@ -172,10 +173,11 @@ export default function FinalizeOrderScreen({
         contentContainerStyle={styles.scrollViewContent}>
         <FormGroup>
           <Label required>Requested Delivery Date</Label>
-          <DateInput
-            defaultValue={requestedDeliveryDate}
+
+          <CalendarInput
+            minimumDate={dayjs().format('YYYY-MM-DD')}
+            headerTitle="Delivery Date"
             onChange={handleUpdateDeliveryDate}
-            minimumDate={dayjs().toDate()}
           />
         </FormGroup>
         <FormGroup>
