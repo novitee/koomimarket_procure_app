@@ -26,7 +26,7 @@ export default function RemoveCategorySheet({
     }
   }
   return (
-    <BottomSheet isOpen={isOpen} contentHeight={550} onClose={onCancel}>
+    <BottomSheet isOpen={isOpen} contentHeight={350} onClose={onCancel}>
       <View className="pb-10 px-5 pt-5 flex-1">
         <View className="flex-1">
           <View className="border-b border-gray-300 pb-5">

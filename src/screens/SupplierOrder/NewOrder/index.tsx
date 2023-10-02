@@ -162,6 +162,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
       const newItem = {
         productId: item.id,
         qty,
+        pricing: item.pricing,
         uom: item.uom,
       };
 
@@ -230,9 +231,18 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
       Toast.show(error?.message || message, Toast.LONG);
     }
   }, [generateCheckoutCart, cartDetails]);
+
   const minOrderAmount = supplier?.minOrder;
   const allowCheckout =
     cartDetails.length > 0 && cartDetails.some((item: any) => item.qty > 0);
+
+  const estimatedTotal = useMemo(
+    () =>
+      cartDetails.reduce((accumulator: any, currentValue: any) => {
+        return accumulator + currentValue.qty * currentValue.pricing;
+      }, 0),
+    [cartDetails],
+  );
 
   return (
     <>
@@ -284,15 +294,27 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         )}
         <FlatList
           keyExtractor={_keyExtractor}
-          contentContainerStyle={styles.flatListContentStyle}
+          contentContainerStyle={
+            !!records && records.length > 0
+              ? styles.flatListContentStyle
+              : styles.flatListEmptyStyle
+          }
           renderItem={_renderItem}
           data={records || []}
           extraData={records}
           ListEmptyComponent={isLoading ? null : EmptyComponent}
           ItemSeparatorComponent={_renderItemSeparator}
+          ListFooterComponent={_renderItemSeparator}
         />
         {(records || []).length > 0 && (
           <View className="bg-white px-5 pt-2">
+            <Text className="font-semibold">
+              Estimated Order Total: {toCurrency(estimatedTotal, 'SGD')}
+            </Text>
+            <Text className="text-sm font-light mt-2 mb-2">
+              All prices to all products to see the estimated order total
+              Missing product
+            </Text>
             <Button
               disabled={!allowCheckout || loading}
               onPress={handleCheckoutCart}>
@@ -314,6 +336,9 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
 
 const styles = StyleSheet.create({
   flatListContentStyle: {
+    paddingBottom: 20,
+  },
+  flatListEmptyStyle: {
     flex: 1,
   },
 });

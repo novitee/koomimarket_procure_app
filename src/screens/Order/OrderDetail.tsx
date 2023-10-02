@@ -177,7 +177,10 @@ export default function OrderDetailScreen({
           </View>
         </ScrollView>
         <View key={1} className="p-4">
-          <Text>{remarks}</Text>
+          {!!remarks && <Text>{remarks}</Text>}
+          {!remarks && (
+            <Text className="text-center text-gray-600 mt-2">No comment</Text>
+          )}
         </View>
         <ScrollView
           key={2}

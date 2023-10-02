@@ -12,12 +12,10 @@ import CreateBusinessScreen from 'screens/Auth/CreateBusiness';
 import JoinMyTeamScreen from 'screens/Auth/JoinMyTeam';
 import {useAppStore} from 'stores/app';
 import SupplierThankYouScreen from 'screens/Auth/SupplierThankYou';
-import {resetAuthData} from 'utils/auth';
 const Stack = createNativeStackNavigator();
 
 export default function AuthNavigator() {
   const {authStatus, authRegisterType} = useAppStore();
-  // resetAuthData();
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
