@@ -213,6 +213,7 @@ export default function AddingProductFormScreen({
             <FormGroup>
               <Label required>Product Name</Label>
               <Input
+                autoCapitalize="words"
                 value={productName}
                 onChangeText={(text: string) =>
                   handleChange('productName', text)

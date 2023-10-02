@@ -19,6 +19,8 @@ import ImagePicker from 'components/ImagePicker';
 import PlusIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
 import {useModal} from 'libs/modal';
+import CloseCircleIcon from 'assets/images/check_no_active.svg';
+
 const reasonOptions = [
   {
     id: 2,
@@ -84,6 +86,12 @@ export default function GoodsReceivingIssue({
     dispatch({photos: assets, render: true});
   }
 
+  function removeImage(uri: string) {
+    dispatch({
+      photos: photos.filter((i: any) => i.uri !== uri),
+      render: true,
+    });
+  }
   function handlePickImage(onPick: (() => void) | undefined) {
     if (values.showedNotice) {
       onPick?.();
@@ -195,13 +203,19 @@ export default function GoodsReceivingIssue({
                 <View className="flex-row w-full flex-wrap mt-5">
                   {(photos || []).map((image: any) => {
                     return (
-                      <Image
-                        resizeMode="cover"
-                        resizeMethod="scale"
-                        className="w-40 h-40 overflow-hidden"
-                        key={image.uri}
-                        source={{uri: image.uri}}
-                      />
+                      <View key={image.uri}>
+                        <Image
+                          source={{uri: image.uri}}
+                          resizeMode="cover"
+                          resizeMethod="scale"
+                          className="w-40 h-40 bg-slate-300 rounded-lg"
+                        />
+                        <TouchableOpacity
+                          className="absolute -right-2 -top-2 z-50 bg-white rounded-full"
+                          onPress={() => removeImage(image.uri)}>
+                          <CloseCircleIcon width={24} height={24} />
+                        </TouchableOpacity>
+                      </View>
                     );
                   })}
                 </View>

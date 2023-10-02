@@ -181,7 +181,7 @@ export default function FinalizeOrderScreen({
           />
         </FormGroup>
         <FormGroup>
-          <Label required>Comment</Label>
+          <Label>Comment</Label>
           <Input
             multiline={true}
             numberOfLines={10}

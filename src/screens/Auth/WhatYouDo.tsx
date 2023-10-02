@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Linking} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import Container from 'components/Container';
 import ChefIcon from 'assets/images/chef.svg';
 import SupplierIcon from 'assets/images/supplier.svg';
@@ -8,6 +8,8 @@ import {SUPPLIER_DASHBOARD_URL} from 'configs/index';
 import {Title} from 'components/Text';
 import {useGlobalStore} from 'stores/global';
 import {setState, useAppStore, IAppStore} from 'stores/app';
+import {BackButton} from 'navigations/common';
+import {resetAuthData} from 'utils/auth';
 
 const types = [
   {
@@ -34,6 +36,26 @@ export default function WhatYouDoScreen({
   useEffect(() => {
     triggerNavigate(authRegisterType);
   }, [navigation, authRegisterType]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerLeft: () => (
+        <BackButton
+          canGoBack
+          goBack={() => {
+            resetAuthData();
+            setTimeout(() => {
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'VerifyNumber'}],
+              });
+            }, 100);
+          }}
+        />
+      ),
+    });
+  }, [navigation]);
 
   function triggerNavigate(registerType: IAppStore['authRegisterType']) {
     if (registerType === 'BUYER') {
