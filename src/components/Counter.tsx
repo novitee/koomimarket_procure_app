@@ -11,43 +11,61 @@ interface CounterProps {
   min?: number;
 }
 
-function Counter({defaultValue, onChange, max, min = 1}: CounterProps) {
-  const [value, setValue] = useState(Math.max(defaultValue || min, min));
+function isNumber(value: string): boolean {
+  return !isNaN(parseInt(value, 10)) && value[value.length - 1] !== '.';
+}
+
+function parsePrecision(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+function Counter({defaultValue, onChange, max, min = 0}: CounterProps) {
+  const [value, setValue] = useState(
+    Math.max(defaultValue || min, min).toString(),
+  );
 
   useEffect(() => {
-    if (value !== defaultValue) {
-      setValue(Math.max(defaultValue || min, min));
+    if (parseFloat(value) !== parseFloat(defaultValue.toString())) {
+      setValue(Math.max(defaultValue || min, min).toString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
 
   function handleIncrease() {
-    let newAmount = parseInt((value || min).toString(), 10) + 1;
+    let newAmount = parseFloat((value || min).toString()) + 1;
+    newAmount = parsePrecision(newAmount);
+
     if (max && newAmount > max) {
       newAmount = max;
     }
-    setValue(newAmount);
+    setValue(newAmount.toString());
     onChange(newAmount);
   }
 
   function handleDecrease() {
-    if (value === min) {
+    let newAmount = parseFloat((value || min).toString()) - 1;
+    newAmount = parsePrecision(newAmount);
+    if (newAmount <= min) {
       return;
     }
-    let newAmount = parseInt((value || min).toString(), 10) - 1;
     if (max && newAmount > max) {
       newAmount = max;
     }
-    setValue(newAmount);
+    setValue(newAmount.toString());
     onChange(newAmount);
   }
 
   function handleChange(v: string) {
-    let newAmount = parseInt((v || min).toString(), 10);
+    if (!isNumber(v)) {
+      setValue(v);
+      return;
+    }
+    let newAmount = parseFloat((v || min).toString());
+    newAmount = parsePrecision(newAmount);
+
     if (max && newAmount > max) {
       newAmount = max;
     }
-    setValue(newAmount);
+    setValue(newAmount.toString());
     onChange(newAmount);
   }
 
@@ -61,7 +79,7 @@ function Counter({defaultValue, onChange, max, min = 1}: CounterProps) {
       <Input
         value={value.toString()}
         onChangeText={handleChange}
-        style={{width: Math.max(50, value.toString().length * 16 + 8)}}
+        style={{width: Math.max(60, value.toString().length * 16 + 8)}}
         inputClassName="text-center px-0"
         className="rounded-none border-y-0 h-full"
         keyboardType="decimal-pad"
