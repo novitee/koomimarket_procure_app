@@ -171,7 +171,7 @@ export default function GoodsReceivingIssue({
                 <Input
                   multiline={true}
                   numberOfLines={6}
-                  placeholder={'e.g. Item not correct'}
+                  placeholder={'e.g. xx items are spoil'}
                   textAlignVertical={'top'}
                   className="h-[100px]"
                   scrollEnabled={false}

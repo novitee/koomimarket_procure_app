@@ -18,6 +18,8 @@ import BusinessForm from './BusinessForm';
 import ImageUpload from 'components/ImageUpload';
 import Avatar from 'components/Avatar';
 import OutletBusinessList from 'components/OutletBusinessList';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+
 const Divider = () => <View className="h-[1px] w-full bg-gray-D1D5DB my-2" />;
 
 export default function EditBusinessScreen({
@@ -31,7 +33,7 @@ export default function EditBusinessScreen({
     url: 'me/business-profile',
     method: 'PATCH',
   });
-  const {data: outletsData} = useQuery('me/outlets');
+  const {data: outletsData, mutate: refreshOutlets} = useQuery('me/outlets');
   const {records: outlets} = outletsData || {};
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {});
@@ -50,6 +52,15 @@ export default function EditBusinessScreen({
   }
 
   const {companyName, billingAddress, postalCode, unitNo, photo} = values;
+
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        refreshOutlets();
+      }
+    }, [isFocused]),
+  );
 
   useEffect(() => {
     if (currentCompany) {
