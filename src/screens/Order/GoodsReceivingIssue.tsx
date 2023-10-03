@@ -25,12 +25,12 @@ const reasonOptions = [
   {
     id: 2,
     name: 'Wrong Quantity',
-    value: 'WRONG_QUANTITY',
+    value: 'WRONG_AMOUNT',
   },
   {
     id: 3,
-    name: 'Poor Quantity',
-    value: 'POOR_QUANTITY',
+    name: 'Poor Quality',
+    value: 'POOR_QUALITY',
   },
   {
     id: 4,

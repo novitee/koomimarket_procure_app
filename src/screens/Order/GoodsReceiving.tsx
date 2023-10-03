@@ -44,7 +44,13 @@ export default function GoodsReceivingScreen({
   const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    lineItemData: lineItems,
+    lineItemData: lineItems.map((item: any) => ({
+      ...item,
+      deliveryCheck: {
+        ...(item.deliveryCheck || {}),
+        status: item.deliveryCheck?.status || 'NOTHING',
+      },
+    })),
   });
 
   const [{}, checkGoodsReceived] = useMutation({
@@ -66,22 +72,17 @@ export default function GoodsReceivingScreen({
 
   const {lineItemData} = values;
 
-  const handleUpdateIssue = useCallback(
-    (newItem: any) => {
-      const itemIndex = lineItemData.findIndex(
-        (item: any) => item.id === newItem.id,
-      );
-
-      const newLineItemData = [...lineItemData];
-      newLineItemData[itemIndex] = newItem;
-      dispatch({lineItemData: newLineItemData, render: true});
-    },
-    [lineItemData],
-  );
+  const handleUpdateIssue = useCallback((newItem: any, lineItemData: any) => {
+    const itemIndex = lineItemData.findIndex(
+      (item: any) => item.id === newItem.id,
+    );
+    const newLineItemData = [...lineItemData];
+    newLineItemData[itemIndex] = newItem;
+    dispatch({lineItemData: newLineItemData, render: true});
+  }, []);
 
   const handleCheckProduct = useCallback(
     (item: any, value: string) => {
-      console.log(value);
       if (value === 'no') {
         navigation.navigate('GoodsReceivingIssue', {
           lineItem: {
@@ -90,7 +91,8 @@ export default function GoodsReceivingScreen({
               status: 'TROUBLED',
             },
           },
-          onUpdateIssue: handleUpdateIssue,
+          onUpdateIssue: (newItem: any) =>
+            handleUpdateIssue(newItem, lineItemData),
         });
       } else if (value === 'yes') {
         const itemIndex = lineItemData.findIndex(
@@ -125,18 +127,18 @@ export default function GoodsReceivingScreen({
     ).length;
   }, [lineItemData]);
 
-  function markAllAsGood() {
-    const newLineItemData = [...lineItemData].map((item: any) => ({
+  const markAllAsGood = useCallback((lineItems: any) => {
+    const newLineItemData = [...lineItems].map((item: any) => ({
       ...item,
       deliveryCheck: {
         status: 'NOTHING',
       },
     }));
-
     dispatch({lineItemData: newLineItemData, render: true});
-  }
-  function markTheRestAsGood() {
-    const newLineItemData = [...lineItemData].map((item: any) => {
+  }, []);
+
+  const markTheRestAsGood = useCallback((lineItems: any) => {
+    const newLineItemData = [...lineItems].map((item: any) => {
       if (typeof item.deliveryCheck === 'undefined') {
         return {
           ...item,
@@ -145,30 +147,38 @@ export default function GoodsReceivingScreen({
           },
         };
       }
-
       return item;
     });
-
     dispatch({lineItemData: newLineItemData, render: true});
-  }
+  }, []);
 
-  function convertLineItemsToParams() {
-    return lineItemData.map((item: any) => ({
+  const convertLineItemsToParams = useCallback((lineItems: any) => {
+    return lineItems.map((item: any) => ({
       id: item.id,
       deliveryCheck: item.deliveryCheck,
     }));
-  }
+  }, []);
 
-  async function handleConfirm() {
-    let lineItemParams = convertLineItemsToParams();
+  const isAllGood = useCallback((lineItems: any) => {
+    return lineItems.every((item: any) => {
+      return item?.deliveryCheck?.status === 'NOTHING';
+    });
+  }, []);
+
+  const handleConfirm = useCallback(async () => {
+    let lineItemParams = convertLineItemsToParams(lineItemData);
+    console.log('lineItemParams :>> ', lineItemParams);
     const response = await checkGoodsReceived({lineItems: lineItemParams});
     const {data, success, error, message} = response || {};
+
     if (!success) {
-      Toast.show(error?.message, Toast.LONG);
+      Toast.show("Couldn't update the delivery status", Toast.LONG);
       return;
     }
-    navigation.navigate('GoodsReceivingDone');
-  }
+    navigation.navigate('GoodsReceivingDone', {
+      isAllGood: isAllGood(lineItemData),
+    });
+  }, [lineItemData, navigation]);
 
   return (
     <Container>
@@ -180,10 +190,14 @@ export default function GoodsReceivingScreen({
         renderItem={_renderItem}
       />
       {numOfChecked === 0 && (
-        <Button onPress={markAllAsGood}>{'Mark all as good'}</Button>
+        <Button onPress={() => markAllAsGood(lineItemData)}>
+          Mark all as good
+        </Button>
       )}
       {numOfChecked > 0 && numOfChecked < lineItemData.length && (
-        <Button onPress={markTheRestAsGood}>{'Mark the rest as good'}</Button>
+        <Button onPress={() => markTheRestAsGood(lineItemData)}>
+          Mark the rest as good
+        </Button>
       )}
       {numOfChecked === lineItemData.length && (
         <Button onPress={handleConfirm}>{'Confirm'}</Button>
