@@ -47,7 +47,12 @@ export default function OrderItem({
           </Text>
         </TouchableOpacity>
       </View>
-      <Counter defaultValue={0} onChange={handleUpdateQty} min={0} />
+      <Counter
+        defaultValue={item?.procureQty}
+        onChange={handleUpdateQty}
+        min={item?.minOfQty || 0}
+        allowDecimal={item?.allowDecimalQuantity}
+      />
     </View>
   );
 }

@@ -9,16 +9,31 @@ interface CounterProps {
   onChange: (value: number) => void;
   max?: number;
   min?: number;
+  allowDecimal?: boolean;
 }
 
 function isNumber(value: string): boolean {
-  return !isNaN(parseInt(value, 10)) && value[value.length - 1] !== '.';
+  return /^\d+$/.test(value);
+}
+function isDecimal(value: string): boolean {
+  return /^\d+(\.\d*)?$/.test(value);
 }
 
 function parsePrecision(value: number): number {
   return Math.round(value * 100) / 100;
 }
-function Counter({defaultValue, onChange, max, min = 0}: CounterProps) {
+
+function isValidTypeNumber(v: string, allowDecimal: boolean): boolean {
+  return (allowDecimal && isDecimal(v)) || (!allowDecimal && isNumber(v));
+}
+
+function Counter({
+  defaultValue,
+  onChange,
+  max,
+  min = 0,
+  allowDecimal = false,
+}: CounterProps) {
   const [value, setValue] = useState(
     Math.max(defaultValue || min, min).toString(),
   );
@@ -45,7 +60,7 @@ function Counter({defaultValue, onChange, max, min = 0}: CounterProps) {
     let newAmount = parseFloat((value || min).toString()) - 1;
     newAmount = parsePrecision(newAmount);
     if (newAmount <= min) {
-      return;
+      newAmount = 0;
     }
     if (max && newAmount > max) {
       newAmount = max;
@@ -55,18 +70,26 @@ function Counter({defaultValue, onChange, max, min = 0}: CounterProps) {
   }
 
   function handleChange(v: string) {
-    if (!isNumber(v)) {
+    if (v === '') {
+      setValue('0');
+      onChange(0);
+      return;
+    } else if (!isValidTypeNumber(v, allowDecimal)) {
+      setValue(value);
+      return;
+    } else if (/^\d+\.$/.test(v) && allowDecimal) {
       setValue(v);
       return;
-    }
-    let newAmount = parseFloat((v || min).toString());
-    newAmount = parsePrecision(newAmount);
+    } else {
+      let newAmount = parseFloat((v || min).toString());
+      newAmount = parsePrecision(newAmount);
 
-    if (max && newAmount > max) {
-      newAmount = max;
+      if (max && newAmount > max) {
+        newAmount = max;
+      }
+      setValue(newAmount.toString());
+      onChange(newAmount);
     }
-    setValue(newAmount.toString());
-    onChange(newAmount);
   }
 
   return (
@@ -82,7 +105,7 @@ function Counter({defaultValue, onChange, max, min = 0}: CounterProps) {
         style={{width: Math.max(60, value.toString().length * 16 + 8)}}
         inputClassName="text-center px-0"
         className="rounded-none border-y-0 h-full"
-        keyboardType="decimal-pad"
+        keyboardType={allowDecimal ? 'decimal-pad' : 'number-pad'}
       />
 
       <TouchableOpacity
