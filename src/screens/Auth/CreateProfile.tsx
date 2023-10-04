@@ -96,7 +96,7 @@ export default function CreateProfile({
             <Input
               value={fullName}
               onChangeText={text => onChangeText(text, 'fullName')}
-              placeholder="e.g. Tan Ah Gao"
+              placeholder="E.g. John Doe"
             />
           </FormGroup>
           <FormGroup>
@@ -105,7 +105,7 @@ export default function CreateProfile({
               value={emailAddress}
               inputMode="email"
               onChangeText={text => onChangeText(text, 'emailAddress')}
-              placeholder="e.g. ahgao@business.com"
+              placeholder="e.g. johndoe@mail.com"
             />
           </FormGroup>
         </ScrollView>

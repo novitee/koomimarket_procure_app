@@ -19,6 +19,7 @@ import Loading from 'components/Loading';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import Toast from 'react-native-simple-toast';
+import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -280,32 +281,35 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
                 <Text className="text-primary">Manage List</Text>
               </TouchableOpacity>
             </View>
-            <View className="bg-gray-100 px-5 py-4 mt-4">
+            <View className="bg-gray-100 px-5 py-3 mt-4">
               <Text className="font-medium">{`Minimum Order Amount: ${toCurrency(
                 minOrderAmount,
                 'SGD',
               )}`}</Text>
-              <Text className="text-sm text-gray-500 leading-none mt-2">
+              <Text className="text-xs text-gray-500 leading-none mt-1">
                 This supplier has a minimum order value. Additional costs may
                 occur if orders are placed under this amount.
               </Text>
             </View>
           </View>
         )}
-        <FlatList
-          keyExtractor={_keyExtractor}
-          contentContainerStyle={
-            !!records && records.length > 0
-              ? styles.flatListContentStyle
-              : styles.flatListEmptyStyle
-          }
-          renderItem={_renderItem}
-          data={records || []}
-          extraData={records}
-          ListEmptyComponent={isLoading ? null : EmptyComponent}
-          ItemSeparatorComponent={_renderItemSeparator}
-          ListFooterComponent={_renderItemSeparator}
-        />
+        <KeyboardAvoidingView>
+          <FlatList
+            keyExtractor={_keyExtractor}
+            contentContainerStyle={
+              !!records && records.length > 0
+                ? styles.flatListContentStyle
+                : styles.flatListEmptyStyle
+            }
+            renderItem={_renderItem}
+            data={records || []}
+            extraData={records}
+            ListEmptyComponent={isLoading ? null : EmptyComponent}
+            ItemSeparatorComponent={_renderItemSeparator}
+            ListFooterComponent={_renderItemSeparator}
+          />
+        </KeyboardAvoidingView>
+
         {(records || []).length > 0 && (
           <View className="bg-white px-5 pt-2">
             <Text className="font-semibold">

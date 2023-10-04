@@ -4,12 +4,14 @@ import Input from './Input';
 import PlusIcon from 'assets/images/plus.svg';
 import MinusIcon from 'assets/images/minus.svg';
 import colors from 'configs/colors';
+import Text from './Text';
 interface CounterProps {
   defaultValue: number;
   onChange: (value: number) => void;
   max?: number;
   min?: number;
   allowDecimal?: boolean;
+  unit?: string;
 }
 
 function isNumber(value: string): boolean {
@@ -33,6 +35,7 @@ function Counter({
   max,
   min = 0,
   allowDecimal = false,
+  unit,
 }: CounterProps) {
   const [value, setValue] = useState(
     Math.max(defaultValue || min, min).toString(),
@@ -99,14 +102,23 @@ function Counter({
         onPress={handleDecrease}>
         <MinusIcon />
       </TouchableOpacity>
-      <Input
-        value={value.toString()}
-        onChangeText={handleChange}
-        style={{width: Math.max(60, value.toString().length * 16 + 8)}}
-        inputClassName="text-center px-0"
-        className="rounded-none border-y-0 h-full"
-        keyboardType={allowDecimal ? 'decimal-pad' : 'number-pad'}
-      />
+      <View className="h-full items-center border-gray-300 border-x py-1">
+        <Input
+          value={value.toString()}
+          onChangeText={handleChange}
+          style={{width: Math.max(60, value.toString().length * 16 + 8)}}
+          inputClassName="text-center px-0 py-0"
+          className="rounded-none border-0 flex-1 "
+          keyboardType={allowDecimal ? 'decimal-pad' : 'number-pad'}
+          onBlur={() => {
+            if (allowDecimal) {
+              const v = parsePrecision(parseFloat(value));
+              handleChange(v.toString());
+            }
+          }}
+        />
+        {!!unit && <Text className="text-xs text-gray-400">{unit}</Text>}
+      </View>
 
       <TouchableOpacity
         className="flex-row items-center justify-center w-10  h-full"

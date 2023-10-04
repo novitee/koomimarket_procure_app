@@ -143,7 +143,7 @@ export default function CreateBusiness({
                   errors: {...errors, businessName: !text},
                 })
               }
-              placeholder="e.g. Ah Gao’s Cafe"
+              placeholder="e.g. John Doe Cafe"
               className={errors.businessName ? 'border-red-500' : ''}
             />
           </FormGroup>
