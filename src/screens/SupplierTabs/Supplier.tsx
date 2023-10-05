@@ -1,11 +1,13 @@
-import React, {useCallback, useLayoutEffect, useEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useEffect, useRef} from 'react';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ShippingIcon from 'assets/images/shipping.svg';
 import IllustrationIcon from 'assets/images/Illustration.svg';
 import {
+  Animated,
   FlatList,
+  GestureResponderEvent,
   StyleSheet,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -15,7 +17,7 @@ import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import SearchBar from 'components/SearchBar';
-import AddIcon from 'assets/images/plus.svg';
+import EditIcon from 'assets/images/edit.svg';
 
 import {LogBox} from 'react-native';
 import {setGlobal, useGlobalStore} from 'stores/global';
@@ -26,6 +28,8 @@ import useSearch from 'hooks/useSearch';
 import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -33,45 +37,94 @@ LogBox.ignoreLogs([
 function SupplierItem({
   item,
   onPress,
+  onPressEdit,
 }: {
   item?: any;
   onPress?: TouchableOpacityProps['onPress'];
+  onPressEdit?: TouchableOpacityProps['onPress'];
 }) {
   const {name, createdAt, lastMessage, channelMembers, lastOrderAt} =
     item || {};
   const supplierChannelMember = channelMembers.find(
     (channelMember: any) => channelMember.objectType === 'SUPPLIER',
   );
+
+  const swipeableRef = useRef<any>();
   const imageUrl = supplierChannelMember?.photo?.url;
   const {type, text} = lastMessage || {};
   const isPendingSetup =
     type === 'group_notification' && text === 'Pending Setup';
 
+  const handlePressEdit = useCallback(
+    (event: GestureResponderEvent) => {
+      onPressEdit?.(event);
+      if (swipeableRef.current) {
+        swipeableRef.current.close();
+      }
+    },
+    [onPressEdit, swipeableRef],
+  );
+
+  const renderRightActions = useCallback(
+    (progress: any) => {
+      const trans = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [64, 0],
+      });
+      return (
+        <View className="h-full  bg-primary">
+          <Animated.View
+            className={
+              'flex-1 w-[100px] items-center bg-primary justify-center h-full'
+            }
+            style={{transform: [{translateX: trans}]}}>
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-white items-center justify-center"
+              onPress={handlePressEdit}>
+              <EditIcon color={colors.primary.DEFAULT} />
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      );
+    },
+    [handlePressEdit],
+  );
+
+  const Wrapper = isPendingSetup ? View : Swipeable;
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={isPendingSetup}
-      className={clsx({
-        'flex-row items-center rounded-lg p-5': true,
-        'bg-slate-50': isPendingSetup,
-      })}>
-      <Avatar url={imageUrl} size={64} name={name} />
-      <View className="flex-1 justify-center ml-4">
-        <Text className="font-bold text-18">{name}</Text>
-        {!isPendingSetup && (
-          <Text className="font-light text-xs mt-2">
-            {lastOrderAt
-              ? `Last Ordered: ${dayjs(lastOrderAt).format('MM/DD/YYYY')}`
-              : `Added at ${dayjs(createdAt).format('MM/DD/YYYY')}`}
-          </Text>
-        )}
-        {isPendingSetup && (
-          <Text className="font-light  text-xs mt-2">
-            Pending Setup by Koomi Team
-          </Text>
-        )}
-      </View>
-    </TouchableOpacity>
+    <Wrapper
+      ref={swipeableRef}
+      renderRightActions={renderRightActions}
+      friction={2}
+      rightThreshold={40}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPress}
+        disabled={isPendingSetup}
+        className={clsx({
+          'flex-row items-center rounded-lg p-5': true,
+          'bg-slate-50': isPendingSetup,
+          'bg-white': !isPendingSetup,
+        })}>
+        <Avatar url={imageUrl} size={64} name={name} />
+        <View className="flex-1 justify-center ml-4">
+          <Text className="font-bold text-18">{name}</Text>
+          {!isPendingSetup && (
+            <Text className="font-light text-xs mt-2">
+              {lastOrderAt
+                ? `Last Ordered: ${dayjs(lastOrderAt).format('MM/DD/YYYY')}`
+                : `Added at ${dayjs(createdAt).format('MM/DD/YYYY')}`}
+            </Text>
+          )}
+          {isPendingSetup && (
+            <Text className="font-light  text-xs mt-2">
+              Pending Setup by Koomi Team
+            </Text>
+          )}
+        </View>
+      </TouchableOpacity>
+    </Wrapper>
   );
 }
 
@@ -170,6 +223,13 @@ export default function SupplierScreen({
     [navigation],
   );
 
+  const handleEditSupplier = useCallback(
+    (item: any) => {
+      navigation.navigate('SupplierDetail', {item});
+    },
+    [navigation],
+  );
+
   const EmptyComponent = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center px-5">
@@ -210,10 +270,11 @@ export default function SupplierScreen({
         <SupplierItem
           item={item}
           onPress={() => handleSelectSupplier({item})}
+          onPressEdit={() => handleEditSupplier(item)}
         />
       );
     },
-    [handleSelectSupplier],
+    [handleEditSupplier, handleSelectSupplier],
   );
 
   return (

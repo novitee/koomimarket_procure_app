@@ -46,7 +46,7 @@ function ProductItem({
         <Text className="font-bold">{item.name}</Text>
       </View>
       <TouchableOpacity className="p-2" onPress={onEdit}>
-        <EditIcon />
+        <EditIcon color={colors.dark} />
       </TouchableOpacity>
     </View>
   );

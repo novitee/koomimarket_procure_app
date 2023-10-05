@@ -1,6 +1,6 @@
 import {View} from 'react-native';
 import React from 'react';
-import LogoIcon from 'assets/images/logo.svg';
+import LogoIcon from 'assets/images/koomi-logo.svg';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -19,7 +19,7 @@ export default function WelcomeScreen({
   return (
     <Container>
       <View className="flex-1 justify-center items-center">
-        <LogoIcon />
+        <LogoIcon width={263} height={56} />
       </View>
       <View>
         <Button onPress={() => navigateTo('login')}>Login</Button>

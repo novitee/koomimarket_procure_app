@@ -124,7 +124,7 @@ export default function JoinMyTeamScreen({
                   errors: {...errors, businessName: !text},
                 })
               }
-              placeholder="e.g. Ah Gao’s Cafe"
+              placeholder="E.g. John Doe Cafe"
             />
           </FormGroup>
           <FormGroup>

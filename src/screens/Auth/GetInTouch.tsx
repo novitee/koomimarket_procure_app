@@ -118,7 +118,7 @@ export default function GetInTouchScreen({
             <Input
               value={name}
               onChangeText={text => onChangeText(text, 'name')}
-              placeholder="Tan Ah Gao"
+              placeholder="E.g. John Doe"
             />
           </FormGroup>
           <FormGroup>
@@ -126,7 +126,7 @@ export default function GetInTouchScreen({
             <Input
               value={companyName}
               onChangeText={text => onChangeText(text, 'companyName')}
-              placeholder="The company you work for"
+              placeholder="E.g. John Doe Cafe"
             />
           </FormGroup>
           <FormGroup>
@@ -134,7 +134,7 @@ export default function GetInTouchScreen({
             <Input
               value={position}
               onChangeText={text => onChangeText(text, 'position')}
-              placeholder="The company you work for"
+              placeholder="E.g. Sales Director"
             />
           </FormGroup>
           <FormGroup>
@@ -143,7 +143,7 @@ export default function GetInTouchScreen({
               value={email}
               inputMode="email"
               onChangeText={text => onChangeText(text, 'email')}
-              placeholder="tanahgao@business.com"
+              placeholder="johndoe@mail.com"
             />
           </FormGroup>
           <FormGroup>
