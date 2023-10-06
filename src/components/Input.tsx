@@ -20,6 +20,7 @@ export interface RNTextInputProps extends TextInputProps {
   inputClassName?: string;
   inputType?: 'text' | 'amount';
   decimalPlaces?: number;
+  error?: boolean;
 }
 
 export default function Input({
@@ -28,6 +29,7 @@ export default function Input({
   inputClassName,
   style,
   onChangeText,
+  error,
   ...props
 }: RNTextInputProps): JSX.Element {
   return (
@@ -35,6 +37,7 @@ export default function Input({
       style={style}
       className={clsx({
         'bg-gray-EEF3FD/50': props.editable === false,
+        'border-red-500': !!error,
       })}>
       {StartComponent && <StartComponent />}
       <StyledTextInput
