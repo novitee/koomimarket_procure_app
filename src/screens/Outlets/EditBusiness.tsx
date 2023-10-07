@@ -26,7 +26,7 @@ export default function EditBusinessScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
   const [editMode, setEditMode] = useState(false);
-  const {user} = useMe();
+  const {user, refresh} = useMe();
 
   const {currentCompany} = user || {};
   const [{loading}, updateBusinessProfile] = useMutation({
@@ -99,6 +99,7 @@ export default function EditBusinessScreen({
       Toast.show(error.message, Toast.LONG);
       return;
     }
+    refresh();
     setEditMode(false);
   }
   return (

@@ -27,7 +27,6 @@ export default function BusinessForm({
   editMode?: boolean;
   initialValues: any;
 }) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     companyName: initialValues.companyName,
@@ -40,13 +39,7 @@ export default function BusinessForm({
   const {handlePostalCodeChange} = usePostalCode();
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {...updatedValues, ...action};
+    return {...state, ...action};
   }
 
   const {
@@ -183,7 +176,12 @@ export default function BusinessForm({
               'mb-4': true,
               'border-red-500': errors.billingAddress,
             })}
-            editable={false}
+            onChangeText={text =>
+              onChangeFields({
+                billingAddress: text,
+                errors: {...errors, billingAddress: !text},
+              })
+            }
           />
           <Input
             value={unitNo}

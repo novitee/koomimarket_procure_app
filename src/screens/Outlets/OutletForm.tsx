@@ -248,7 +248,12 @@ export default function OutletForm({
               'mb-4': true,
               'border-red-500': errors.billingAddress,
             })}
-            editable={false}
+            onChangeText={text =>
+              onChangeFields({
+                billingAddress: text,
+                errors: {...errors, billingAddress: !text},
+              })
+            }
           />
           <Input
             value={unitNo}
@@ -282,7 +287,13 @@ export default function OutletForm({
               'mb-4': true,
               'border-red-500': errors.deliveryAddress,
             })}
-            editable={false}
+            editable={!sameAsBillingAddress}
+            onChangeText={text =>
+              onChangeFields({
+                deliveryAddress: text,
+                errors: {...errors, deliveryAddress: !text},
+              })
+            }
           />
           <Input
             value={deliveryUnitNo}

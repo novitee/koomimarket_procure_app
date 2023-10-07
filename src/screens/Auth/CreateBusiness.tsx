@@ -102,6 +102,7 @@ export default function CreateBusiness({
       ...errors,
       businessName: !businessName,
       postalCode: !postalCode,
+      billingAddress: !billingAddress,
     });
     if (!validFields) return;
 
@@ -162,8 +163,16 @@ export default function CreateBusiness({
             <Input
               value={billingAddress}
               placeholder="Billing Address"
-              className="mb-4"
-              editable={false}
+              className={clsx({
+                'mb-4': true,
+                'border-red-500': errors.billingAddress,
+              })}
+              onChangeText={(text: string) =>
+                onChangeFields({
+                  billingAddress: text,
+                  errors: {...errors, billingAddress: !text},
+                })
+              }
             />
             <Input
               value={unitNo}
