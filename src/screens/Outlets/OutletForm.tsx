@@ -35,11 +35,11 @@ export default function OutletForm({
     billingAddress: initialValues.billingAddress,
     unitNo: initialValues.unitNo,
     deliveryAddress: initialValues.deliveryAddress,
-    deliveryPostalCode: initialValues.deliveryPostal,
-    postalCode: initialValues.postal,
+    deliveryPostalCode: initialValues.postal,
     deliveryUnitNo: initialValues.deliveryUnitNo,
     sameAsBillingAddress: initialValues.isSameBillingAddress,
     photo: initialValues.photo,
+    billingPostalCode: initialValues.billingPostal,
   });
 
   const {handlePostalCodeChange} = usePostalCode();
@@ -56,7 +56,8 @@ export default function OutletForm({
 
   const {
     outletName,
-    postalCode,
+    // postalCode,
+    billingPostalCode,
     billingAddress,
     unitNo,
     deliveryAddress,
@@ -132,7 +133,7 @@ export default function OutletForm({
         ...changeFields,
         deliveryAddress: billingAddress,
         deliveryUnitNo: unitNo,
-        deliveryPostalCode: postalCode,
+        deliveryPostalCode: billingPostalCode,
       };
     }
     onChangeFields(changeFields);
@@ -159,7 +160,7 @@ export default function OutletForm({
     const validFields = validateInputs({
       ...values.errors,
       outletName: !outletName,
-      postalCode: !postalCode,
+      postalCode: !billingPostalCode,
       billingAddress: !billingAddress,
       deliveryPostalCode: !deliveryPostalCode,
       deliveryAddress: !deliveryAddress,
@@ -171,10 +172,9 @@ export default function OutletForm({
 
     const params = {
       name: outletName,
-      billingPostal: postalCode,
+      billingPostal: billingPostalCode,
       billingAddress: billingAddress,
       deliveryAddress: deliveryAddress,
-      deliveryPostal: deliveryPostalCode,
       postal: deliveryPostalCode,
       isSameBillingAddress: sameAsBillingAddress,
       unitNo: unitNo,
@@ -232,12 +232,12 @@ export default function OutletForm({
         <FormGroup>
           <Label required>Billing Address</Label>
           <Input
-            value={postalCode}
+            value={billingPostalCode}
             onChangeText={handleChangePostalCode}
             placeholder="Postal Code"
             className={clsx({
               'mb-4': true,
-              'border-red-500': errors.postalCode,
+              'border-red-500': errors.billingPostalCode,
             })}
             keyboardType="numeric"
           />
