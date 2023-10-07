@@ -2,28 +2,19 @@ import {View, ViewProps} from 'react-native';
 import React from 'react';
 import {styled} from 'nativewind';
 import Text from './Text';
-
+import {ORDER_STATUS} from 'utils/constaints';
 interface StatusBadgeProps extends ViewProps {
   status?: string;
 }
 
 const convertStatus = (status: string | undefined) => {
-  switch (status) {
-    case 'SUBMITTED':
-      return 'Sent';
-    case 'ACKNOWLEDGED':
-      return 'Confirmed';
-    case 'PACKED':
-      return 'Packed';
-    case 'COMPLETED':
-      return 'Delivered';
-    case 'CANCELED':
-      return 'Cancelled';
-    case 'RESOLVING':
-      return 'Resolving';
-    default:
-      return status;
-  }
+  let result = Object.keys(ORDER_STATUS).find(key => {
+    if (ORDER_STATUS[key] === status) {
+      return key;
+    }
+  });
+  if (!result) return '';
+  return result.charAt(0).toUpperCase() + result.slice(1).toLowerCase();
 };
 const StyledView = styled(
   View,

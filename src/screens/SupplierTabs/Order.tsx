@@ -25,6 +25,7 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
+import {ORDER_STATUS} from 'utils/constaints';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -43,6 +44,26 @@ function renderProductName(lineItems: any[]) {
   }
 }
 
+const convertFilter = (params: any) => {
+  const {listFilteredBy, filteredBy} = params || {};
+  let filter = {};
+  if (filteredBy !== 'ALL') {
+    filter = {
+      ...filter,
+      status: filteredBy,
+    };
+  }
+  if (listFilteredBy !== 'ALL_ORDERS') {
+    let now = dayjs();
+    filter = {
+      ...filter,
+      deliveryDate_gte: now.startOf('day').valueOf(),
+      deliveryDate_lte: now.endOf('day').valueOf(),
+    };
+  }
+  return filter;
+};
+
 function OrderItem({
   item,
   onPress,
@@ -50,7 +71,7 @@ function OrderItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {supplier, status, lineItems, deliveredAt} = item;
+  const {supplier, status, lineItems, deliveryDate} = item;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -60,7 +81,7 @@ function OrderItem({
         <View className="flex-1 justify-center ml-4 mr-2">
           <Text className="font-bold text-16 w-3/4">{supplier.name}</Text>
           <Text className="text-14 text-gray-400">{`Delivered by ${dayjs(
-            deliveredAt,
+            deliveryDate,
           ).format('MM/DD/YYYY (ddd)')}`}</Text>
         </View>
         <StatusBadge status={status} />
@@ -74,7 +95,7 @@ function OrderItem({
           color={colors.primary.DEFAULT}
         />
       </View>
-      {deliveredAt && status === 'COMPLETED' && (
+      {deliveryDate && status === 'COMPLETED' && (
         <View className="flex-row w-full items-center mt-3">
           <Text className="text-14 text-red-500 flex-shrink-0 truncate mr-4">
             Order Received
@@ -86,22 +107,23 @@ function OrderItem({
   );
 }
 
-function useQueryOrders(searchString: string) {
+function useQueryOrders(searchString: string, filter: any) {
   const url = 'orders';
   const params = {
     first: 100,
     skip: 0,
-    fields: 'id,orderNo,orderedAt,lineItems,status,deliveredAt,total',
+    fields: 'id,orderNo,orderedAt,lineItems,status,deliveryDate,total',
     include: 'supplier(name,photo)',
     searchString,
     orderBy: {
       orderedAt: 'desc',
     },
+    filter,
   };
   return useQuery([url, params]);
 }
 
-const orderFilters = [
+const deliveryFilters = [
   {
     label: 'All Orders',
     value: 'ALL_ORDERS',
@@ -119,48 +141,49 @@ const orderStatuses = [
   },
   {
     label: 'Sent',
-    value: 'SENT',
+    value: ORDER_STATUS['sent'],
   },
   {
     label: 'Confirmed',
-    value: 'CONFIRMED',
+    value: ORDER_STATUS['confirmed'],
+  },
+  {
+    label: 'Packed',
+    value: ORDER_STATUS['packed'],
+  },
+  {
+    label: 'Completed',
+    value: ORDER_STATUS['delivered'],
   },
   {
     label: 'Cancelled',
-    value: 'CANCELLED',
+    value: ORDER_STATUS['cancelled'],
   },
   {
     label: 'Issue',
-    value: 'ISSUE',
+    value: ORDER_STATUS['resolving'],
   },
 ];
+
 export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
   const {searchString, handleSearch} = useSearch();
-  const {data, isLoading, mutate} = useQueryOrders(searchString);
-  const {records} = data || {};
+
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
   const isFocused = useIsFocused();
 
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
     listFilteredBy: 'ALL_ORDERS',
     filteredBy: 'ALL',
   });
 
   const {listFilteredBy, filteredBy} = values;
-
+  const {data, isLoading, mutate} = useQueryOrders(
+    searchString,
+    convertFilter(values),
+  );
+  const {records} = data || {};
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   useFocusEffect(
@@ -218,22 +241,23 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
     [handlePressItem],
   );
 
+  const handleChangeListFilter = (value: string) => {
+    dispatch({listFilteredBy: value, filteredBy: 'ALL'});
+  };
+
   return (
     <Container>
       <SearchBar onSearch={handleSearch} />
       <View className="flex-row pt-4">
-        {orderFilters.map(item => (
-          <View className="flex-1 items-center">
+        {deliveryFilters.map(item => (
+          <View className="flex-1 items-center" key={item.value}>
             <TouchableOpacity
-              onPress={() =>
-                dispatch({render: true, listFilteredBy: item.value})
-              }
+              onPress={() => handleChangeListFilter(item.value)}
               className={clsx({
                 'py-1 border-b-2': true,
                 'border-primary': listFilteredBy === item.value,
                 'border-transparent': listFilteredBy !== item.value,
-              })}
-              key={item.value}>
+              })}>
               <Text
                 className={clsx({
                   'font-semibold': true,
@@ -246,17 +270,20 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
           </View>
         ))}
       </View>
-      <View>
+      <View
+        className={clsx({
+          hidden: listFilteredBy === 'TODAY_RECEIVING',
+        })}>
         <ScrollView horizontal className="py-3">
           {orderStatuses.map(item => (
             <TouchableOpacity
-              onPress={() => dispatch({render: true, filteredBy: item.value})}
+              key={item.value}
+              onPress={() => dispatch({filteredBy: item.value})}
               className={clsx({
                 'py-2 px-3 border mr-2 rounded-lg': true,
                 'border-primary': filteredBy === item.value,
                 'border-gray-9CA3AF': filteredBy !== item.value,
-              })}
-              key={item.value}>
+              })}>
               <Text
                 className={clsx({
                   'font-semibold': true,
