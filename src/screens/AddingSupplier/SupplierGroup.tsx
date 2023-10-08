@@ -54,15 +54,8 @@ function SupplierItem({
   );
 }
 
-export default function SupplierGroupScreen({
-  navigation,
-  route,
-}: NativeStackScreenProps<any>) {
-  const {group} = route.params || {};
-  const {slug} = group || {};
-  const {searchString, handleSearch} = useSearch();
-
-  const {data, mutate} = useQuery([
+export function useQuerySupplier(searchString: String, extraOpts = {}) {
+  return useQuery([
     'suppliers',
     {
       first: 100,
@@ -72,17 +65,12 @@ export default function SupplierGroupScreen({
       include: 'photo(id,url,width,height,signedKey,filename,contentType)',
       orderBy: {createdAt: 'desc'},
       filter: {status: 'ACTIVE'},
-      categoryFilter: {slug: slug},
+      ...extraOpts,
     },
   ]);
-  const {records} = data || {};
+}
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: group.name.toUpperCase(),
-    });
-  }, [group, navigation]);
-
+export function SupplierFlatList({records, handleSelectSupplier}: any) {
   const EmptyComponent = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center">
@@ -92,13 +80,6 @@ export default function SupplierGroupScreen({
       </View>
     );
   }, []);
-
-  const handleSelectSupplier = useCallback(
-    ({item}: {item?: any}) => {
-      navigation.navigate('SupplierProfile', {slug: item.slug});
-    },
-    [navigation],
-  );
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
@@ -113,8 +94,7 @@ export default function SupplierGroupScreen({
   );
 
   return (
-    <Container className="pt-0">
-      <SearchBar onSearch={handleSearch} />
+    <>
       <FlatList
         className="flex-1"
         keyExtractor={_keyExtractor}
@@ -122,6 +102,44 @@ export default function SupplierGroupScreen({
         data={records || []}
         extraData={records}
         ListEmptyComponent={EmptyComponent}
+      />
+    </>
+  );
+}
+
+export default function SupplierGroupScreen({
+  navigation,
+  route,
+}: NativeStackScreenProps<any>) {
+  const {category} = route.params || {};
+  const {slug} = category || {};
+  const {searchString, handleSearch} = useSearch();
+
+  const {data, mutate} = useQuerySupplier(searchString, {
+    categoryFilter: {slug: slug},
+  });
+
+  const {records} = data || {};
+
+  const handleSelectSupplier = useCallback(
+    ({item}: {item?: any}) => {
+      navigation.navigate('SupplierProfile', {slug: item.slug});
+    },
+    [navigation],
+  );
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: category.name.toUpperCase(),
+    });
+  }, [category, navigation]);
+
+  return (
+    <Container className="pt-0">
+      <SearchBar onSearch={handleSearch} />
+      <SupplierFlatList
+        records={records}
+        handleSelectSupplier={handleSelectSupplier}
       />
     </Container>
   );

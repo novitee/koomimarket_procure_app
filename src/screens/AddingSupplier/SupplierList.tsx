@@ -4,7 +4,6 @@ import SearchBar from 'components/SearchBar';
 import useQuery from 'libs/swr/useQuery';
 import useSearch from 'hooks/useSearch';
 import dummy from 'assets/images/dummy.png';
-// const dummy = 'assets/images/dummy.png';
 import {
   FlatList,
   ImageBackground,
@@ -13,14 +12,17 @@ import {
   View,
 } from 'react-native';
 import Text from 'components/Text';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  NativeStackScreenProps,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
 import Loading from 'components/Loading';
-
+import {SupplierFlatList, useQuerySupplier} from './SupplierGroup';
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
 }
 
-function SupplierItem({
+function CategoryItem({
   item,
   onPress,
 }: {
@@ -44,8 +46,8 @@ function SupplierItem({
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
+  const {searchString, handleSearch} = useSearch();
   const url = 'app/categories';
-
   const {data, isLoading} = useQuery([
     url,
     {
@@ -67,9 +69,9 @@ export default function SupplierListScreen({
     );
   }, []);
 
-  const handleSelectSupplier = useCallback(
+  const handleSelectCategory = useCallback(
     ({item}: {item?: any}) => {
-      navigation.navigate('SupplierGroup', {group: item});
+      navigation.navigate('SupplierGroup', {category: item});
     },
     [navigation],
   );
@@ -77,28 +79,56 @@ export default function SupplierListScreen({
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       return (
-        <SupplierItem
+        <CategoryItem
           item={item}
-          onPress={() => handleSelectSupplier({item})}
+          onPress={() => handleSelectCategory({item})}
         />
       );
     },
-    [handleSelectSupplier],
+    [handleSelectCategory],
   );
 
   return (
     <Container className="pt-0">
-      {/* <SearchBar onSearch={handleSearch} /> */}
-
-      <FlatList
-        className="flex-1"
-        keyExtractor={_keyExtractor}
-        renderItem={_renderItem}
-        data={records || []}
-        extraData={records}
-        ListEmptyComponent={isLoading ? null : EmptyComponent}
-      />
+      <SearchBar onSearch={handleSearch} />
+      {searchString ? (
+        <SupplierGroup searchString={searchString} navigation={navigation} />
+      ) : (
+        <FlatList
+          className="flex-1"
+          keyExtractor={_keyExtractor}
+          renderItem={_renderItem}
+          data={records || []}
+          extraData={records}
+          ListEmptyComponent={isLoading ? null : EmptyComponent}
+        />
+      )}
       {isLoading && <Loading />}
     </Container>
+  );
+}
+
+function SupplierGroup({
+  searchString,
+  navigation,
+}: {
+  searchString: string;
+  navigation: NativeStackNavigationProp<any>;
+}) {
+  const {data, mutate} = useQuerySupplier(searchString);
+  const {records} = data || [];
+  const handleSelectSupplier = useCallback(
+    ({item}: {item?: any}) => {
+      navigation.navigate('SupplierProfile', {
+        slug: item.slug,
+      });
+    },
+    [navigation],
+  );
+  return (
+    <SupplierFlatList
+      records={records}
+      handleSelectSupplier={handleSelectSupplier}
+    />
   );
 }
