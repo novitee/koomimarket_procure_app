@@ -35,18 +35,11 @@ export default function EditBusinessScreen({
   });
   const {data: outletsData, mutate: refreshOutlets} = useQuery('me/outlets');
   const {records: outlets} = outletsData || {};
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {});
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     return {
-      ...updatedValues,
+      ...state,
       ...action,
     };
   }
@@ -70,6 +63,8 @@ export default function EditBusinessScreen({
         billingAddress: currentCompany?.billingAddress,
         unitNo: currentCompany?.unitNo,
         photo: currentCompany?.photo,
+        mobileTelCode: currentCompany?.mobileTelCode,
+        mobileTelNumber: currentCompany?.mobileTelNumber,
       });
     }
   }, [currentCompany]);

@@ -11,7 +11,7 @@ import ImageUpload from 'components/ImageUpload';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
 import Avatar from 'components/Avatar';
-
+import PhonePicker from 'components/ui/PhonePicker';
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
@@ -34,6 +34,8 @@ export default function BusinessForm({
     billingPostal: initialValues.postalCode,
     unitNo: initialValues.unitNo,
     photo: initialValues.photo,
+    mobileTelCode: initialValues.mobileTelCode,
+    mobileTelNumber: initialValues.mobileTelNumber,
   });
 
   const {handlePostalCodeChange} = usePostalCode();
@@ -48,11 +50,13 @@ export default function BusinessForm({
     billingAddress,
     unitNo,
     photo,
+    mobileTelCode,
+    mobileTelNumber,
     errors = {},
   } = values;
 
   function onChangeFields(fields: {[key: string]: string | boolean | object}) {
-    dispatch({...fields, render: true});
+    dispatch({...fields});
   }
 
   function handleChangeUnitNo(text: string) {
@@ -97,6 +101,8 @@ export default function BusinessForm({
       companyName: !companyName,
       billingPostal: !billingPostal,
       billingAddress: !billingAddress,
+      mobileTelNumber: !mobileTelNumber,
+      mobileTelCode: !mobileTelCode,
     });
 
     if (!validFields) {
@@ -108,8 +114,8 @@ export default function BusinessForm({
       billingAddress: billingAddress,
       unitNo: unitNo,
       photo: photo,
-      mobileCode: 'none',
-      mobileNumber: 'none',
+      mobileTelCode: mobileTelCode,
+      mobileTelNumber: mobileTelNumber,
     };
 
     onSave?.(params);
@@ -141,6 +147,7 @@ export default function BusinessForm({
             editable={editMode}
           />
         </View>
+
         <FormGroup>
           <Label required>Business Name</Label>
           <Input
@@ -155,6 +162,22 @@ export default function BusinessForm({
               'border-red-500': errors.companyName,
             })}
             placeholder="E.g. John Doe Cafe"
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label required>Business Phone Number</Label>
+          <PhonePicker
+            containerClassName="rounded-md"
+            code={mobileTelCode}
+            number={mobileTelNumber}
+            onChange={(code: string, number: string) =>
+              onChangeFields({
+                mobileTelNumber: number,
+                mobileTelCode: code,
+                errors: {...errors, mobileTelNumber: !number},
+              })
+            }
+            showError={errors.mobileTelNumber || errors.mobileTelCode}
           />
         </FormGroup>
         <FormGroup>

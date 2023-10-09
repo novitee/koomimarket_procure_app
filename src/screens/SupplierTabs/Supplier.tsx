@@ -43,14 +43,9 @@ function SupplierItem({
   onPress?: TouchableOpacityProps['onPress'];
   onPressEdit?: TouchableOpacityProps['onPress'];
 }) {
-  const {name, createdAt, lastMessage, channelMembers, lastOrderAt} =
-    item || {};
-  const supplierChannelMember = channelMembers.find(
-    (channelMember: any) => channelMember.objectType === 'SUPPLIER',
-  );
-
+  const {name, createdAt, lastMessage, supplier, lastOrderAt} = item || {};
   const swipeableRef = useRef<any>();
-  const imageUrl = supplierChannelMember?.photo?.url;
+  const imageUrl = supplier?.photo?.url;
   const {type, text} = lastMessage || {};
   const isPendingSetup =
     type === 'group_notification' && text === 'Pending Setup';
@@ -168,7 +163,6 @@ export default function SupplierScreen({
         status_nin: ['INACTIVE'],
       },
       searchString: searchString,
-      include: 'channelMembers(id,objectType,objectId,userId,user,photo)',
     },
   ]);
 
@@ -225,7 +219,7 @@ export default function SupplierScreen({
 
   const handleEditSupplier = useCallback(
     (item: any) => {
-      navigation.navigate('SupplierDetail', {item});
+      navigation.navigate('SupplierDetail', {channelId: item.id});
     },
     [navigation],
   );

@@ -166,12 +166,14 @@ export default function EditProfileScreen({
               placeholder="Email"
               onChangeText={text => dispatch({email: text, render: true})}
             />
-            <PhonePicker
-              code={mobileCode}
-              number={mobileNumber}
-              onChange={() => {}}
-              editable={false}
-            />
+            <View className="mx-4 my-2 ">
+              <PhonePicker
+                code={mobileCode}
+                number={mobileNumber}
+                onChange={() => {}}
+                editable={false}
+              />
+            </View>
           </View>
         </ScrollView>
 

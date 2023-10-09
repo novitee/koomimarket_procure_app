@@ -28,6 +28,7 @@ export default function AddOutletScreen({
     if (success) {
       navigation.goBack();
     } else {
+      console.log('response :>> ', response);
       Toast.show(message || errors?.name, Toast.LONG);
     }
   }

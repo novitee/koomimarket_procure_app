@@ -3,32 +3,59 @@ import React, {useLayoutEffect} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Container from 'components/Container';
 import Avatar from 'components/Avatar';
+import useQuery from 'libs/swr/useQuery';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 export default function SupplierDetailScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const {item: supplier} = route.params || {};
-
-  const {name, customerOutletName, channelMembers} = supplier || {};
-  const supplierChannelMember = channelMembers.find(
-    (channelMember: any) => channelMember.objectType === 'SUPPLIER',
-  );
-
-  const imageUrl = supplierChannelMember?.photo?.url;
-  const {email, fullName, mobileNumber, mobileCode} =
-    supplierChannelMember?.user || {};
-
-  const phone = `+${[mobileCode, mobileNumber].join(' ')}`;
+  const {channelId} = route.params || {};
+  const {data, mutate} = useQuery([
+    channelId ? `channels/${channelId}` : undefined,
+    {
+      include:
+        'supplier(id,photo,name,code,billingAddress,postal,mobileCode,mobileNumber,email,unitNo,manualSupplierId,mobileTelCode,mobileTelNumber)',
+    },
+  ]);
+  const {channel} = data || {};
+  const {
+    linkedAccountNumber,
+    isCustomerPurchased,
+    orderMobileCode,
+    orderMobileNumber,
+    orderNameRepresentative,
+    orderCreationMethod,
+    emails,
+    supplier,
+  } = channel || {};
+  const {
+    email: supplierEmail,
+    name: supplierName,
+    mobileTelCode: supplierMobileCode,
+    mobileTelNumber: supplierMobileNumber,
+    manualSupplierId,
+  } = supplier || {};
+  console.log('supplier :>> ', supplier);
+  const imageUrl = supplier?.photo?.url;
 
   function handleEdit() {
     navigation.navigate('EditSupplierDetail', {
-      supplier: supplier,
+      channel: channel,
     });
   }
 
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        mutate();
+      }
+    }, [isFocused]),
+  );
+
   useLayoutEffect(() => {
-    if (supplier) {
+    if (channel) {
       navigation.setOptions({
         // eslint-disable-next-line react/no-unstable-nested-components
         headerRight: () => (
@@ -39,26 +66,46 @@ export default function SupplierDetailScreen({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supplier, navigation]);
+  }, [channel, navigation]);
 
   return (
     <Container>
       <View className="items-center mb-10">
-        <Avatar url={imageUrl} size={168} name={name} />
+        <Avatar url={imageUrl} size={168} name={supplierName} />
       </View>
-      <Text className="text-lg font-semibold">{name}</Text>
-      <Text className="mt-2">{customerOutletName}</Text>
-      <Text className="mt-2">{email}</Text>
-      <Text className="mt-2">{phone}</Text>
-      <Text className="text-lg font-semibold mt-5">{`Currently a customer of ${name}`}</Text>
-      <Text className="mt-2">???</Text>
-      <Text className="text-lg font-semibold mt-5">
-        How do you create your orders?
+      <Text className="text-lg font-semibold">{supplierName}</Text>
+      {[
+        supplierEmail,
+        supplierMobileCode && supplierMobileNumber
+          ? `+${supplierMobileCode} ${supplierMobileNumber}`
+          : null,
+      ]
+        .filter(Boolean)
+        .map((item, index) => (
+          <Text className="mt-2" key={index}>
+            {item}
+          </Text>
+        ))}
+      <Text className="text-lg font-semibold mt-5">{`Currently a customer of ${supplierName}`}</Text>
+      <Text className="mt-2">
+        {isCustomerPurchased ? `YES - ${linkedAccountNumber}` : 'NO'}
       </Text>
-      <Text className="mt-2">{`Name of Representative: ${fullName} ???`}</Text>
-
-      <Text className="mt-2">{`Phone: ${phone} ???`}</Text>
-      <Text className="mt-2">{`Email: ${email} ???`}</Text>
+      {manualSupplierId && (
+        <>
+          <Text className="text-lg font-semibold mt-5">
+            How do you create your orders?
+          </Text>
+          <Text className="mt-2">{`Name of Representative: ${orderNameRepresentative}`}</Text>
+          {orderCreationMethod === 'WHATSAPP' ||
+            (orderCreationMethod === 'BOTH' && (
+              <Text className="mt-2">{`Phone: +${orderMobileCode} ${orderMobileNumber}`}</Text>
+            ))}
+          {orderCreationMethod === 'EMAIL' ||
+            (orderCreationMethod === 'BOTH' && (
+              <Text className="mt-2">{`Email: ${emails?.join(', ')}`}</Text>
+            ))}
+        </>
+      )}
     </Container>
   );
 }

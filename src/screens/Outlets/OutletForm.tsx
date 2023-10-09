@@ -12,6 +12,7 @@ import ImageUpload from 'components/ImageUpload';
 import usePostalCode from 'hooks/usePostalCode';
 import clsx from 'libs/clsx';
 import Avatar from 'components/Avatar';
+import PhonePicker from 'components/ui/PhonePicker';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -28,7 +29,6 @@ export default function OutletForm({
   editMode?: boolean;
   initialValues: any;
 }) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     outletName: initialValues.name,
@@ -40,23 +40,18 @@ export default function OutletForm({
     sameAsBillingAddress: initialValues.isSameBillingAddress,
     photo: initialValues.photo,
     billingPostalCode: initialValues.billingPostal,
+    mobileCode: initialValues.mobileCode,
+    mobileNumber: initialValues.mobileNumber,
   });
 
   const {handlePostalCodeChange} = usePostalCode();
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {...updatedValues, ...action};
+    return {...state, ...action};
   }
 
   const {
     outletName,
-    // postalCode,
     billingPostalCode,
     billingAddress,
     unitNo,
@@ -64,6 +59,8 @@ export default function OutletForm({
     deliveryPostalCode,
     deliveryUnitNo,
     sameAsBillingAddress,
+    mobileCode,
+    mobileNumber,
     photo,
     errors = {},
   } = values;
@@ -86,11 +83,11 @@ export default function OutletForm({
   async function handleChangePostalCode(text: string) {
     const address = await handlePostalCodeChange(text);
     let changeFields = {
-      postalCode: text,
+      billingPostalCode: text,
       billingAddress: address,
       errors: {
         ...errors,
-        postalCode: !text,
+        billingPostalCode: !text,
         billingAddress: !address,
       },
     } as any;
@@ -164,6 +161,8 @@ export default function OutletForm({
       billingAddress: !billingAddress,
       deliveryPostalCode: !deliveryPostalCode,
       deliveryAddress: !deliveryAddress,
+      mobileCode: !mobileCode,
+      mobileNumber: !mobileNumber,
     });
 
     if (!validFields) {
@@ -175,13 +174,14 @@ export default function OutletForm({
       billingPostal: billingPostalCode,
       billingAddress: billingAddress,
       deliveryAddress: deliveryAddress,
+      deliveryPostal: deliveryPostalCode,
       postal: deliveryPostalCode,
       isSameBillingAddress: sameAsBillingAddress,
       unitNo: unitNo,
       deliveryUnitNo: deliveryUnitNo,
       photo: photo,
-      mobileCode: 'none',
-      mobileNumber: 'none',
+      mobileCode: mobileCode,
+      mobileNumber: mobileNumber,
     };
 
     onSave?.(params);
@@ -227,6 +227,22 @@ export default function OutletForm({
               'border-red-500': errors.outletName,
             })}
             placeholder="E.g. John Doe Cafe"
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label required>Outlet Phone Number</Label>
+          <PhonePicker
+            containerClassName="rounded-md"
+            code={mobileCode}
+            number={mobileNumber}
+            onChange={(code: string, number: string) =>
+              onChangeFields({
+                mobileNumber: number,
+                mobileCode: code,
+                errors: {...errors, mobileNumber: !number},
+              })
+            }
+            showError={errors.mobileNumber || errors.mobileCode}
           />
         </FormGroup>
         <FormGroup>

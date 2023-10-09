@@ -24,6 +24,7 @@ export default function PhonePicker({
   onChange,
   showError = true,
   editable = true,
+  containerClassName = '',
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [search, setSearch] = useState('');
@@ -120,12 +121,13 @@ export default function PhonePicker({
     <>
       <View
         style={StyleSheet.flatten([
-          styles.container,
           {borderColor: !!isError ? '#D80D1D' : '#ddd'},
         ])}
         className={clsx({
-          'mx-4 my-2 rounded-lg border-gray-300 bg-gray-EEF3FD/50':
-            editable == false,
+          'flex-row justify-start items-center px-2.5 border': true,
+          'rounded-lg border-gray-300 bg-gray-EEF3FD/50': editable == false,
+          'rounded-xl': !containerClassName,
+          [containerClassName]: !!containerClassName,
         })}>
         <TouchableOpacity
           disabled={!editable}
@@ -213,14 +215,6 @@ export default function PhonePicker({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-  },
   dropdownButton: {
     flexDirection: 'row',
     alignItems: 'center',

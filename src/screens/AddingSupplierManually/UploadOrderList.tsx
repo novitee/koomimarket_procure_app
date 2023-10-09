@@ -5,7 +5,8 @@ import Button from 'components/Button';
 import clsx from 'libs/clsx';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import ProgressBar from 'components/ProgressBar';
-
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 const options = [
   {
     title: 'Send a photo',
@@ -32,6 +33,20 @@ export default function UploadOrderList({
       supplierId: supplier?.id,
     });
   }
+
+  const [{loading}, newManualOrder] = useMutation({
+    url: `suppliers/${supplier?.id}/add-manual-order`,
+  });
+
+  async function sendLater() {
+    const {success, error} = await newManualOrder({});
+    if (!success) {
+      Toast.show(error?.message);
+      return false;
+    }
+    navigation.navigate('CompleteAdding');
+  }
+
   return (
     <>
       <ProgressBar total={5} step={4} tag="AddSupplierManually" />
@@ -54,8 +69,7 @@ export default function UploadOrderList({
               <Text className="text-center mt-2">{option.description}</Text>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CompleteAdding')}>
+          <TouchableOpacity onPress={sendLater}>
             <Text className="text-center text-primary text-lg">
               I will do it later
             </Text>

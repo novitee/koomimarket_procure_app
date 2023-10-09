@@ -13,6 +13,8 @@ import Button from 'components/Button';
 import FormGroup from 'components/Form/FormGroup';
 import TrashIcon from 'assets/images/trash.svg';
 import AddIcon from 'assets/images/plus-circle.svg';
+import useMutation from 'libs/swr/useMutation';
+import Toast from 'react-native-simple-toast';
 
 const options = [
   {
@@ -47,52 +49,45 @@ export default function EditSupplierDetailScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const {supplier} = route.params || {};
-  const {channelMembers} = supplier || {};
-
-  const supplierChannelMember = channelMembers.find(
-    (channelMember: any) => channelMember.objectType === 'SUPPLIER',
-  );
-
-  const {user} = supplierChannelMember || {};
-
-  const isAddedFromNonExisting = true;
-
+  const {channel} = route.params || {};
+  const {supplier} = channel;
+  const {manualSupplierId} = supplier;
+  const [{loading}, updateSupplier] = useMutation({
+    url: `channels/${channel?.id}/supplier`,
+  });
   const [values, dispatch] = useReducer(reducer, {
-    name: supplier.name,
-    supplierEmail: user?.email,
-    mobileNumber: user?.mobileNumber,
-    mobileCode: user?.mobileCode,
-    isCustomerPurchased: false,
-    customerAccountNumber: '',
-    orderCreationMethod: null,
-    userMobileCode: '',
-    userMobileNumber: '',
+    supplierName: supplier.name,
+    supplierEmail: supplier?.email,
+    supplierMobileCode: supplier?.mobileTelCode,
+    photo: supplier?.photo,
+    supplierMobileNumber: supplier?.mobileTelNumber,
+    isCustomerPurchased: channel?.isCustomerPurchased,
+    linkedAccountNumber: channel?.linkedAccountNumber,
+    orderCreationMethod: channel?.orderCreationMethod,
+    orderMobileCode: channel?.orderMobileCode,
+    orderMobileNumber: channel?.orderMobileNumber,
+    orderNameRepresentative: channel?.orderNameRepresentative,
     keyItem: new Date().getTime(),
-    emails: [''],
+    emails: channel?.emails || [''],
     errors: {},
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   const {
-    name,
+    supplierName,
     supplierEmail,
-    mobileCode,
-    mobileNumber,
+    supplierMobileNumber,
+    supplierMobileCode,
     photo,
     isCustomerPurchased,
-    customerAccountNumber,
+    linkedAccountNumber,
     orderCreationMethod,
-    userMobileCode,
-    userMobileNumber,
+    orderMobileCode,
+    orderMobileNumber,
+    orderNameRepresentative,
     errors,
     emails,
   } = values;
@@ -130,20 +125,42 @@ export default function EditSupplierDetailScreen({
 
   function handleChangePhone(codeValue: string, numberValue: string) {
     dispatch({
-      userMobileCode: codeValue,
-      userMobileNumber: numberValue,
+      orderMobileCode: codeValue,
+      orderMobileNumber: numberValue,
     });
   }
 
-  const isDisabled =
-    !orderCreationMethod ||
-    !name ||
-    (orderCreationMethod === WHATSAPP && !userMobileNumber) ||
-    (orderCreationMethod === EMAIL && !emails[0]) ||
-    (orderCreationMethod === BOTH && (!userMobileNumber || !emails[0]));
+  // const isDisabled =
+  //   !orderCreationMethod ||
+  //   !supplierName ||
+  //   (orderCreationMethod === WHATSAPP && !orderMobileNumber) ||
+  //   (orderCreationMethod === EMAIL && !emails[0]) ||
+  //   (orderCreationMethod === BOTH && (!orderMobileNumber || !emails[0]));
 
   async function handleSave() {
-    console.log(`values :>>`, values);
+    const response = await updateSupplier({
+      supplierInfo: {
+        supplierEmail,
+        supplierMobileCode,
+        supplierMobileNumber,
+        orderCreationMethod,
+        orderMobileCode,
+        orderMobileNumber,
+        emails,
+        supplierName,
+        isCustomerPurchased,
+        linkedAccountNumber,
+        orderNameRepresentative,
+      },
+    });
+
+    const {success, error} = response;
+    console.log('response :>> ', response);
+    if (success) {
+      navigation.goBack();
+    } else {
+      Toast.show(error?.message, Toast.LONG);
+    }
   }
 
   return (
@@ -165,15 +182,16 @@ export default function EditSupplierDetailScreen({
                 )
               }
               onChange={handleChangePhoto}
+              editable={!!manualSupplierId}
             />
           </View>
 
           <Input
-            editable={isAddedFromNonExisting}
-            defaultValue={name}
+            editable={!!manualSupplierId}
+            defaultValue={supplierName}
             onChangeText={text =>
               onChangeFields({
-                name: text,
+                supplierName: text,
                 errors: {...errors, name: !text},
               })
             }
@@ -182,32 +200,35 @@ export default function EditSupplierDetailScreen({
             className="mb-5"
           />
           <Input
-            editable={isAddedFromNonExisting}
+            editable={!!manualSupplierId}
             defaultValue={supplierEmail}
             onChangeText={text =>
               onChangeFields({
-                email: text,
-                errors: {...errors, email: !text},
+                supplierEmail: text,
+                errors: {...errors, supplierEmail: !text},
               })
             }
-            error={errors.email}
+            error={errors.supplierEmail}
             placeholder="Email"
             className="mb-5"
           />
           <PhonePicker
-            editable={isAddedFromNonExisting}
-            code={mobileCode}
-            number={mobileNumber}
+            editable={!!manualSupplierId}
+            code={supplierMobileCode}
+            number={supplierMobileNumber}
             onChange={(code: string, number: string) =>
               onChangeFields({
-                mobileCode: code,
-                mobileNumber: number,
-                errors: {...errors, mobileNumber: !number},
+                supplierMobileNumber: number,
+                supplierMobileCode: code,
+                errors: {...errors, supplierMobileNumber: !number},
               })
             }
           />
           <FormGroup className="mt-10">
-            <Label>Are you currently a customer with {supplier?.name}?</Label>
+            <Label>
+              Are you currently a customer with{' '}
+              <Text className="text-red-500">{supplier?.name}</Text>?
+            </Label>
             <View className="flex-row gap-x-4 ">
               {options.map(option => (
                 <Button
@@ -222,98 +243,118 @@ export default function EditSupplierDetailScreen({
               ))}
             </View>
           </FormGroup>
-
-          <FormGroup className="mt-5">
-            <Label>Your Customer Account Number (Optional) *</Label>
-            <Input
-              defaultValue={customerAccountNumber}
-              onChangeText={text =>
-                onChangeFields({
-                  customerAccountNumber: text,
-                  errors: {...errors, customerAccountNumber: !text},
-                })
-              }
-              error={errors.customerAccountNumber}
-            />
-          </FormGroup>
-
-          <FormGroup className="mt-5">
-            <Label>How do you create your orders?</Label>
-            <View className="flex-row gap-x-4">
-              {contactOptions.map(option => (
-                <Button
-                  key={option.label}
-                  className="flex-1 px-0"
-                  variant={
-                    option.id === orderCreationMethod ? 'primary' : 'secondary'
-                  }
-                  onPress={() => dispatch({orderCreationMethod: option.id})}>
-                  {option.label}
-                </Button>
-              ))}
-            </View>
-          </FormGroup>
-
-          {!!orderCreationMethod && (
+          {!!isCustomerPurchased && (
             <FormGroup className="mt-5">
-              <Label>Name of Representative</Label>
-              <Input onChangeText={text => dispatch({name: text})} />
-            </FormGroup>
-          )}
-          {[WHATSAPP, BOTH].includes(orderCreationMethod) && (
-            <FormGroup className="mt-5">
-              <Label>Enter phone number</Label>
-              <PhonePicker
-                code={userMobileCode}
-                number={userMobileNumber}
-                onChange={handleChangePhone}
+              <Label>Your Customer Account Number (Optional) *</Label>
+              <Input
+                defaultValue={linkedAccountNumber}
+                onChangeText={text =>
+                  onChangeFields({
+                    linkedAccountNumber: text,
+                    errors: {...errors, linkedAccountNumber: !text},
+                  })
+                }
+                error={errors.linkedAccountNumber}
               />
             </FormGroup>
           )}
 
-          {[EMAIL, BOTH].includes(orderCreationMethod) && (
-            <View>
+          {!!manualSupplierId && (
+            <>
               <FormGroup className="mt-5">
-                <Label>Enter email address</Label>
-                <View className="gap-y-4">
-                  {emails.map((email: string, index: number) => (
-                    <View
-                      key={`${values.keyItem}-${index}`}
-                      className="flex-row">
-                      <Input
-                        defaultValue={email}
-                        className="flex-1"
-                        keyboardType="email-address"
-                        onChangeText={text => handleChangeEmail(index, text)}
-                        // eslint-disable-next-line react/no-unstable-nested-components
-                        EndComponent={() =>
-                          index === 0 ? (
-                            <View />
-                          ) : (
-                            <TouchableOpacity
-                              className="items-center justify-center px-3"
-                              onPress={() => handleDeleteEmail(index)}>
-                              <TrashIcon color={colors.primary.DEFAULT} />
-                            </TouchableOpacity>
-                          )
-                        }
-                      />
-                    </View>
+                <Label>How do you create your orders?</Label>
+                <View className="flex-row gap-x-4">
+                  {contactOptions.map(option => (
+                    <Button
+                      key={option.label}
+                      className="flex-1 px-0"
+                      variant={
+                        option.id === orderCreationMethod
+                          ? 'primary'
+                          : 'secondary'
+                      }
+                      onPress={() =>
+                        dispatch({orderCreationMethod: option.id})
+                      }>
+                      {option.label}
+                    </Button>
                   ))}
                 </View>
               </FormGroup>
-              <Button variant="outline" onPress={handleAddMoreEmail}>
-                <View className="flex-row items-center">
-                  <AddIcon color={colors.primary.DEFAULT} />
-                  <Text className="text-primary text-16 font-semibold flex-row items-center ml-2">
-                    Add More Email
-                  </Text>
+
+              {!!orderCreationMethod && (
+                <FormGroup className="mt-5">
+                  <Label required>Name of Representative</Label>
+                  <Input
+                    onChangeText={text =>
+                      dispatch({orderNameRepresentative: text})
+                    }
+                    defaultValue={orderNameRepresentative}
+                  />
+                </FormGroup>
+              )}
+              {[WHATSAPP, BOTH].includes(orderCreationMethod) && (
+                <FormGroup className="mt-5">
+                  <Label required>Enter phone number</Label>
+                  <PhonePicker
+                    code={orderMobileCode}
+                    number={orderMobileNumber}
+                    onChange={handleChangePhone}
+                  />
+                </FormGroup>
+              )}
+
+              {[EMAIL, BOTH].includes(orderCreationMethod) && (
+                <View>
+                  <FormGroup className="mt-5">
+                    <Label required>Enter email address</Label>
+                    <View className="gap-y-4">
+                      {emails.map((email: string, index: number) => (
+                        <View
+                          key={`${values.keyItem}-${index}`}
+                          className="flex-row">
+                          <Input
+                            defaultValue={email}
+                            className="flex-1"
+                            keyboardType="email-address"
+                            onChangeText={text =>
+                              handleChangeEmail(index, text)
+                            }
+                            // eslint-disable-next-line react/no-unstable-nested-components
+                            EndComponent={() =>
+                              index === 0 ? (
+                                <View />
+                              ) : (
+                                <TouchableOpacity
+                                  className="items-center justify-center px-3"
+                                  onPress={() => handleDeleteEmail(index)}>
+                                  <TrashIcon color={colors.primary.DEFAULT} />
+                                </TouchableOpacity>
+                              )
+                            }
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </FormGroup>
+                  <Button variant="outline" onPress={handleAddMoreEmail}>
+                    <View className="flex-row items-center">
+                      <AddIcon color={colors.primary.DEFAULT} />
+                      <Text className="text-primary text-16 font-semibold flex-row items-center ml-2">
+                        Add More Email
+                      </Text>
+                    </View>
+                  </Button>
                 </View>
-              </Button>
-            </View>
+              )}
+            </>
           )}
         </ScrollView>
-        <Button onPress={handleSave} disabled={isDisabled} className="mt-4">
+        <Button
+          loading={loading}
+          onPress={handleSave}
+          disabled={false}
+          className="mt-4">
           Save
         </Button>
       </KeyboardAvoidingView>

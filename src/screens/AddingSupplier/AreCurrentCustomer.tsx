@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -25,24 +25,16 @@ export default function AreCurrentCustomerScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {supplier} = route?.params || {};
-  const [currentState, setCurrentState] = useState(0);
   const [{loading}, newSupplier] = useMutation({url: 'channels'});
 
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
     isCustomerPurchased: null,
     linkedAccountNumber: '',
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     return {
-      ...updatedValues,
+      ...state,
       ...action,
     };
   }
