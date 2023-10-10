@@ -29,6 +29,7 @@ import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -88,38 +89,40 @@ function SupplierItem({
   const Wrapper = isPendingSetup ? View : Swipeable;
 
   return (
-    <Wrapper
-      ref={swipeableRef}
-      renderRightActions={renderRightActions}
-      friction={2}
-      rightThreshold={40}>
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={onPress}
-        disabled={isPendingSetup}
-        className={clsx({
-          'flex-row items-center rounded-lg p-5': true,
-          'bg-slate-50': isPendingSetup,
-          'bg-white': !isPendingSetup,
-        })}>
-        <Avatar url={imageUrl} size={64} name={name} />
-        <View className="flex-1 justify-center ml-4">
-          <Text className="font-bold text-18">{name}</Text>
-          {!isPendingSetup && (
-            <Text className="font-light text-xs mt-2">
-              {lastOrderAt
-                ? `Last Ordered: ${dayjs(lastOrderAt).format('MM/DD/YYYY')}`
-                : `Added at ${dayjs(createdAt).format('MM/DD/YYYY')}`}
-            </Text>
-          )}
-          {isPendingSetup && (
-            <Text className="font-light  text-xs mt-2">
-              Pending Setup by Koomi Team
-            </Text>
-          )}
-        </View>
-      </TouchableOpacity>
-    </Wrapper>
+    <GestureHandlerRootView>
+      <Wrapper
+        ref={swipeableRef}
+        renderRightActions={renderRightActions}
+        friction={2}
+        rightThreshold={40}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={onPress}
+          disabled={isPendingSetup}
+          className={clsx({
+            'flex-row items-center rounded-lg p-5': true,
+            'bg-slate-50': isPendingSetup,
+            'bg-white': !isPendingSetup,
+          })}>
+          <Avatar url={imageUrl} size={64} name={name} />
+          <View className="flex-1 justify-center ml-4">
+            <Text className="font-bold text-18">{name}</Text>
+            {!isPendingSetup && (
+              <Text className="font-light text-xs mt-2">
+                {lastOrderAt
+                  ? `Last Ordered: ${dayjs(lastOrderAt).format('MM/DD/YYYY')}`
+                  : `Added at ${dayjs(createdAt).format('MM/DD/YYYY')}`}
+              </Text>
+            )}
+            {isPendingSetup && (
+              <Text className="font-light  text-xs mt-2">
+                Pending Setup by Koomi Team
+              </Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Wrapper>
+    </GestureHandlerRootView>
   );
 }
 
