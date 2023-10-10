@@ -61,13 +61,13 @@ export default function FinalizeOrderScreen({
   const {requestedDeliveryDate, remarks, reasonableDeliveryTime} = values;
 
   const {getBillingCart: billingCart} = data || {};
-  const {cartGroups, supplierId, total = 0} = billingCart || {};
+  const {cartGroups, total = 0} = billingCart || {};
   const cartGroup = cartGroups?.[0] || {};
   const mappingProducts = cartGroup?.cartItems?.map((cartItem: any) => ({
     id: cartItem.productId,
   }));
   const deliveryInputData = {
-    id: supplierId,
+    id: supplier?.id,
     products: mappingProducts,
   };
   const getReasonableDeliveryTime = async () => {
@@ -106,14 +106,14 @@ export default function FinalizeOrderScreen({
   const handleCreateOfflinePaymentOrders = useCallback(async () => {
     const {data, success, error} = await createOfflinePaymentOrders({
       billingCartId,
-      supplierId,
+      supplierId: supplier?.id,
       procurePortalOrderUrl: '/order-details',
     });
     if (!success) {
       Toast.show(error?.message, Toast.LONG);
     }
     return data;
-  }, [billingCartId, createOfflinePaymentOrders, supplierId]);
+  }, [billingCartId, createOfflinePaymentOrders, supplier?.id]);
 
   const handleOrder = useCallback(async () => {
     const newBillingCart = generateOfflineBillingCart(billingCart, remarks);
