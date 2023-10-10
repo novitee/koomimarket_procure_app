@@ -1,4 +1,4 @@
-import React, {useCallback, useReducer, useState, useMemo} from 'react';
+import React, {useCallback, useReducer, useEffect, useMemo} from 'react';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
@@ -55,26 +55,18 @@ function useQuerySupplier(id: string) {
 
 function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   const {} = useCart();
-  const [currentState, setCurrentState] = useState(0);
-
   const channel = useGlobalStore(state => state.currentChannel);
-
   const {supplierId} = channel || {};
-
   const {data: dataSupplier, isLoading} = useQuerySupplier(supplierId);
   const {company: supplier} = dataSupplier || {};
-
+  const {searchString, handleSearch} = useSearch();
+  const {data, mutate: refreshCartItems} = useQueryCartItems({
+    supplierId,
+    searchString,
+  });
+  const {records} = data || {};
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   const [values, dispatch] = useReducer(reducer, {
@@ -82,8 +74,21 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     selectedItem: {},
     cartDetails: [],
   });
+
+  useEffect(() => {
+    if (records && records.length > 0) {
+      const cartDetails = records.map((item: any) => {
+        return {
+          productId: item.id,
+          qty: item.procureQty,
+          pricing: item.pricing,
+          uom: item.uom,
+        };
+      });
+      dispatch({cartDetails});
+    }
+  }, [records]);
   const {selectedItem, cartDetails} = values;
-  const {searchString, handleSearch} = useSearch();
 
   const [{loading}, generateCheckoutCart] = useMutation({
     url: 'generate-checkout-cart',
@@ -102,25 +107,17 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     }, [isFocused]),
   );
 
-  const {data, mutate: refreshCartItems} = useQueryCartItems({
-    supplierId,
-    searchString,
-  });
-
-  const toAddProduct = useCallback(
-    (isManual = false) => {
-      if (isManual) {
-        navigation.navigate('AddingProductType', {
-          supplierId,
-        });
-      } else {
-        navigation.navigate('ProductCatalogue', {
-          supplierId,
-        });
-      }
-    },
-    [navigation],
-  );
+  const toAddProduct = useCallback((isManual = false) => {
+    if (isManual) {
+      navigation.navigate('AddingProductType', {
+        supplierId,
+      });
+    } else {
+      navigation.navigate('ProductCatalogue', {
+        supplierId,
+      });
+    }
+  }, []);
 
   const EmptyComponent = useCallback(() => {
     return (
@@ -151,15 +148,8 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     );
   }, [toAddProduct, searchString]);
 
-  const handleEdit = useCallback((item: any) => {
-    dispatch({
-      selectedItem: item,
-      render: true,
-    });
-  }, []);
-
   const handleChangeItem = useCallback(
-    ({item, qty}: {item: any; qty: any}) => {
+    ({item, qty, currentCartDetails}: any) => {
       const newItem = {
         productId: item.id,
         qty,
@@ -167,21 +157,21 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         uom: item.uom,
       };
 
-      const findIndex = values.cartDetails.findIndex(
+      const findIndex = currentCartDetails.findIndex(
         (cartDetail: any) => cartDetail.productId === item.id,
       );
       let newCartDetails = [];
       if (findIndex === -1) {
-        newCartDetails = [...values.cartDetails, newItem];
+        newCartDetails = [...currentCartDetails, newItem];
       } else {
-        newCartDetails = values.cartDetails.map((cartDetail: any) =>
+        newCartDetails = currentCartDetails.map((cartDetail: any) =>
           cartDetail.productId === item.id ? newItem : cartDetail,
         );
       }
 
-      dispatch({cartDetails: newCartDetails, render: true});
+      dispatch({cartDetails: newCartDetails});
     },
-    [dispatch, values.cartDetails],
+    [],
   );
 
   const _renderItem = useCallback(
@@ -189,34 +179,32 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
       return (
         <OrderItem
           item={item}
-          onEdit={() => handleEdit(item)}
+          onEdit={() => dispatch({selectedItem: item})}
           onPress={(value: number) =>
             handleChangeItem({
               item,
               qty: value,
+              currentCartDetails: cartDetails,
             })
           }
           supplierId={supplierId}
         />
       );
     },
-    [handleChangeItem, handleEdit, supplierId],
+    [handleChangeItem, cartDetails],
   );
 
   const handleClose = useCallback(
     (refresh = false) => {
       dispatch({
         selectedItem: {},
-        render: true,
       });
       if (refresh) {
         refreshCartItems();
       }
     },
-    [dispatch, refreshCartItems],
+    [refreshCartItems],
   );
-
-  const {records} = data || {};
 
   const handleCheckoutCart = useCallback(async () => {
     const {data, error, success, message} = await generateCheckoutCart({
@@ -234,6 +222,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
   }, [generateCheckoutCart, cartDetails]);
 
   const minOrderAmount = supplier?.minOrder;
+
   const allowCheckout =
     cartDetails.length > 0 && cartDetails.some((item: any) => item.qty > 0);
 
