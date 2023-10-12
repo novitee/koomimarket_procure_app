@@ -6,16 +6,27 @@ import colors from 'configs/colors';
 import CheckBox from './CheckBox';
 import {PermissionsAndroid} from 'react-native';
 import Toast from 'react-native-simple-toast';
-
+const DEFAULT_COUNTRY_CODE = '65';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
 function resolveContact(data: any) {
   const {phoneNumbers, givenName, familyName} = data || {};
+  let phoneNumber = phoneNumbers ? phoneNumbers[0]?.number : '';
+  phoneNumber = phoneNumber.replace(/[\+\-\(\)\s]/g, '');
+  if (phoneNumber.length > 8) {
+    phoneNumber = phoneNumber.replace(
+      new RegExp(`^${DEFAULT_COUNTRY_CODE}`),
+      '',
+    );
+  }
+
   return {
     name: [givenName, familyName].join(' '),
-    phoneNumber: phoneNumbers ? phoneNumbers[0]?.number : '',
+    mobileCode: DEFAULT_COUNTRY_CODE,
+    mobileNumber: phoneNumber,
+    phoneNumber: `+${DEFAULT_COUNTRY_CODE}${phoneNumber}`,
   };
 }
 
@@ -50,9 +61,11 @@ function ContactItem({
 export default function ContactList({
   onSelect,
   multiSelect = false,
+  currentMembers,
 }: {
   onSelect: (item: any) => void;
   multiSelect?: boolean;
+  currentMembers?: any[];
 }) {
   const [contacts, setContacts] = useState<any[]>([]);
 
@@ -69,7 +82,20 @@ export default function ContactList({
             },
           );
         }
-        const contactsList = await Contacts.getAll();
+        let contactsList = await Contacts.getAll();
+
+        contactsList = contactsList.filter((item: any) => {
+          const dataItem = resolveContact(item);
+
+          const index = currentMembers?.findIndex(
+            (member: any) =>
+              member?.mobileCode === dataItem.mobileCode &&
+              member?.mobileNumber === dataItem.mobileNumber,
+          );
+
+          return index === -1;
+        });
+
         setContacts(contactsList);
       } catch (error) {
         Toast.show('Failed when get contact', Toast.LONG);

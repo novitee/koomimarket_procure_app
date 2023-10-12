@@ -167,7 +167,7 @@ export default function GoodsReceivingScreen({
 
   const handleConfirm = useCallback(async () => {
     let lineItemParams = convertLineItemsToParams(lineItemData);
-    console.log('lineItemParams :>> ', lineItemParams);
+
     const response = await checkGoodsReceived({lineItems: lineItemParams});
     const {data, success, error, message} = response || {};
 

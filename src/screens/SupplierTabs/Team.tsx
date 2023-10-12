@@ -1,5 +1,5 @@
 import {TouchableOpacity, View, Image} from 'react-native';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useLayoutEffect} from 'react';
 import Container from 'components/Container';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useGlobalStore} from 'stores/global';
@@ -9,19 +9,37 @@ import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import {styled} from 'nativewind';
 import AccountPlus from 'assets/images/account-plus.svg';
-import useMe from 'hooks/useMe';
 import {BackButton} from 'navigations/common';
 import useQuery from 'libs/swr/useQuery';
-
+import MemberList from './MemberList';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 const Divider = styled(View, 'h-[1px] w-full bg-gray-300 my-5');
+import useMe from 'hooks/useMe';
 
 export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
-  const currentOutlet = useGlobalStore(state => state.currentOutlet);
-  const {navigate} = navigation;
   const {user} = useMe();
   const {me} = user || {};
-  const {data} = useQuery(`me/outlets/${currentOutlet?.id}/members`);
-  const members = data?.records || [];
+  const currentOutlet = useGlobalStore(state => state.currentOutlet);
+  const {navigate} = navigation;
+
+  const {data, mutate} = useQuery(
+    currentOutlet?.id ? `me/outlets/${currentOutlet?.id}/members` : undefined,
+  );
+  const members = (data?.records || []).sort((a: any, b: any) => {
+    if (a?.companyRole === 'OWNER') return -1;
+    if (b?.companyRole === 'OWNER') return 1;
+    return 0;
+  });
+
+  const isFocused = useIsFocused();
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isFocused) {
+        mutate();
+      }
+    }, [isFocused]),
+  );
+
   useLayoutEffect(() => {
     if (currentOutlet) {
       navigation.setOptions({
@@ -41,19 +59,8 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
       });
     }
   }, [currentOutlet, navigation]);
-
-  const renderRole = useCallback(
-    ({role, isMine}: {role: string; isMine: boolean}) => {
-      if (isMine) return 'You';
-      return (
-        [
-          {role: 'MEMBER', name: 'Staff'},
-          {role: 'ADMIN', name: 'Admin'},
-          {role: 'OWNER', name: 'Admin'},
-        ].find((item: any) => item.role === role)?.name || ''
-      );
-    },
-    [],
+  const isMineOwn = members.find(
+    (item: any) => item?.id === me?.id && item?.isOutletOwner,
   );
 
   return (
@@ -81,36 +88,25 @@ export default function TeamScreen({navigation}: NativeStackScreenProps<any>) {
       <Divider />
       <View className="px-5">
         <Text className="font-bold">Team Members</Text>
-        <TouchableOpacity
-          onPress={() => navigate('AddTeamMember')}
-          className="flex-row items-center mt-4">
-          <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
-            <AccountPlus color="white" />
-          </View>
-          <Text className="ml-4 text-16 font-medium text-primary">
-            Add team member
-          </Text>
-        </TouchableOpacity>
+        {isMineOwn && (
+          <TouchableOpacity
+            onPress={() =>
+              navigate('AddTeamMember', {
+                currentMembers: members,
+              })
+            }
+            className="flex-row items-center mt-4">
+            <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
+              <AccountPlus color="white" />
+            </View>
+            <Text className="ml-4 text-16 font-medium text-primary">
+              Add team member
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <View className="flex-row items-center mt-4">
-          {members.map((member: any, index: number) => (
-            <View className="flex-row items-center mt-4" key={index}>
-              <Avatar
-                size={40}
-                name={member?.fullName}
-                url={member?.avatar?.url}
-              />
-              <View className="ml-4">
-                <Text>{member?.fullName}</Text>
-                <Text className="text-14 text-gray-600">
-                  {renderRole({
-                    role: member?.role,
-                    isMine: member?.id === me?.id,
-                  })}
-                </Text>
-              </View>
-            </View>
-          ))}
+          <MemberList members={members} />
         </View>
       </View>
     </Container>

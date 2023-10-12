@@ -57,22 +57,6 @@ const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
 
-export const customScreenMemberOptions:
-  | NativeStackNavigationOptions
-  | ((props: {
-      route: RouteProp<ParamListBase, string>;
-      navigation: any;
-    }) => NativeStackNavigationOptions)
-  | undefined = ({navigation}) => ({
-  headerBackVisible: false,
-  headerLeft: () => (
-    <TouchableOpacity onPress={navigation.goBack}>
-      <Text className="text-primary">Cancel</Text>
-    </TouchableOpacity>
-  ),
-  headerTitle: 'Add Team Member',
-});
-
 export const customScreenSupplierTabOptions:
   | NativeStackNavigationOptions
   | ((props: {
@@ -148,7 +132,9 @@ export default function MainNavigator(): JSX.Element {
       />
       <Stack.Screen
         name="AddTeamMember"
-        options={customScreenMemberOptions}
+        options={{
+          headerTitle: 'Add Team Member',
+        }}
         component={AddTeamMemberScreen}
       />
       <Stack.Screen

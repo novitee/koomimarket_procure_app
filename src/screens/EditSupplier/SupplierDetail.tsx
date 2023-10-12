@@ -36,7 +36,7 @@ export default function SupplierDetailScreen({
     mobileTelNumber: supplierMobileNumber,
     manualSupplierId,
   } = supplier || {};
-  console.log('supplier :>> ', supplier);
+
   const imageUrl = supplier?.photo?.url;
 
   function handleEdit() {
@@ -88,7 +88,9 @@ export default function SupplierDetailScreen({
         ))}
       <Text className="text-lg font-semibold mt-5">{`Currently a customer of ${supplierName}`}</Text>
       <Text className="mt-2">
-        {isCustomerPurchased ? `YES - ${linkedAccountNumber}` : 'NO'}
+        {isCustomerPurchased
+          ? `${['YES', linkedAccountNumber].join(' - ')}`
+          : 'NO'}
       </Text>
       {manualSupplierId && (
         <>

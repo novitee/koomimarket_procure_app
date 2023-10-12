@@ -58,7 +58,6 @@ export default function AddCategoryItemSheet({
               url: `update-item/${item?.slug}`,
             },
           });
-          console.log('response :>> ', response);
         }),
       );
     }

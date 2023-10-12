@@ -155,7 +155,7 @@ export default function EditSupplierDetailScreen({
     });
 
     const {success, error} = response;
-    console.log('response :>> ', response);
+
     if (success) {
       navigation.goBack();
     } else {
@@ -245,7 +245,7 @@ export default function EditSupplierDetailScreen({
           </FormGroup>
           {!!isCustomerPurchased && (
             <FormGroup className="mt-5">
-              <Label>Your Customer Account Number (Optional) *</Label>
+              <Label>Your Customer Account Number (Optional)</Label>
               <Input
                 defaultValue={linkedAccountNumber}
                 onChangeText={text =>

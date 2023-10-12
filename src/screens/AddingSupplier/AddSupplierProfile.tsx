@@ -19,7 +19,7 @@ const types = [
     code: 'explore',
     label: 'Explore Koomi suppliers',
     description:
-      'I do not have any existing supplier and want to explore Koomi suppliers.',
+      'I do not have any existing supplier(s) and want to explore Koomi suppliers.',
   },
 ];
 
@@ -40,8 +40,8 @@ export default function AddSupplierProfileScreen({
     <Container>
       <Title>Add Supplier Profile</Title>
       <SubTitle>
-        Create the supplier profile before start ordering. The setup only take 2
-        minutes. Setup only once, and reorder make easy.
+        Create your supplier profile before ordering. The setup only takes 2
+        minutes. Once you’re set your profile, it makes reordering easy!
       </SubTitle>
       <View className="mt-6">
         {types.map(item => {
