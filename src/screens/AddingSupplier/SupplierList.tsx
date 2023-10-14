@@ -18,6 +18,7 @@ import {
 } from '@react-navigation/native-stack';
 import Loading from 'components/Loading';
 import {SupplierFlatList, useQuerySupplier} from './SupplierGroup';
+import {useGlobalStore} from 'stores/global';
 function _keyExtractor(item: any, index: number) {
   return `${item.title}-${index}`;
 }
@@ -46,6 +47,7 @@ function CategoryItem({
 export default function SupplierListScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
+  const currentOutlet = useGlobalStore(state => state.currentOutlet);
   const {searchString, handleSearch} = useSearch();
   const url = 'app/categories';
   const {data, isLoading} = useQuery([
@@ -56,6 +58,7 @@ export default function SupplierListScreen({
       include: 'photo(url)',
       orderBy: {position: 'asc'},
       filter: {depth: 0},
+      ninOutletId: currentOutlet?.id,
     },
   ]);
   const {records} = data || {};
