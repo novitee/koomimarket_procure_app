@@ -1,5 +1,5 @@
 import {View, Text, FlatList, TouchableOpacity, Platform} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, useRef} from 'react';
 import Contacts from 'react-native-contacts';
 import UserIcon from 'assets/images/user.svg';
 import colors from 'configs/colors';
@@ -30,16 +30,38 @@ function resolveContact(data: any) {
   };
 }
 
+async function getContacts() {
+  try {
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        {
+          title: 'Contacts',
+          message: 'This app would like to view your contacts.',
+          buttonPositive: 'Please accept bare mortal',
+        },
+      );
+    }
+    const contactsList = await Contacts.getAll();
+    let contacts = contactsList.map((item: any) => resolveContact(item));
+
+    return {success: true, data: contacts};
+  } catch (error) {
+    return {success: false};
+  }
+}
+
 function ContactItem({
   item,
   onPress,
   multiSelect,
+  selected,
 }: {
   item?: any;
   onPress?: () => void;
   multiSelect?: boolean;
+  selected?: boolean;
 }) {
-  const dataItem = resolveContact(item);
   return (
     <TouchableOpacity
       disabled={multiSelect}
@@ -49,75 +71,98 @@ function ContactItem({
         <UserIcon width={24} height={24} color={colors.chevron} />
       </View>
       <View className="ml-4 flex-1">
-        <Text className="font-medium">{dataItem.name}</Text>
-        <Text>{dataItem.phoneNumber}</Text>
+        <Text className="font-medium">{item.name}</Text>
+        <Text>{item.phoneNumber}</Text>
       </View>
       <View>
-        <CheckBox onChange={onPress} />
+        <CheckBox onChange={onPress} defaultValue={selected} />
       </View>
     </TouchableOpacity>
   );
 }
+
+function compareMembers(member1: any, member2: any) {
+  return (
+    member1?.mobileCode === member2?.mobileCode &&
+    member1?.mobileNumber === member2?.mobileNumber
+  );
+}
+
+function filterContactList(
+  contacts: any[],
+  searchString: string | undefined,
+  currentMembers: any[] | undefined,
+) {
+  if (searchString) {
+    contacts = contacts.filter((item: any) => {
+      return (
+        item.name.toLowerCase().includes(searchString.toLowerCase()) ||
+        item.phoneNumber.toLowerCase().includes(searchString.toLowerCase())
+      );
+    });
+  }
+  contacts = contacts.filter((item: any) => {
+    return !currentMembers?.find((member: any) => compareMembers(member, item));
+  });
+  return contacts;
+}
+
 export default function ContactList({
   onSelect,
   multiSelect = false,
   currentMembers,
+  searchString,
+  selectedMembers,
 }: {
   onSelect: (item: any) => void;
   multiSelect?: boolean;
   currentMembers?: any[];
+  searchString?: string;
+  selectedMembers?: any[];
 }) {
+  const memoRef = useRef<any>(null);
   const [contacts, setContacts] = useState<any[]>([]);
 
   useEffect(() => {
-    async function getContacts() {
-      try {
-        if (Platform.OS === 'android') {
-          await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-            {
-              title: 'Contacts',
-              message: 'This app would like to view your contacts.',
-              buttonPositive: 'Please accept bare mortal',
-            },
-          );
+    if (memoRef.current && !memoRef.current?.contacts) {
+      getContacts().then(({data, success}) => {
+        if (!success) {
+          Toast.show('Failed when get contact', Toast.LONG);
+          return;
         }
-        let contactsList = await Contacts.getAll();
-
-        contactsList = contactsList.filter((item: any) => {
-          const dataItem = resolveContact(item);
-
-          const index = currentMembers?.findIndex(
-            (member: any) =>
-              member?.mobileCode === dataItem.mobileCode &&
-              member?.mobileNumber === dataItem.mobileNumber,
-          );
-
-          return index === -1;
-        });
-
-        setContacts(contactsList);
-      } catch (error) {
-        Toast.show('Failed when get contact', Toast.LONG);
-      }
+        memoRef.current.contacts = data;
+        const contacts = filterContactList(
+          memoRef.current?.contacts || [],
+          searchString,
+          currentMembers,
+        );
+        setContacts(contacts);
+      });
     }
-
-    getContacts();
   }, []);
+
+  useEffect(() => {
+    if (!memoRef.current?.contacts) return;
+
+    const contacts = filterContactList(
+      memoRef.current?.contacts || [],
+      searchString,
+      currentMembers,
+    );
+    setContacts(contacts as any);
+  }, [searchString, currentMembers]);
 
   const EmptyComponent = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center px-5">
-        <Text className="font-bold mt-4 text-center">
-          No supplier available
-        </Text>
+        <Text className="font-bold mt-4 text-center">No user available</Text>
       </View>
     );
   }, []);
 
   const handleSelectItem = useCallback(
     (item: any) => {
-      onSelect(resolveContact(item));
+      onSelect(item);
     },
     [onSelect],
   );
@@ -129,20 +174,27 @@ export default function ContactList({
           item={item}
           multiSelect={multiSelect}
           onPress={() => handleSelectItem(item)}
+          selected={
+            !!selectedMembers?.find((member: any) =>
+              compareMembers(member, item),
+            )
+          }
         />
       );
     },
-    [handleSelectItem, multiSelect],
+    [handleSelectItem, multiSelect, selectedMembers],
   );
 
   return (
-    <FlatList
-      data={contacts}
-      className="flex-1"
-      keyExtractor={_keyExtractor}
-      renderItem={_renderItem}
-      extraData={contacts}
-      ListEmptyComponent={EmptyComponent}
-    />
+    <View ref={memoRef} className="flex-1">
+      <FlatList
+        data={contacts}
+        className="flex-1"
+        keyExtractor={_keyExtractor}
+        renderItem={_renderItem}
+        extraData={contacts}
+        ListEmptyComponent={EmptyComponent}
+      />
+    </View>
   );
 }

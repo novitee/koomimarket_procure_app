@@ -1,5 +1,5 @@
 import {View, ScrollView, KeyboardAvoidingView} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import ContactList from 'components/ContactList';
@@ -9,6 +9,8 @@ import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import clsx from 'libs/clsx';
 import Button from 'components/Button';
+import SearchBar from 'components/SearchBar';
+import useSearch from 'hooks/useSearch';
 
 export default function AddTeamMemberScreen({
   navigation,
@@ -21,6 +23,7 @@ export default function AddTeamMemberScreen({
     method: 'POST',
     url: `me/outlets/${outlet?.id}/members/invites`,
   });
+  const {searchString, handleSearch} = useSearch();
 
   async function handleAdd() {
     const members = selectedMembers.map(item => ({
@@ -52,15 +55,25 @@ export default function AddTeamMemberScreen({
     }
   }
 
+  function handleChangeSearch(text: string) {
+    setSelectedMembers([]);
+    handleSearch(text);
+  }
+
   return (
     <Container className="px-0">
-      <Text className="text-gray-600 font-bold ml-3">Invite to Koomi</Text>
+      <View className="px-3 ">
+        <SearchBar onSearch={handleChangeSearch} />
+      </View>
+      <Text className="text-gray-600 font-bold ml-3 mt-4">Invite to Koomi</Text>
 
       <View className="px-6 flex-1">
         <ContactList
           onSelect={handleSelectMembers}
           multiSelect
           currentMembers={currentMembers}
+          searchString={searchString}
+          selectedMembers={selectedMembers}
         />
       </View>
       <View className="pt-4 px-5">
