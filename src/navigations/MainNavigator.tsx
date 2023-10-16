@@ -75,9 +75,11 @@ export const customScreenSupplierTabOptions:
 };
 
 export default function MainNavigator(): JSX.Element {
-  // resetAuthData();
+  console.log('MainNavigator :>> ');
   return (
-    <Stack.Navigator screenOptions={customScreenOptions}>
+    <Stack.Navigator
+      screenOptions={customScreenOptions}
+      initialRouteName="MyOutlets">
       {/* Outlets */}
       <Stack.Group>
         <Stack.Screen

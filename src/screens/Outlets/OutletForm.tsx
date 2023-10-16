@@ -81,7 +81,10 @@ export default function OutletForm({
   }
 
   async function handleChangePostalCode(text: string) {
-    const address = await handlePostalCodeChange(text);
+    let address = billingAddress;
+    if (text.length >= 6) {
+      address = await handlePostalCodeChange(text);
+    }
     let changeFields = {
       billingPostalCode: text,
       billingAddress: address,
@@ -256,6 +259,7 @@ export default function OutletForm({
               'border-red-500': errors.billingPostalCode,
             })}
             keyboardType="numeric"
+            editable={!loading}
           />
           <Input
             value={billingAddress}
