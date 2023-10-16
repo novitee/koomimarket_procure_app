@@ -32,7 +32,9 @@ export default function AddingProductTypeScreen({
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('UploadInvoice')}
+          onPress={() =>
+            navigation.navigate('UploadInvoice', {...route?.params})
+          }
           className="border-[3px] border-gray-D1D5DB rounded-xl flex-row items-center mt-4 min-h-[160px] px-5">
           <View className="mr-5">
             <Camera />

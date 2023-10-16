@@ -14,11 +14,16 @@ import ImagePicker from 'components/ImagePicker';
 import useMutation from 'libs/swr/useMutation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import CloseCircleIcon from 'assets/images/check_no_active.svg';
+import Toast from 'react-native-simple-toast';
 
 export default function UploadInvoiceScreen({
   navigation,
+  route,
 }: NativeStackScreenProps<any>) {
   const [currentState, setCurrentState] = useState(0);
+
+  const {supplierId} = route.params || {};
+
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     images: [],
@@ -40,19 +45,28 @@ export default function UploadInvoiceScreen({
   const {images} = values;
 
   const [{loading}, uploadInvoice] = useMutation({
-    url: 'upload-invoice',
+    url: 'products/upload-invoice',
   });
-
-  function handleSend() {
-    const {data, success, error} = uploadInvoice({
-      images,
+  console.log('images :>> ', images);
+  async function handleSend() {
+    const response = await uploadInvoice({
+      invoice: {
+        supplierId: supplierId,
+        photos: images.map((image: any) => ({
+          url: image.uri,
+          signedKey: image.signedKey,
+          filename: image.fileName,
+          ...image,
+        })),
+      },
     });
+    const {data, success, error, message} = response;
+    console.log('response :>> ', response);
+    if (!success) {
+      Toast.show(error?.message || message, Toast.LONG);
+      return;
+    }
     navigation.navigate('CompleteUploadInvoice');
-    // if (success) {
-    //   navigation.navigate('CompleteUploadInvoice');
-    // } else {
-    //   Toast.show(error.message);
-    // }
   }
 
   function removeImage(uri: string) {
