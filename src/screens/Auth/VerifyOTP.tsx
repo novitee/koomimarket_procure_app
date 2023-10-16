@@ -81,11 +81,11 @@ export default function VerifyOTP({
             />
           </View>
         </ScrollView>
-        <View>
+        {/* <View>
           <Button loading={loading || isUserLoading} onPress={handleVerify}>
             Next
           </Button>
-        </View>
+        </View> */}
       </KeyboardAvoidingView>
     </Container>
   );

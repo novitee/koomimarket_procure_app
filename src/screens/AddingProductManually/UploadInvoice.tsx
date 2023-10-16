@@ -47,7 +47,7 @@ export default function UploadInvoiceScreen({
   const [{loading}, uploadInvoice] = useMutation({
     url: 'products/upload-invoice',
   });
-  console.log('images :>> ', images);
+
   async function handleSend() {
     const response = await uploadInvoice({
       invoice: {
@@ -61,7 +61,7 @@ export default function UploadInvoiceScreen({
       },
     });
     const {data, success, error, message} = response;
-    console.log('response :>> ', response);
+
     if (!success) {
       Toast.show(error?.message || message, Toast.LONG);
       return;
