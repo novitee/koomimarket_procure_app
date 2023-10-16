@@ -28,8 +28,6 @@ export default function VerifyOTP({
   const authStateRef = useRef<IAppStore['authStatus'] | ''>();
   const {isUserLoading, user, refresh} = useMe();
 
-  const [otpCode, setOtpCode] = useState('');
-
   const [{loading}, verifyOTP] = useMutation({
     url: urls[mode],
   });
@@ -40,7 +38,7 @@ export default function VerifyOTP({
     }
   }, [navigation, user]);
 
-  async function handleVerify() {
+  async function handleVerify(otpCode: string) {
     const {success, data, error, message} = await verifyOTP({
       otpToken,
       otpCode,
@@ -62,6 +60,12 @@ export default function VerifyOTP({
     }
   }
 
+  function handleChangeText(text: string) {
+    if (text.length === 6) {
+      handleVerify(text);
+    }
+  }
+
   return (
     <Container>
       <KeyboardAvoidingView>
@@ -75,10 +79,7 @@ export default function VerifyOTP({
               Enter the code below
             </Text>
 
-            <OtpInput
-              containerClassName="mt-10"
-              onChange={text => setOtpCode(text)}
-            />
+            <OtpInput containerClassName="mt-10" onChange={handleChangeText} />
           </View>
         </ScrollView>
         {/* <View>
