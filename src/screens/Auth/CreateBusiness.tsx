@@ -20,10 +20,16 @@ const url: string = 'registrations/update-sign-up-profile';
 export default function CreateBusiness({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
+  function reducer(state: any, action: any) {
+    return {...state, ...action};
+  }
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
+    businessName: '',
+    postalCode: '',
+    billingAddress: '',
+    unitNo: '',
   });
+
   const [{loading}, updateSignUpProfile] = useMutation({
     method: 'PATCH',
     url: url,
@@ -34,16 +40,6 @@ export default function CreateBusiness({
 
   const {loading: loadingPostal, handlePostalCodeChange} = usePostalCode();
 
-  function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {...updatedValues, ...action};
-  }
-
   const {
     businessName,
     postalCode,
@@ -52,36 +48,34 @@ export default function CreateBusiness({
     errors = {},
   } = values;
 
-  const onChangeFields = useCallback(
-    (fields: {[key: string]: string | boolean | object}) => {
-      dispatch({...fields, render: true});
-    },
-    [],
-  );
+  async function handleChangePostalCode(text: string) {
+    let newAddress = billingAddress;
+    if (text.length >= 6) {
+      newAddress = await handlePostalCodeChange(text);
+    }
+    let changeFields = {
+      postalCode: text,
+      billingAddress: newAddress,
+      errors: {
+        ...errors,
+        postalCode: !text,
+        billingAddress: !newAddress,
+      },
+    } as any;
 
-  const handleChangePostalCode = useCallback(
-    async (text: string) => {
-      const address = await handlePostalCodeChange(text);
-      if (address) {
-        onChangeFields({billingAddress: address, postalCode: text});
+    dispatch(changeFields);
+  }
+
+  function validateInputs(errors: {[key: string]: boolean}) {
+    dispatch({errors});
+    return Object.keys(errors).reduce((acc: boolean, key: string) => {
+      if (errors[key]) {
+        Toast.show('Please fill in all required fields', Toast.SHORT);
+        return false;
       }
-    },
-    [handlePostalCodeChange],
-  );
-
-  const validateInputs = useCallback(
-    (errors: {[key: string]: boolean}) => {
-      onChangeFields({errors});
-      return Object.keys(errors).reduce((acc: boolean, key: string) => {
-        if (errors[key]) {
-          Toast.show('Please fill in all required fields', Toast.SHORT);
-          return false;
-        }
-        return acc;
-      }, true);
-    },
-    [onChangeFields],
-  );
+      return acc;
+    }, true);
+  }
 
   const handleOpenComplete = useCallback(async () => {
     const {data, success, message} = await completeSignUpProfile();
@@ -89,15 +83,16 @@ export default function CreateBusiness({
       Toast.show(message, Toast.LONG);
       return;
     }
-    const {authData} = data;
-    saveAuthData({
-      token: authData.token,
-      refreshToken: authData.refreshToken,
-    });
-    setState({authStatus: 'BUYER_COMPLETED'});
+
+    setState({authStatus: 'NOT_AUTH'});
+    // saveAuthData({
+    //   token: authData.token,
+    //   refreshToken: authData.refreshToken,
+    // });
+    // setState({authStatus: 'BUYER_COMPLETED'});
   }, [completeSignUpProfile]);
 
-  const handleUpdateProfile = useCallback(async () => {
+  const handleUpdateProfile = async () => {
     const validFields = validateInputs({
       ...errors,
       businessName: !businessName,
@@ -123,7 +118,7 @@ export default function CreateBusiness({
     } else {
       Toast.show(message, Toast.LONG);
     }
-  }, [errors, businessName, postalCode, unitNo, updateSignUpProfile]);
+  };
 
   return (
     <Container className="px-0">
@@ -139,7 +134,7 @@ export default function CreateBusiness({
             <Input
               value={businessName}
               onChangeText={(text: string) =>
-                onChangeFields({
+                dispatch({
                   businessName: text,
                   errors: {...errors, businessName: !text},
                 })
@@ -159,6 +154,7 @@ export default function CreateBusiness({
                 'border-red-500': errors.postalCode,
               })}
               keyboardType="numeric"
+              editable={!loadingPostal}
             />
             <Input
               value={billingAddress}
@@ -168,7 +164,7 @@ export default function CreateBusiness({
                 'border-red-500': errors.billingAddress,
               })}
               onChangeText={(text: string) =>
-                onChangeFields({
+                dispatch({
                   billingAddress: text,
                   errors: {...errors, billingAddress: !text},
                 })
@@ -176,7 +172,7 @@ export default function CreateBusiness({
             />
             <Input
               value={unitNo}
-              onChangeText={(text: string) => onChangeFields({unitNo: text})}
+              onChangeText={(text: string) => dispatch({unitNo: text})}
               placeholder="Unit Number"
             />
           </FormGroup>

@@ -1,4 +1,4 @@
-import {View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity, Linking} from 'react-native';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import Container from 'components/Container';
@@ -13,7 +13,8 @@ import {resetAuthData} from 'utils/auth';
 import colors from 'configs/colors';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useModal} from 'libs/modal';
-
+const TERM_AND_CONDITIONS_URL = 'https://koomimarket.com/terms-and-conditions';
+const PRIVACY_POLICY_URL = 'https://koomimarket.com/privacy-policy';
 const Divider = () => <View className="h-[1px] w-full bg-gray-D1D5DB my-2" />;
 
 const menus = [
@@ -68,8 +69,10 @@ export default function SettingsScreen({
           confirmTitle: 'Yes',
         },
       });
+    } else if (id === 'privacy_policy') {
+      Linking.openURL(PRIVACY_POLICY_URL);
     } else {
-      // navigate('');
+      Linking.openURL(TERM_AND_CONDITIONS_URL);
     }
   }
 

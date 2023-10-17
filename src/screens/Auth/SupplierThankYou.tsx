@@ -7,9 +7,7 @@ import Text from 'components/Text';
 import {setState} from 'stores/app';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
-// import {saveAuthData} from 'utils/auth';
 import clsx from 'libs/clsx';
-// import {setGlobal} from 'stores/global';
 import useMe from 'hooks/useMe';
 import {useAppStore} from 'stores/app';
 
@@ -18,30 +16,16 @@ const completeSignUpUrl: string = 'registrations/complete';
 export default function SupplierThankYouScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const {isUserLoading, user, refresh} = useMe();
+  const {isUserLoading} = useMe();
   const {authRegisterType} = useAppStore();
   const [{loading: loadingComplete}, completeSignUp] = useMutation({
     url: completeSignUpUrl,
   });
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setGlobal({authMode: 'login'});
-  //     setState({authStatus: 'NOT_AUTH'});
-  //   }
-  // }, [navigation, user]);
-
   async function handleComplete() {
     const {data, success, error, message} = await completeSignUp();
 
     if (success) {
-      // const {authData} = data;
-      // setGlobal({authMode: 'login'});
-      // saveAuthData({
-      //   token: authData.token,
-      //   refreshToken: authData.refreshToken,
-      // });
-      // refresh();
       setState({authStatus: 'NOT_AUTH'});
     } else {
       Toast.show(error?.message || message, Toast.LONG);

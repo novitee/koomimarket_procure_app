@@ -1,5 +1,5 @@
 import {View, TextInputProps, TextInput} from 'react-native';
-import React, {useLayoutEffect, useRef, useState} from 'react';
+import React, {useLayoutEffect, useRef, useState, useReducer} from 'react';
 import {styled} from 'nativewind';
 import clsx from 'libs/clsx';
 import colors from 'configs/colors';
@@ -8,6 +8,7 @@ interface InputNumberProps extends Omit<TextInputProps, 'onChangeText'> {
   index: number;
   onChangeText?: (index: number, value: string) => void;
   focus?: boolean;
+  onFocus?: any;
 }
 
 interface OtpInputProps {
@@ -26,6 +27,7 @@ function InputNumber({
   focus,
   onChangeText,
   onKeyPress,
+  onFocus,
 }: InputNumberProps) {
   const inputRef = useRef<any>();
 
@@ -45,10 +47,10 @@ function InputNumber({
       maxLength={1}
       onChangeText={text => onChangeText?.(index, text)}
       onKeyPress={onKeyPress}
-      selectTextOnFocus
       cursorColor={colors.dark}
       placeholderTextColor={colors.gray.D1D5DB}
       selectionColor={colors.dark}
+      onFocus={() => onFocus?.(index)}
     />
   );
 }
@@ -57,37 +59,84 @@ export default function OtpInput({
   containerClassName,
   onChange,
 }: OtpInputProps) {
-  const [optNumbers, setOptNumbers] = useState(Array(6).fill(''));
-  const [activeInput, setActiveInput] = useState(0);
-  const [isBackspace, setIsBackspace] = useState(false);
+  const [values, dispatch] = useReducer(
+    (prev: any, next: any) => ({...prev, ...next}),
+    {
+      optNumbers: Array(6).fill(''),
+      activeInput: 0,
+      isBackspace: false,
+    },
+  );
+  const {optNumbers, activeInput, isBackspace} = values;
+
+  const onRemoveOTP = (index: number, value: string) => {
+    if (index < 0 || index >= optNumbers.length) return {};
+    let activeInput = index - 1;
+    if (activeInput < 0) {
+      activeInput = 0;
+    }
+    return {
+      optNumbers: optNumbers.map((_: string, i: number) =>
+        i === index ? value : _,
+      ),
+      activeInput,
+    };
+  };
+
+  const onAddOTP = (index: number, value: string) => {
+    if (index < 0 || index >= optNumbers.length) return {};
+
+    let activeInput = index + 1;
+    if (activeInput >= optNumbers.length) {
+      activeInput = optNumbers.length - 1;
+    }
+    if (index < 0 || index >= optNumbers.length) return {};
+
+    return {
+      optNumbers: optNumbers.map((_: string, i: number) =>
+        i === index ? value : _,
+      ),
+      activeInput,
+    };
+  };
 
   function onKeyPress({nativeEvent}: any) {
-    if (nativeEvent.key === 'Backspace') {
-      setIsBackspace(true);
+    let changeFields = {
+      isBackspace: nativeEvent.key === 'Backspace',
+    };
+    if (changeFields.isBackspace) {
+      if (!!optNumbers[activeInput]) {
+        changeFields = {
+          ...changeFields,
+          ...onRemoveOTP(activeInput, ''),
+        };
+      } else {
+        changeFields = {
+          ...changeFields,
+          ...{activeInput: activeInput === 0 ? 0 : activeInput - 1},
+        };
+      }
     } else {
-      setIsBackspace(false);
+      changeFields = {
+        ...changeFields,
+        ...onAddOTP(activeInput, nativeEvent.key),
+      };
     }
+    dispatch(changeFields);
   }
 
   function onChangeText(index: number, value: string) {
-    const _opt = [...optNumbers];
-    _opt[index] = value;
-    setOptNumbers(_opt);
-    if (isBackspace) {
-      if (index === 0) {
-        setActiveInput(0);
-      } else {
-        setActiveInput(index - 1);
-      }
-    } else {
-      if (index >= 5) {
-        setActiveInput(5);
-      } else {
-        setActiveInput(index + 1);
-      }
+    if (!isBackspace) {
+      dispatch(onAddOTP(index, value));
     }
-    onChange?.(_opt.join(''));
+
+    onChange?.(optNumbers.join(''));
   }
+
+  function onFocused(index: number) {
+    dispatch({activeInput: index});
+  }
+
   return (
     <View
       className={clsx(
@@ -96,7 +145,7 @@ export default function OtpInput({
         },
         containerClassName,
       )}>
-      {optNumbers.map((item, index) => {
+      {optNumbers.map((item: any, index: number) => {
         return (
           <InputNumber
             key={index}
@@ -105,6 +154,7 @@ export default function OtpInput({
             focus={activeInput === index}
             onChangeText={onChangeText}
             onKeyPress={onKeyPress}
+            onFocus={onFocused}
           />
         );
       })}

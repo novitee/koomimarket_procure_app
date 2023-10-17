@@ -64,7 +64,10 @@ export default function BusinessForm({
   }
 
   async function handleChangePostalCode(text: string) {
-    const address = await handlePostalCodeChange(text);
+    let address = billingAddress;
+    if (text.length >= 6) {
+      address = await handlePostalCodeChange(text);
+    }
     let changeFields = {
       billingPostal: text,
       billingAddress: address,
@@ -191,6 +194,7 @@ export default function BusinessForm({
               'border-red-500': errors.billingPostal,
             })}
             keyboardType="numeric"
+            editable={!loading}
           />
           <Input
             value={billingAddress}
