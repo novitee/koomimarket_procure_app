@@ -75,7 +75,6 @@ export const customScreenSupplierTabOptions:
 };
 
 export default function MainNavigator(): JSX.Element {
-  console.log('MainNavigator :>> ');
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
