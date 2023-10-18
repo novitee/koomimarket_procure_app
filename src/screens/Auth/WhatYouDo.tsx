@@ -46,10 +46,7 @@ export default function WhatYouDoScreen({
           goBack={() => {
             resetAuthData();
             setTimeout(() => {
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'VerifyNumber'}],
-              });
+              navigation.navigate('Welcome');
             }, 100);
           }}
         />
