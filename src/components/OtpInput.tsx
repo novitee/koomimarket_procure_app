@@ -71,7 +71,7 @@ export default function OtpInput({
 
   const onRemoveOTP = (index: number, value: string) => {
     if (index < 0 || index >= optNumbers.length) return {};
-    let activeInput = index - 1;
+    let activeInput = !!optNumbers[index] ? index : index - 1;
     if (activeInput < 0) {
       activeInput = 0;
     }
