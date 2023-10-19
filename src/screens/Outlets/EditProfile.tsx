@@ -21,13 +21,12 @@ import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import PhonePicker from 'components/ui/PhonePicker';
-
+import {validateEmail} from 'utils/validate';
 const StyledInput = styled(Input, 'mx-4 my-2 rounded-lg');
 
 export default function EditProfileScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const {user, refresh} = useMe();
   const {me} = user || {};
@@ -42,25 +41,15 @@ export default function EditProfileScreen({
   );
 
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
     fullName: '',
     email: '',
     avatar: '',
   });
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
-  const {fullName, email, avatar, mobileCode, mobileNumber} = values;
+  const {fullName, email, avatar, mobileCode, mobileNumber, errors} = values;
 
   const resetToDefault = useCallback(() => {
     dispatch({
@@ -69,7 +58,6 @@ export default function EditProfileScreen({
       avatar: me?.avatar,
       mobileCode: me?.mobileCode,
       mobileNumber: me?.mobileNumber,
-      render: true,
     });
   }, [me]);
 
@@ -109,8 +97,12 @@ export default function EditProfileScreen({
     method: 'PATCH',
   });
 
-  const handleSave = useCallback(async () => {
-    const {success, error} = await updateProfile({
+  const handleSave = async () => {
+    if (!fullName || !email || !validateEmail(email)) {
+      Toast.show('Please fill in all the fields', Toast.LONG);
+      return;
+    }
+    const {success, error, message} = await updateProfile({
       profile: {
         fullName: fullName,
         email: email,
@@ -123,7 +115,7 @@ export default function EditProfileScreen({
       return;
     }
     navigation.goBack();
-  }, [fullName, email, avatar]);
+  };
 
   return (
     <Container className="px-0">
@@ -145,9 +137,9 @@ export default function EditProfileScreen({
               }
               onChange={image => {
                 if (Array.isArray(image)) {
-                  dispatch({avatar: image[0], render: true});
+                  dispatch({avatar: image[0]});
                 } else {
-                  dispatch({avatar: image, render: true});
+                  dispatch({avatar: image});
                 }
               }}
               editable={editMode}
@@ -158,13 +150,29 @@ export default function EditProfileScreen({
               editable={editMode}
               defaultValue={fullName}
               placeholder="Full name"
-              onChangeText={text => dispatch({fullName: text, render: true})}
+              onChangeText={text =>
+                dispatch({
+                  fullName: text,
+                  errors: {
+                    fullName: !text,
+                  },
+                })
+              }
+              error={errors?.fullName}
             />
             <StyledInput
               editable={editMode}
               defaultValue={email}
               placeholder="Email"
-              onChangeText={text => dispatch({email: text, render: true})}
+              onChangeText={text =>
+                dispatch({
+                  email: text,
+                  errors: {
+                    email: !text || !validateEmail(text),
+                  },
+                })
+              }
+              error={errors?.email}
             />
             <View className="mx-4 my-2 ">
               <PhonePicker

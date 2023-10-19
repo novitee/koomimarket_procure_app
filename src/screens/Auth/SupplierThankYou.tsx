@@ -10,6 +10,7 @@ import Toast from 'react-native-simple-toast';
 import clsx from 'libs/clsx';
 import useMe from 'hooks/useMe';
 import {useAppStore} from 'stores/app';
+import {saveAuthData} from 'utils/auth';
 
 const completeSignUpUrl: string = 'registrations/complete';
 
@@ -26,7 +27,12 @@ export default function SupplierThankYouScreen({
     const {data, success, error, message} = await completeSignUp();
 
     if (success) {
-      setState({authStatus: 'NOT_AUTH'});
+      const {authData} = data;
+      saveAuthData({
+        token: authData?.token,
+        refreshToken: authData?.refreshToken,
+      });
+      setState({authStatus: 'BUYER_COMPLETED'});
     } else {
       Toast.show(error?.message || message, Toast.LONG);
     }

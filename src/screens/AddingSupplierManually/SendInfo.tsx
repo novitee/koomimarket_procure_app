@@ -16,6 +16,7 @@ import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
 import ProgressBar from 'components/ProgressBar';
 import Clipboard from '@react-native-clipboard/clipboard';
+import clsx from 'libs/clsx';
 
 type ManualOrderOptions = {
   method: string;
@@ -49,32 +50,31 @@ export default function SendInfo({
     });
   }, [navigation, type]);
 
-  const [currentState, setCurrentState] = useState(0);
+  // const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     photos: [],
     comment: '',
     copied: false,
+    errors: '',
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     return {
-      ...updatedValues,
+      ...state,
       ...action,
     };
   }
 
-  const {photos, comment} = values;
+  const {photos, comment, errors} = values;
 
   async function handleSubmit() {
     let opts = {method: 'SEND_EMAIL'} as ManualOrderOptions;
     if (type === 'photo') {
+      if (!photos?.length || !comment) {
+        Toast.show('Please enter all required fields', Toast.LONG);
+        return false;
+      }
       opts = {
         method: 'SEND_PHOTO',
         photos: photos.map((photo: any) => ({
@@ -85,9 +85,11 @@ export default function SendInfo({
         comment,
       };
     }
-    const {data, success, error} = await newManualOrder(opts);
+    const response = await newManualOrder(opts);
+    const {data, success, error} = response || {};
+    console.log('response :>> ', response);
     if (!success) {
-      Toast.show(error?.message);
+      Toast.show(error?.message, Toast.LONG);
       return false;
     }
 
@@ -102,7 +104,12 @@ export default function SendInfo({
   }
 
   function handleSelectPhoto(assets: any) {
-    dispatch({photos: assets, render: true});
+    dispatch({
+      photos: assets,
+      errors: {
+        photos: !(assets?.length > 0),
+      },
+    });
   }
 
   return (
@@ -113,7 +120,7 @@ export default function SendInfo({
         <View className="flex-1 pt-5">
           {type === 'email' && (
             <View className="">
-              <Label>
+              <Label required>
                 Attach any digital invoices / delivery receipts and send to this
                 email:
               </Label>
@@ -138,13 +145,16 @@ export default function SendInfo({
           {type === 'photo' && (
             <View>
               <FormGroup>
-                <Label>Upload Photo</Label>
+                <Label required>Upload Photo</Label>
 
                 <ImagePicker onChange={handleSelectPhoto}>
                   {({onPick, progress}) => (
                     <TouchableOpacity
                       onPress={onPick}
-                      className="w-full h-[130px] rounded-2xl border border-dashed border-gray-71717A bg-white items-center justify-center ">
+                      className={clsx({
+                        'w-full h-[130px] rounded-2xl border border-dashed bg-white items-center justify-center border-gray-71717A':
+                          true,
+                      })}>
                       {!!progress && progress > 0 && progress < 100 ? (
                         <ActivityIndicator size={'large'} />
                       ) : (
@@ -171,10 +181,18 @@ export default function SendInfo({
                 </View>
               </FormGroup>
               <FormGroup>
-                <Label>Comment</Label>
+                <Label required>Comment</Label>
                 <Input
                   placeholder="Enter your message"
-                  onChangeText={text => dispatch({comment: text})}
+                  onChangeText={text =>
+                    dispatch({
+                      comment: text,
+                      errors: {
+                        comment: !text,
+                      },
+                    })
+                  }
+                  error={errors?.comment}
                 />
               </FormGroup>
             </View>

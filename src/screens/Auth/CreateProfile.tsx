@@ -16,7 +16,6 @@ const url: string = 'registrations/update-sign-up-profile';
 export default function CreateProfile({
   navigation,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
   });
@@ -26,26 +25,17 @@ export default function CreateProfile({
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     return {
-      ...updatedValues,
+      ...state,
       ...action,
     };
   }
 
   const {fullName, emailAddress} = values;
 
-  const onChangeText = useCallback(
-    (text: string, field: string) => {
-      dispatch({[field]: text, render: true});
-    },
-    [dispatch],
-  );
+  const onChangeText = (text: string, field: string) => {
+    dispatch({[field]: text});
+  };
 
   const validateInputs = useCallback(() => {
     if (!fullName) {

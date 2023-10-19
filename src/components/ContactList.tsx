@@ -30,27 +30,6 @@ function resolveContact(data: any) {
   };
 }
 
-async function getContacts() {
-  try {
-    if (Platform.OS === 'android') {
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          title: 'Contacts',
-          message: 'This app would like to view your contacts.',
-          buttonPositive: 'Please accept bare mortal',
-        },
-      );
-    }
-    const contactsList = await Contacts.getAll();
-    let contacts = contactsList.map((item: any) => resolveContact(item));
-
-    return {success: true, data: contacts};
-  } catch (error) {
-    return {success: false};
-  }
-}
-
 function ContactItem({
   item,
   onPress,
@@ -125,6 +104,28 @@ export default function ContactList({
 
   useEffect(() => {
     if (memoRef.current && !memoRef.current?.contacts) {
+      async function getContacts() {
+        try {
+          if (Platform.OS === 'android') {
+            await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+              {
+                title: 'Contacts',
+                message: 'This app would like to view your contacts.',
+                buttonPositive: 'Please accept bare mortal',
+              },
+            );
+          }
+          const contactsList = await Contacts.getAll();
+
+          let contacts = contactsList.map((item: any) => resolveContact(item));
+
+          return {success: true, data: contacts};
+        } catch (error) {
+          return {success: false};
+        }
+      }
+
       getContacts().then(({data, success}) => {
         if (!success) {
           Toast.show('Failed when get contact', Toast.LONG);

@@ -81,7 +81,6 @@ export default function ManageOrderListScreen({
   } = useQuery(['filter-categories', {supplierId}]);
   const categories = categoryData?.records || [];
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
     selectedIds: [],
     showSheet: null,
     selectedEditItem: null,
@@ -89,14 +88,8 @@ export default function ManageOrderListScreen({
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     return {
-      ...updatedValues,
+      ...state,
       ...action,
     };
   }
@@ -111,6 +104,7 @@ export default function ManageOrderListScreen({
   });
 
   const products = productData?.records || [];
+
   const productSections = categories
     .map((category: any) => ({
       category: {name: category.name, id: category.id, slug: category.slug},
@@ -127,7 +121,6 @@ export default function ManageOrderListScreen({
   const handleEdit = useCallback((item: any) => {
     dispatch({
       selectedEditItem: item,
-      render: true,
     });
   }, []);
 
@@ -135,7 +128,6 @@ export default function ManageOrderListScreen({
     dispatch({
       selectedEditCategory: item,
       showSheet: SAVE_CATEGORY,
-      render: true,
     });
   }, []);
 
@@ -143,7 +135,6 @@ export default function ManageOrderListScreen({
     dispatch({
       selectedEditCategory: category,
       showSheet: ADD_CATEGORY_ITEM,
-      render: true,
     });
   }, []);
 
@@ -156,7 +147,7 @@ export default function ManageOrderListScreen({
           newSelectedIds.length > 0 ? (
             <TouchableOpacity
               className="items-center justify-center px-3"
-              onPress={() => dispatch({showSheet: REMOVE_ITEMS, render: true})}>
+              onPress={() => dispatch({showSheet: REMOVE_ITEMS})}>
               <TrashIcon color={colors.primary.DEFAULT} />
             </TouchableOpacity>
           ) : (
@@ -166,7 +157,7 @@ export default function ManageOrderListScreen({
 
       dispatch({
         selectedIds: newSelectedIds,
-        render: true,
+
         CheckBox,
       });
     },
@@ -235,7 +226,6 @@ export default function ManageOrderListScreen({
     }
     dispatch({
       showSheet: null,
-      render: true,
     });
   }
 
@@ -246,7 +236,6 @@ export default function ManageOrderListScreen({
     dispatch({
       selectedEditItem: null,
       selectedEditCategory: null,
-      render: true,
     });
   }
   return (
@@ -282,7 +271,6 @@ export default function ManageOrderListScreen({
                 dispatch({
                   showSheet: SAVE_CATEGORY,
                   selectedEditCategory: null,
-                  render: true,
                 })
               }
               className="mr-4 border-gray-400">
@@ -307,9 +295,7 @@ export default function ManageOrderListScreen({
         isOpen={showSheet === SAVE_CATEGORY}
         selectedEditCategory={selectedEditCategory}
         onClose={closeSheet}
-        handleRemoveCategory={() =>
-          dispatch({showSheet: REMOVE_CATEGORY, render: true})
-        }
+        handleRemoveCategory={() => dispatch({showSheet: REMOVE_CATEGORY})}
       />
       <EditItemSheet
         categories={categories}

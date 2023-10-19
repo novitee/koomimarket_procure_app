@@ -11,7 +11,7 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-
+import {useQueryProducts} from './SupplierProfile';
 import Animated from 'react-native-reanimated';
 import useQuery from 'libs/swr/useQuery';
 
@@ -26,11 +26,13 @@ function SupplierItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
+  const {data: productsData} = useQueryProducts(item.slug);
+
+  const {count = 0} = productsData || {};
+
   const imageUrl = item?.photo ? {uri: item?.photo?.url} : dummyCover;
-  const discoverText =
-    item.productCountByCategory > 1
-      ? `${item.productCountByCategory} products`
-      : `${item.productCountByCategory} product`;
+  const discoverText = count > 1 ? `${count} products` : `${count} product`;
+
   return (
     <TouchableOpacity
       className=" mt-5 w-full border border-gray-D4D4D8"
@@ -61,7 +63,7 @@ export function useQuerySupplier(searchString: String, extraOpts = {}) {
       first: 100,
       skip: 0,
       searchString,
-      fields: 'id,name,slug,productCountByCategory',
+      fields: 'id,name,slug',
       include: 'photo(id,url,width,height,signedKey,filename,contentType)',
       orderBy: {createdAt: 'desc'},
       filter: {status: 'ACTIVE'},

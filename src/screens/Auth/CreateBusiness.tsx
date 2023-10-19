@@ -77,20 +77,20 @@ export default function CreateBusiness({
     }, true);
   }
 
-  const handleOpenComplete = useCallback(async () => {
+  const handleOpenComplete = async () => {
     const {data, success, message} = await completeSignUpProfile();
     if (!success) {
       Toast.show(message, Toast.LONG);
       return;
     }
 
-    setState({authStatus: 'NOT_AUTH'});
-    // saveAuthData({
-    //   token: authData.token,
-    //   refreshToken: authData.refreshToken,
-    // });
-    // setState({authStatus: 'BUYER_COMPLETED'});
-  }, [completeSignUpProfile]);
+    const {authData} = data;
+    saveAuthData({
+      token: authData?.token,
+      refreshToken: authData?.refreshToken,
+    });
+    setState({authStatus: 'BUYER_COMPLETED'});
+  };
 
   const handleUpdateProfile = async () => {
     const validFields = validateInputs({

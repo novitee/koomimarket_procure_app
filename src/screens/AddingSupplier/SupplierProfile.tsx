@@ -40,10 +40,10 @@ function useQuerySupplier(slug: string) {
   return useQuery([url, params]);
 }
 
-function useQueryProducts(slug: string, skip = 0) {
-  const url = 'products';
+export function useQueryProducts(slug: string, skip = 0) {
+  const url = slug ? 'products' : undefined;
   const params = {
-    first: 5,
+    first: 999,
     skip: skip,
     orderBy: {
       soldOut: 'asc',

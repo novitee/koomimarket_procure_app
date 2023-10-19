@@ -89,7 +89,7 @@ export default function SupplierDetailScreen({
       <Text className="text-lg font-semibold mt-5">{`Currently a customer of ${supplierName}`}</Text>
       <Text className="mt-2">
         {isCustomerPurchased
-          ? `${['YES', linkedAccountNumber].join(' - ')}`
+          ? `${['YES', linkedAccountNumber]?.filter(Boolean)?.join(' - ')}`
           : 'NO'}
       </Text>
       {manualSupplierId && (

@@ -70,10 +70,13 @@ export default function EditItemSheet({
       }
     }
   }
-  const categoriesOptions = (categories || []).map(cat => ({
-    label: cat.name,
-    value: cat.slug,
-  }));
+  const categoriesOptions = (categories || [])
+    .map(cat => ({
+      label: cat.name,
+      value: cat.slug,
+    }))
+    .filter(cat => cat.value !== 'uncategorized');
+
   return (
     <BottomSheet ref={bottomSheetRef} isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
