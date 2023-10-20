@@ -14,7 +14,7 @@ function _keyExtractor(item: any, index: number) {
 function resolveContact(data: any) {
   const {phoneNumbers, givenName, familyName} = data || {};
   let phoneNumber = phoneNumbers ? phoneNumbers[0]?.number : '';
-  phoneNumber = phoneNumber.replace(/[\+\-\(\)\s]/g, '');
+  phoneNumber = (phoneNumber || '').replace(/[+\-()\s]/g, '');
   if (phoneNumber.length > 8) {
     phoneNumber = phoneNumber.replace(
       new RegExp(`^${DEFAULT_COUNTRY_CODE}`),
