@@ -22,7 +22,7 @@ function useQueryCategories(supplierId: string) {
       position: 'asc',
     },
     supplierFilter: {
-      id: supplierId,
+      _id: supplierId,
     },
     filter: {
       depth: 0,
