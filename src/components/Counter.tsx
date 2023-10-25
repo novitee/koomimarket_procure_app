@@ -5,6 +5,7 @@ import PlusIcon from 'assets/images/plus.svg';
 import MinusIcon from 'assets/images/minus.svg';
 import colors from 'configs/colors';
 import Text from './Text';
+import {isDecimal, isNumber} from 'utils/validate';
 interface CounterProps {
   defaultValue: number;
   onChange: (value: number) => void;
@@ -12,13 +13,6 @@ interface CounterProps {
   min?: number;
   allowDecimal?: boolean;
   unit?: string;
-}
-
-function isNumber(value: string): boolean {
-  return /^\d+$/.test(value);
-}
-function isDecimal(value: string): boolean {
-  return /^\d+(\.\d*)?$/.test(value);
 }
 
 function parsePrecision(value: number): number {
@@ -110,6 +104,8 @@ function Counter({
           inputClassName="text-center px-0 py-0"
           className="rounded-none border-0 flex-1 "
           keyboardType={allowDecimal ? 'decimal-pad' : 'number-pad'}
+          enablesReturnKeyAutomatically
+          returnKeyType="done"
           onBlur={() => {
             if (allowDecimal) {
               const v = parsePrecision(parseFloat(value));

@@ -5,7 +5,8 @@ import Button from 'components/Button';
 import BottomSheet from 'components/BottomSheet';
 import Input from 'components/Input';
 import useMutation from 'libs/swr/useMutation';
-import {toCurrency} from 'utils/format';
+import {formatDecimalPlaces, toCurrency} from 'utils/format';
+import {isDecimal, isNumber} from 'utils/validate';
 export default function ToggleUpdateProduct({
   isOpen,
   supplierId,
@@ -41,6 +42,15 @@ export default function ToggleUpdateProduct({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item]);
 
+  function handleSetPricing(text: string) {
+    if (text !== '' && !isDecimal(text)) {
+      return;
+    }
+
+    text = formatDecimalPlaces(text, 2);
+    setPricing(text);
+  }
+
   return (
     <BottomSheet isOpen={isOpen} contentHeight={550}>
       <View className="pb-10 px-5 pt-5 flex-1">
@@ -58,14 +68,16 @@ export default function ToggleUpdateProduct({
               <Input
                 keyboardType="decimal-pad"
                 className="rounded-lg"
+                enablesReturnKeyAutomatically
+                returnKeyType="done"
                 // eslint-disable-next-line react/no-unstable-nested-components
                 StartComponent={() => (
                   <View className="flex-row items-center ml-2">
                     <Text className="text-gray-500 text-center ">$</Text>
                   </View>
                 )}
-                value={pricing}
-                onChangeText={setPricing}
+                value={pricing.toString()}
+                onChangeText={handleSetPricing}
               />
             </View>
           </View>

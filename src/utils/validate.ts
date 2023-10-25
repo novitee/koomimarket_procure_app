@@ -13,3 +13,10 @@ export function validatePostalCode(code: string): boolean {
   const re = /^\d+$/;
   return re.test(String(code).toLowerCase());
 }
+
+export function isNumber(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+export function isDecimal(value: string): boolean {
+  return /^\d+(\.\d*)?$/.test(value);
+}
