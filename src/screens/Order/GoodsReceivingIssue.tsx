@@ -20,24 +20,8 @@ import PlusIcon from 'assets/images/plus-circle.svg';
 import colors from 'configs/colors';
 import {useModal} from 'libs/modal';
 import CloseCircleIcon from 'assets/images/check_no_active.svg';
+import {REASON_OPTIONS} from 'utils/constants';
 
-const reasonOptions = [
-  {
-    id: 2,
-    name: 'Wrong Quantity',
-    value: 'WRONG_AMOUNT',
-  },
-  {
-    id: 3,
-    name: 'Poor Quality',
-    value: 'POOR_QUALITY',
-  },
-  {
-    id: 4,
-    name: 'Other',
-    value: 'OTHER',
-  },
-];
 export default function GoodsReceivingIssue({
   navigation,
   route,
@@ -128,7 +112,7 @@ export default function GoodsReceivingIssue({
       <KeyboardAvoidingView>
         <ScrollView className="flex-1 mt-5">
           <View className="border border-gray-D1D5DB divide-y divide-gray-D1D5DB">
-            {reasonOptions.map((item: any) => (
+            {REASON_OPTIONS.map((item: any) => (
               <TouchableOpacity
                 onPress={() => dispatch({reason: item, render: true})}
                 key={item.id}

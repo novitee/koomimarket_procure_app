@@ -270,16 +270,18 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
                 <Text className="text-primary">Manage List</Text>
               </TouchableOpacity>
             </View>
-            <View className="bg-gray-100 px-5 py-3 mt-4">
-              <Text className="font-medium">{`Minimum Order Amount: ${toCurrency(
-                minOrderAmount,
-                'SGD',
-              )}`}</Text>
-              <Text className="text-xs text-gray-500 leading-none mt-1">
-                This supplier has a minimum order value. Additional costs may
-                occur if orders are placed under this amount.
-              </Text>
-            </View>
+            {minOrderAmount > 0 && (
+              <View className="bg-gray-100 px-5 py-3 mt-4">
+                <Text className="font-medium">{`Minimum Order Amount: ${toCurrency(
+                  minOrderAmount,
+                  'SGD',
+                )}`}</Text>
+                <Text className="text-xs text-gray-500 leading-none mt-1">
+                  If orders placed are less than the minimum order value for
+                  this supplier, additional fees may be incurred.
+                </Text>
+              </View>
+            )}
           </View>
         )}
         <KeyboardAvoidingView>
@@ -305,8 +307,8 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
               Estimated Order Total: {toCurrency(estimatedTotal, 'SGD')}
             </Text>
             <Text className="text-sm font-light mt-2 mb-2">
-              All prices to all products to see the estimated order total
-              Missing product
+              This is an estimated pricing. For the final pricing, please refer
+              to the invoice.
             </Text>
             <Button
               disabled={!allowCheckout || loading}

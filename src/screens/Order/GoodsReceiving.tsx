@@ -7,6 +7,7 @@ import YesNoCheckBox from 'components/YesNoCheckBox';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import useMutation from 'libs/swr/useMutation';
 import Toast from 'react-native-simple-toast';
+import {REASON_OPTIONS} from 'utils/constants';
 function LineItem({
   item,
   onCheck,
@@ -22,6 +23,10 @@ function LineItem({
       ? 'no'
       : 'yes'
     : undefined;
+  const deliveryCheckReasonText = REASON_OPTIONS.find(
+    r => r.name === deliveryCheck?.reason,
+  )?.value;
+
   return (
     <View className="flex-row items-center py-6 border-b border-gray-400">
       <Text className="text-30 font-bold w-16 text-center">{qty}</Text>
@@ -29,7 +34,7 @@ function LineItem({
         <Text className="font-bold">{name}</Text>
         <Text className="font-light mt-2">{uom}</Text>
         {deliveryCheckReason && (
-          <Text className="font-medium text-error mt-2">{`Issue: ${deliveryCheckReason}`}</Text>
+          <Text className="font-medium text-error mt-2">{`Issue: ${deliveryCheckReasonText}`}</Text>
         )}
       </View>
       <YesNoCheckBox value={value} onChange={onCheck} />

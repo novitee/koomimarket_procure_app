@@ -213,7 +213,7 @@ export default function FinalizeOrderScreen({
           Estimated Order Total: {toCurrency(total, 'SGD')}
         </Text>
         <Text className="text-sm font-light mt-2">
-          All prices to all products to see the estimated order total
+          For the final pricing, please refer to the invoice
         </Text>
       </ScrollView>
 

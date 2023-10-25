@@ -7,7 +7,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import React, {useCallback, useReducer, useState} from 'react';
+import React, {useCallback, useReducer} from 'react';
 import Container from 'components/Container';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 import Button from 'components/Button';
@@ -65,7 +65,6 @@ export default function AddingProductFormScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     openNewCategory: false,
@@ -98,10 +97,6 @@ export default function AddingProductFormScreen({
   function reducer(state: any, action: any) {
     let updatedValues = state;
 
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
     updatedValues = {
       ...updatedValues,
       ...action,
@@ -128,15 +123,15 @@ export default function AddingProductFormScreen({
   } = values;
 
   const handleChange = useCallback((key: string, item: any) => {
-    dispatch({[key]: item, render: true});
+    dispatch({[key]: item});
   }, []);
 
   const handleToggleAddingCategory = useCallback((openNewCategory: boolean) => {
-    dispatch({openNewCategory, render: true});
+    dispatch({openNewCategory});
   }, []);
 
   const handleToggleAddingUOM = useCallback((openNewUOM: boolean) => {
-    dispatch({openNewUOM, render: true});
+    dispatch({openNewUOM});
   }, []);
 
   const handleCreatedCategory = useCallback(
@@ -155,24 +150,16 @@ export default function AddingProductFormScreen({
     [handleChange, refreshUOMList],
   );
   async function handleSave() {
-    if (
-      !productName ||
-      !unitOfMeasure ||
-      !price ||
-      !category ||
-      images.length < 1
-    ) {
+    if (!productName || !unitOfMeasure || !price || !category) {
       Toast.show('Please fill in all required fields', Toast.LONG);
       return;
     }
 
     const imagesInput = images.map((img: any) => ({
+      ...img,
       url: img.uri,
-      width: img.width,
-      height: img.height,
       filename: img.fileName,
       contentType: img.type,
-      signedKey: img.signedKey,
     }));
 
     const params = {
@@ -291,7 +278,7 @@ export default function AddingProductFormScreen({
               </View>
             </FormGroup>
             <FormGroup>
-              <Label required>Image</Label>
+              <Label>Image</Label>
               <ImagePicker
                 onChange={(assets: any) =>
                   handleChange('images', [...images, ...assets])

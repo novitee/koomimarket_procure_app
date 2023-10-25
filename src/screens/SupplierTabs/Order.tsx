@@ -25,7 +25,7 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
-import {ORDER_STATUS} from 'utils/constaints';
+import {ORDER_STATUS} from 'utils/constants';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -71,18 +71,18 @@ function OrderItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {supplier, status, lineItems, deliveryDate} = item;
+  const {supplier, status, lineItems, deliveryDate, orderedAt} = item;
   return (
     <TouchableOpacity
       onPress={onPress}
       className=" items-center rounded-lg border border-gray-D4D4D8 p-4 mb-4">
       <View className="flex-row">
         <Avatar size={40} name={supplier.name} url={supplier?.photo?.url} />
-        <View className="flex-1 justify-center ml-4 mr-2">
-          <Text className="font-bold text-16 w-3/4">{supplier.name}</Text>
-          <Text className="text-14 text-gray-400">{`Delivered by ${dayjs(
-            deliveryDate,
-          ).format('MM/DD/YYYY (ddd)')}`}</Text>
+        <View className="flex-1 justify-start ml-2 mr-2 w-3/4 ">
+          <Text className="font-bold text-16 ">{supplier.name}</Text>
+          <Text className="text-14 text-gray-400">
+            {`Ordered ${dayjs(orderedAt).format('ddd, DD MMM')}`}
+          </Text>
         </View>
         <StatusBadge status={status} />
       </View>
@@ -97,10 +97,10 @@ function OrderItem({
       </View>
       {deliveryDate && status === 'COMPLETED' && (
         <View className="flex-row w-full items-center mt-3">
-          <Text className="text-14 text-red-500 flex-shrink-0 truncate mr-4">
-            Order Received
+          <CheckIcon color={colors.green} className="w-6 h-6" />
+          <Text className="text-14 text-[#16D66E] flex-shrink-0 truncate ml-2">
+            Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`}
           </Text>
-          <CheckIcon color={colors.primary.DEFAULT} />
         </View>
       )}
     </TouchableOpacity>
@@ -112,7 +112,8 @@ function useQueryOrders(searchString: string, filter: any) {
   const params = {
     first: 100,
     skip: 0,
-    fields: 'id,orderNo,orderedAt,lineItems,status,deliveryDate,total',
+    fields:
+      'id,orderNo,orderedAt,lineItems,status,deliveryDate,total,orderedAt',
     include: 'supplier(name,photo)',
     searchString,
     orderBy: {
@@ -148,16 +149,8 @@ const orderStatuses = [
     value: ORDER_STATUS['confirmed'],
   },
   {
-    label: 'Packed',
-    value: ORDER_STATUS['packed'],
-  },
-  {
     label: 'Completed',
     value: ORDER_STATUS['delivered'],
-  },
-  {
-    label: 'Cancelled',
-    value: ORDER_STATUS['cancelled'],
   },
   {
     label: 'Issue',
@@ -249,8 +242,8 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
     <Container>
       <SearchBar onSearch={handleSearch} />
       <View className="flex-row pt-4">
-        {deliveryFilters.map(item => (
-          <View className="flex-1 items-center" key={item.value}>
+        {deliveryFilters.map((item, index) => (
+          <View className="flex-1 items-center" key={index}>
             <TouchableOpacity
               onPress={() => handleChangeListFilter(item.value)}
               className={clsx({

@@ -2,23 +2,21 @@ import {View, ViewProps} from 'react-native';
 import React from 'react';
 import {styled} from 'nativewind';
 import Text from './Text';
-import {ORDER_STATUS} from 'utils/constaints';
+import {ORDER_STATUS} from 'utils/constants';
 interface StatusBadgeProps extends ViewProps {
   status?: string;
 }
 
 const convertStatus = (status: string | undefined) => {
-  let result = Object.keys(ORDER_STATUS).find(key => {
-    if (ORDER_STATUS[key] === status) {
-      return key;
-    }
-  });
+  let result = Object.keys(ORDER_STATUS).find(
+    key => ORDER_STATUS[key] === status,
+  );
   if (!result) return '';
   return result.charAt(0).toUpperCase() + result.slice(1).toLowerCase();
 };
 const StyledView = styled(
   View,
-  'px-3 py-2 flex-row items-center justify-center self-start border rounded',
+  'px-2 py-2 flex-row items-center justify-center self-start border rounded-lg',
 );
 
 const colors: Record<string, string> = {
@@ -37,7 +35,7 @@ export default function StatusBadge({status, ...props}: StatusBadgeProps) {
         borderColor: colors[status || ''],
       }}>
       <View
-        className="rounded-full w-2.5 h-2.5"
+        className="rounded-full w-4 h-4"
         style={{
           backgroundColor: colors[status || ''],
         }}
@@ -45,7 +43,7 @@ export default function StatusBadge({status, ...props}: StatusBadgeProps) {
       <Text
         className="ml-2 text-14 font-semibold"
         style={{color: colors[status || '']}}>
-        {convertStatus(status)}
+        {convertStatus(status).toUpperCase()}
       </Text>
     </StyledView>
   );
