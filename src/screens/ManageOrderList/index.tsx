@@ -78,7 +78,7 @@ export default function ManageOrderListScreen({
     data: categoryData,
     isLoading: isCategoryLoading,
     mutate: refreshCategories,
-  } = useQuery(['filter-categories', {supplierId}]);
+  } = useQuery(['categories', {supplierId}]);
   const categories = categoryData?.records || [];
   const [values, dispatch] = useReducer(reducer, {
     selectedIds: [],
@@ -246,7 +246,9 @@ export default function ManageOrderListScreen({
             {categories.map((category: any, index: any) => {
               if (
                 productSections.find(
-                  (section: any) => section.category.id === category.id,
+                  (section: any) =>
+                    section.category.id === category.id &&
+                    section.data.length > 0,
                 )
               ) {
                 return (

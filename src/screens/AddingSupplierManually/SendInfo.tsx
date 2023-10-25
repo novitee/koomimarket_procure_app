@@ -1,4 +1,4 @@
-import {ActivityIndicator, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, TouchableOpacity, View, Image} from 'react-native';
 import React, {useLayoutEffect, useReducer, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Container from 'components/Container';
@@ -105,13 +105,17 @@ export default function SendInfo({
 
   function handleSelectPhoto(assets: any) {
     dispatch({
-      photos: assets,
+      photos: assets.map((asset: any) => ({
+        ...asset,
+        filename: asset?.fileName,
+        url: asset?.uri,
+      })),
       errors: {
         photos: !(assets?.length > 0),
       },
     });
   }
-
+  console.log('photos :>> ', photos);
   return (
     <>
       <ProgressBar total={5} step={5} tag="AddSupplierManually" />
@@ -171,11 +175,13 @@ export default function SendInfo({
 
                 <View className="mt-3">
                   {photos.map((photo: any, index: number) => (
-                    <View key={index} className="flex-row items-center">
-                      <DocIcon color={colors.primary.DEFAULT} />
-                      <Text className="text-primary font-medium ml-2 text-sm">
-                        {photo.fileName}
-                      </Text>
+                    <View key={index} className="">
+                      <Image
+                        source={{uri: photo?.url}}
+                        resizeMode="cover"
+                        resizeMethod="scale"
+                        className="w-32 h-32 rounded-lg bg-slate-200"
+                      />
                     </View>
                   ))}
                 </View>

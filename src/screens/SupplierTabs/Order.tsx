@@ -268,9 +268,9 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
           hidden: listFilteredBy === 'TODAY_RECEIVING',
         })}>
         <ScrollView horizontal className="py-3">
-          {orderStatuses.map(item => (
+          {orderStatuses.map((item, index) => (
             <TouchableOpacity
-              key={item.value}
+              key={index}
               onPress={() => dispatch({filteredBy: item.value})}
               className={clsx({
                 'py-2 px-3 border mr-2 rounded-lg': true,
