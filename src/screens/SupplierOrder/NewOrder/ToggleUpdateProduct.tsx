@@ -1,12 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import Text from 'components/Text';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import Button from 'components/Button';
 import BottomSheet from 'components/BottomSheet';
 import Input from 'components/Input';
 import useMutation from 'libs/swr/useMutation';
 import {formatDecimalPlaces, toCurrency} from 'utils/format';
 import {isDecimal, isNumber} from 'utils/validate';
+import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 export default function ToggleUpdateProduct({
   isOpen,
   supplierId,
@@ -52,10 +53,10 @@ export default function ToggleUpdateProduct({
   }
 
   return (
-    <BottomSheet isOpen={isOpen} contentHeight={550}>
+    <BottomSheet isOpen={isOpen} contentHeight={570}>
       <View className="pb-10 px-5 pt-5 flex-1">
         <View className="flex-1">
-          <View className="border-b border-gray-300 pb-10">
+          <View className="border-b border-gray-300 pb-5 ">
             <Text className="text-primary font-semibold text-xl text-center">{`Edit ${item?.name} price`}</Text>
           </View>
           <View className="flex-row justify-between mt-10">
@@ -76,7 +77,7 @@ export default function ToggleUpdateProduct({
                     <Text className="text-gray-500 text-center ">$</Text>
                   </View>
                 )}
-                value={pricing.toString()}
+                value={pricing?.toString()}
                 onChangeText={handleSetPricing}
               />
             </View>

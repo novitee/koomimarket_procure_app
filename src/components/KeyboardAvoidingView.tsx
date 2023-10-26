@@ -14,7 +14,7 @@ export default function KeyboardAvoidingView({
   return (
     <StyledView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 35 : 70}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 70}
       {...props}>
       {children}
     </StyledView>

@@ -25,7 +25,7 @@ export default function GoodsReceivingDone({
 
   return (
     <Container className="items-center justify-center">
-      <Text className="text-36 font-semibold text-primary">
+      <Text className="text-36 font-semibold text-primary text-center">
         Thank you for the order!
       </Text>
       <View className="w-[281px]">

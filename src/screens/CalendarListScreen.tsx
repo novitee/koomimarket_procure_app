@@ -21,9 +21,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
     });
   }, [headerTitle, navigation]);
 
-  const [selected, setSelected] = useState(
-    initialDate || dayjs(new Date()).format('YYYY-MM-DD'),
-  );
+  const [selected, setSelected] = useState(initialDate);
   const marked = useMemo(() => {
     return {
       [selected]: {
