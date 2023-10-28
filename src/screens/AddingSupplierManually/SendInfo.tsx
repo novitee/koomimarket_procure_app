@@ -17,6 +17,7 @@ import Toast from 'react-native-simple-toast';
 import ProgressBar from 'components/ProgressBar';
 import Clipboard from '@react-native-clipboard/clipboard';
 import clsx from 'libs/clsx';
+import CloseCircleIcon from 'assets/images/check_no_active.svg';
 
 type ManualOrderOptions = {
   method: string;
@@ -115,7 +116,13 @@ export default function SendInfo({
       },
     });
   }
-  console.log('photos :>> ', photos);
+  function removeImage(uri: string) {
+    dispatch({
+      photos: photos.filter((i: any) => i.url !== uri),
+      render: true,
+    });
+  }
+
   return (
     <>
       <ProgressBar total={5} step={5} tag="AddSupplierManually" />
@@ -173,7 +180,7 @@ export default function SendInfo({
                   )}
                 </ImagePicker>
 
-                <View className="mt-3">
+                <View className="flex-row w-full flex-wrap pt-3 gap-4">
                   {photos.map((photo: any, index: number) => (
                     <View key={index} className="">
                       <Image
@@ -182,6 +189,11 @@ export default function SendInfo({
                         resizeMethod="scale"
                         className="w-32 h-32 rounded-lg bg-slate-200"
                       />
+                      <TouchableOpacity
+                        className="absolute -right-2 -top-2 z-50 bg-white rounded-full"
+                        onPress={() => removeImage(photo?.url)}>
+                        <CloseCircleIcon width={24} height={24} />
+                      </TouchableOpacity>
                     </View>
                   ))}
                 </View>

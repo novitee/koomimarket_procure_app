@@ -26,7 +26,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
     return {
       [selected]: {
         selected: true,
-        disableTouchEvent: true,
+        disableTouchEvent: false,
         selectedColor: colors.primary.DEFAULT,
         selectedTextColor: 'white',
       },
@@ -35,6 +35,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
 
   const onDayPress = useCallback(
     (day: DateData) => {
+      console.log(`1 :>>`, 1);
       setSelected(day.dateString);
       onSelectDay?.(day.dateString);
       navigation.goBack();

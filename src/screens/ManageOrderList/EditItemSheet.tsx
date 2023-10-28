@@ -14,6 +14,7 @@ export default function EditItemSheet({
   categories,
   itemSlug,
   supplierId,
+  onDeleteItem,
 }: {
   isOpen?: boolean;
   selectedItem?: any;
@@ -21,6 +22,7 @@ export default function EditItemSheet({
   categories?: any[];
   itemSlug: string;
   supplierId: string;
+  onDeleteItem?: () => void;
 }) {
   const initialItem = {productName: '', category: ''};
   const [item, setItem] = useState(initialItem);
@@ -62,7 +64,7 @@ export default function EditItemSheet({
       };
 
       const response = await updateItem(params);
-      const {data, success, error, message} = response;
+      const {success, error, message} = response;
       if (success) {
         onClose(true);
       } else {
@@ -110,7 +112,11 @@ export default function EditItemSheet({
                   }
                 }}
                 onOpen={() => bottomSheetRef.current?.close()}
-                onBack={() => bottomSheetRef.current?.open()}
+                onBack={() => {
+                  setTimeout(() => {
+                    bottomSheetRef.current?.open();
+                  }, 50);
+                }}
                 title={'Select Category'}
                 value={{value: category}}
                 options={categoriesOptions}
@@ -119,20 +125,25 @@ export default function EditItemSheet({
           </View>
         </View>
 
-        <View className="flex-row">
-          <Button
-            variant="outline"
-            onPress={() => onClose()}
-            className="flex-1">
-            Cancel
+        <View>
+          <Button variant="outline" onPress={onDeleteItem}>
+            Delete Item
           </Button>
-          <Button
-            loading={updateItemLoading}
-            onPress={handleSave}
-            disabled={!canUpdate}
-            className="flex-1 ml-2">
-            Save
-          </Button>
+          <View className="flex-row mt-6">
+            <Button
+              variant="outline"
+              onPress={() => onClose()}
+              className="flex-1">
+              Cancel
+            </Button>
+            <Button
+              loading={updateItemLoading}
+              onPress={handleSave}
+              disabled={!canUpdate}
+              className="flex-1 ml-2">
+              Save
+            </Button>
+          </View>
         </View>
       </View>
     </BottomSheet>

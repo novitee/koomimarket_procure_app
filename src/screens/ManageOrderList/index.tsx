@@ -31,18 +31,14 @@ const ADD_CATEGORY_ITEM = 'ADD_CATEGORY_ITEM';
 function ProductItem({
   item,
   onEdit,
-  onSelect,
-  selected,
 }: {
   item?: any;
   onEdit?: () => void;
-  onSelect: () => void;
   selected: boolean;
 }) {
   return (
     <View className="flex-row items-center justify-between p-4 border-b border-gray-400">
       <View className="flex-row items-center">
-        <CheckBox onChange={onSelect} defaultValue={selected} />
         <Text className="font-bold">{item.name}</Text>
       </View>
       <TouchableOpacity className="p-2" onPress={onEdit}>
@@ -138,44 +134,17 @@ export default function ManageOrderListScreen({
     });
   }, []);
 
-  const handleSelect = useCallback(
-    (item: any) => {
-      const newSelectedIds = toggleValueInArray(item.id, values.selectedIds);
-      navigation.setOptions({
-        // eslint-disable-next-line react/no-unstable-nested-components
-        headerLeft: () =>
-          newSelectedIds.length > 0 ? (
-            <TouchableOpacity
-              className="items-center justify-center px-3"
-              onPress={() => dispatch({showSheet: REMOVE_ITEMS})}>
-              <TrashIcon color={colors.primary.DEFAULT} />
-            </TouchableOpacity>
-          ) : (
-            <BackButton canGoBack goBack={navigation.goBack} />
-          ),
-      });
-
-      dispatch({
-        selectedIds: newSelectedIds,
-
-        CheckBox,
-      });
-    },
-    [navigation, values.selectedIds],
-  );
-
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       return (
         <ProductItem
           onEdit={() => handleEdit(item)}
-          onSelect={() => handleSelect(item)}
           item={item}
           selected={values.selectedIds.includes(item.id)}
         />
       );
     },
-    [handleEdit, handleSelect, values.selectedIds],
+    [handleEdit, values.selectedIds],
   );
 
   const _renderSectionHeader = useCallback(
@@ -306,6 +275,19 @@ export default function ManageOrderListScreen({
         onClose={handleCloseEditItemSheet}
         itemSlug={selectedEditItem?.slug}
         supplierId={supplierId}
+        onDeleteItem={() => {
+          const deletedItem = selectedEditItem;
+          dispatch({
+            selectedEditItem: null,
+          });
+
+          setTimeout(() => {
+            dispatch({
+              showSheet: REMOVE_ITEMS,
+              selectedIds: [deletedItem?.id],
+            });
+          }, 300);
+        }}
       />
       <RemoveCategorySheet
         isOpen={showSheet === REMOVE_CATEGORY}
