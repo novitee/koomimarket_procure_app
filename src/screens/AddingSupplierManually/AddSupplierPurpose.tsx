@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -24,38 +24,28 @@ export default function AddSupplierPurpose({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
-    purchasedSupplier: null,
+    isCustomerPurchased: null,
     accountNumber: '',
   });
   const {supplierName} = route?.params || {};
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
-  const {purchasedSupplier, accountNumber} = values;
+  const {isCustomerPurchased, accountNumber} = values;
 
   function handleNext() {
     const params = {
-      isCustomerPurchased: !purchasedSupplier,
+      isCustomerPurchased: isCustomerPurchased,
       linkedAccountNumber: accountNumber,
       supplierName,
     };
     navigation.navigate('AddSupplierContact', params);
   }
 
-  const isDisabled = purchasedSupplier === null;
+  const isDisabled = isCustomerPurchased === null;
   return (
     <>
       <ProgressBar total={5} step={2} tag="AddSupplierManually" />
@@ -71,14 +61,14 @@ export default function AddSupplierPurpose({
                 key={option.label}
                 className="flex-1"
                 variant={
-                  option.id === purchasedSupplier ? 'primary' : 'secondary'
+                  option.id === isCustomerPurchased ? 'primary' : 'secondary'
                 }
-                onPress={() => dispatch({purchasedSupplier: option.id})}>
+                onPress={() => dispatch({isCustomerPurchased: option.id})}>
                 {option.label}
               </Button>
             ))}
           </View>
-          {!!purchasedSupplier && (
+          {!!isCustomerPurchased && (
             <FormGroup className="mt-10">
               <Label>Your Customer Account Number (Optional)</Label>
               <Input onChangeText={text => dispatch({accountNumber: text})} />

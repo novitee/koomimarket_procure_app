@@ -1,5 +1,5 @@
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
 import Container from 'components/Container';
 import Button from 'components/Button';
 import Input from 'components/Input';
@@ -39,7 +39,6 @@ export default function AddSupplierContact({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     orderCreationMethod: null,
@@ -54,16 +53,7 @@ export default function AddSupplierContact({
     route?.params || {};
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   const {name, orderCreationMethod, phoneCode, phoneNumber, emails} = values;
