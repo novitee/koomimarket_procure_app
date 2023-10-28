@@ -52,3 +52,14 @@ export function toCurrency(
     .format(value)
     .replace('SGD', 'S$');
 }
+
+export function formatDecimalPlaces(value: string, numberOfDecimal: number) {
+  if (!value) {
+    return '';
+  }
+  if (value.endsWith('.')) {
+    return value;
+  }
+  const regex = new RegExp(`^(\\d+.?\\d{0,${numberOfDecimal}})\\d*$`);
+  return value.toString().replace(regex, '$1');
+}

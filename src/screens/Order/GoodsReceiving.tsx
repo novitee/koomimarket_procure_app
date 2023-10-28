@@ -34,7 +34,9 @@ function LineItem({
         <Text className="font-bold">{name}</Text>
         <Text className="font-light mt-2">{uom}</Text>
         {deliveryCheckReason && (
-          <Text className="font-medium text-error mt-2">{`Issue: ${deliveryCheckReasonText}`}</Text>
+          <Text className="font-medium text-error mt-2">{`Issue: ${
+            deliveryCheckReasonText || '-'
+          }`}</Text>
         )}
       </View>
       <YesNoCheckBox value={value} onChange={onCheck} />
