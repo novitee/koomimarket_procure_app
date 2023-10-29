@@ -11,7 +11,7 @@ const StyledTextInput = styled(
 
 const StyledContainerView = styled(
   View,
-  'h-[50px] bg-white flex-row relative border border-gray-300 rounded',
+  'h-[50px] bg-white flex-row relative border border-gray-300 rounded overflow-hidden',
 );
 
 export interface RNTextInputProps extends TextInputProps {
@@ -36,7 +36,7 @@ export default function Input({
     <StyledContainerView
       style={style}
       className={clsx({
-        'bg-gray-EEF3FD/50': props.editable === false,
+        'bg-gray-EEF3FD/50 ': props.editable === false,
         'border-red-500': !!error,
       })}>
       {StartComponent && <StartComponent />}

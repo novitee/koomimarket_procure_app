@@ -179,6 +179,8 @@ export default function GoodsReceivingScreen({
     const {data, success, error, message} = response || {};
 
     if (!success) {
+      console.log('error :>> ', error);
+      console.log('message :>> ', message);
       Toast.show("Couldn't update the delivery status", Toast.LONG);
       return;
     }

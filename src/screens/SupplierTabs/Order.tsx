@@ -57,9 +57,11 @@ const convertFilter = (params: any) => {
     let now = dayjs();
     filter = {
       ...filter,
+      status_ne: ORDER_STATUS['completed'],
       deliveryDate_gte: now.startOf('day').valueOf(),
       deliveryDate_lte: now.endOf('day').valueOf(),
     };
+    console.log('filter :>> ', filter);
   }
   return filter;
 };
@@ -150,7 +152,7 @@ const orderStatuses = [
   },
   {
     label: 'Completed',
-    value: ORDER_STATUS['delivered'],
+    value: ORDER_STATUS['completed'],
   },
   {
     label: 'Issue',

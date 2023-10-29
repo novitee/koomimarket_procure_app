@@ -113,6 +113,10 @@ export default function OrderDetailScreen({
   > = ({nativeEvent: {position}}) => {
     setSelectedPage(position);
   };
+  const isTodayDeliveryDate = dayjs(deliveryDate).isSame(dayjs(), 'day');
+  const shouldShowReceived =
+    (status === 'SUBMITTED' && isTodayDeliveryDate) ||
+    (readyForDeliveryCheck && status === 'ACKNOWLEDGED');
 
   return (
     <Container className="px-0">
@@ -214,7 +218,7 @@ export default function OrderDetailScreen({
           </View>
         </ScrollView>
       </PagerView>
-      {readyForDeliveryCheck && status === 'ACKNOWLEDGED' && (
+      {shouldShowReceived && (
         <View className="px-5">
           <Button
             onPress={() =>

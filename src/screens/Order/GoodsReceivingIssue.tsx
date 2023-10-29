@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
 import Container from 'components/Container';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
@@ -21,36 +21,36 @@ import colors from 'configs/colors';
 import {useModal} from 'libs/modal';
 import CloseCircleIcon from 'assets/images/check_no_active.svg';
 import {REASON_OPTIONS} from 'utils/constants';
-
+import Toast from 'react-native-simple-toast';
 export default function GoodsReceivingIssue({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
   const {lineItem, onUpdateIssue} = route.params || {};
-
-  const [currentState, setCurrentState] = useState(0);
   const {showModal, closeModal} = useModal();
-
   const [values, dispatch] = useReducer(reducer, {
-    render: false,
     reason: null,
     showedNotice: false,
+    comment: '',
+    photos: [],
+    requestTroubleQuantity: '',
+    errors: {},
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   function handleUpdateIssue() {
+    if (
+      ['WRONG_AMOUNT', 'POOR_QUALITY'].includes(reason?.value) &&
+      !requestTroubleQuantity
+    ) {
+      dispatch({errors: {requestTroubleQuantity: true}});
+      Toast.show('Please enter all required fields', Toast.LONG);
+      return;
+    }
+
     const newItem = {
       ...lineItem,
       deliveryCheck: {
@@ -67,13 +67,12 @@ export default function GoodsReceivingIssue({
   }
 
   function handleSelectPhoto(assets: any) {
-    dispatch({photos: assets, render: true});
+    dispatch({photos: assets});
   }
 
   function removeImage(uri: string) {
     dispatch({
       photos: photos.filter((i: any) => i.uri !== uri),
-      render: true,
     });
   }
   function handlePickImage(onPick: (() => void) | undefined) {
@@ -96,7 +95,16 @@ export default function GoodsReceivingIssue({
     }
   }
 
-  const {reason, requestTroubleQuantity, photos} = values;
+  const {reason, requestTroubleQuantity, photos, comment, errors} = values;
+
+  function handleChangeRequestTroubleQuantity(text: string) {
+    dispatch({
+      requestTroubleQuantity: text,
+      errors: {
+        requestTroubleQuantity: !text,
+      },
+    });
+  }
 
   return (
     <Container>
@@ -114,7 +122,7 @@ export default function GoodsReceivingIssue({
           <View className="border border-gray-D1D5DB divide-y divide-gray-D1D5DB">
             {REASON_OPTIONS.map((item: any) => (
               <TouchableOpacity
-                onPress={() => dispatch({reason: item, render: true})}
+                onPress={() => dispatch({reason: item})}
                 key={item.id}
                 className="flex-row items-center justify-between px-3 py-6">
                 <Text>{item.name}</Text>
@@ -140,18 +148,25 @@ export default function GoodsReceivingIssue({
                 <Input
                   placeholder="e.g. 0.8kg"
                   value={requestTroubleQuantity}
-                  onChangeText={(text: string) =>
-                    dispatch({requestTroubleQuantity: text, render: true})
-                  }
+                  onChangeText={handleChangeRequestTroubleQuantity}
                   inputType="amount"
                   decimalPlaces={2}
+                  keyboardType="numeric"
+                  error={errors.requestTroubleQuantity}
+                  EndComponent={() => (
+                    <View className="flex-row items-center px-2 bg-gray-EEF3FD ">
+                      <Text className="text-gray-500 font-semibold">
+                        {lineItem?.uom}
+                      </Text>
+                    </View>
+                  )}
                 />
               </FormGroup>
             )}
 
             {reason && (
               <FormGroup>
-                <Label required>Leave a comment</Label>
+                <Label>Leave a comment</Label>
                 <Input
                   multiline={true}
                   numberOfLines={6}
@@ -159,13 +174,14 @@ export default function GoodsReceivingIssue({
                   textAlignVertical={'top'}
                   className="h-[100px]"
                   scrollEnabled={false}
-                  onChangeText={text => dispatch({comment: text, render: true})}
+                  onChangeText={text => dispatch({comment: text})}
+                  value={comment}
                 />
               </FormGroup>
             )}
             {reason && reason.id !== 1 && (
               <FormGroup>
-                <Label required>Add photo</Label>
+                <Label>Add photo</Label>
                 <ImagePicker onChange={handleSelectPhoto}>
                   {({onPick, progress}) => (
                     <TouchableOpacity

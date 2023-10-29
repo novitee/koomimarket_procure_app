@@ -35,7 +35,6 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
 
   const onDayPress = useCallback(
     (day: DateData) => {
-      console.log(`1 :>>`, 1);
       setSelected(day.dateString);
       onSelectDay?.(day.dateString);
       navigation.goBack();
