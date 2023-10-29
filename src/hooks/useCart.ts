@@ -9,7 +9,6 @@ export default function useCart() {
     isLoading,
     mutate: refreshCart,
   } = useQuery('get-current-cart', {
-    immutable: true,
     onError(err) {
       const {statusCode} = err;
 
