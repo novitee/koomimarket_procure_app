@@ -43,8 +43,9 @@ export default function GoodsReceivingIssue({
 
   function handleUpdateIssue() {
     if (
-      ['WRONG_AMOUNT', 'POOR_QUALITY'].includes(reason?.value) &&
-      !requestTroubleQuantity
+      (['WRONG_AMOUNT', 'POOR_QUALITY'].includes(reason?.value) &&
+        !requestTroubleQuantity) ||
+      (['OTHER'].includes(reason?.value) && !comment)
     ) {
       dispatch({errors: {requestTroubleQuantity: true}});
       Toast.show('Please enter all required fields', Toast.LONG);
@@ -166,7 +167,9 @@ export default function GoodsReceivingIssue({
 
             {reason && (
               <FormGroup>
-                <Label>Leave a comment</Label>
+                <Label required={reason.value === 'OTHER'}>
+                  Leave a comment
+                </Label>
                 <Input
                   multiline={true}
                   numberOfLines={6}
@@ -174,8 +177,16 @@ export default function GoodsReceivingIssue({
                   textAlignVertical={'top'}
                   className="h-[100px]"
                   scrollEnabled={false}
-                  onChangeText={text => dispatch({comment: text})}
+                  onChangeText={text =>
+                    dispatch({
+                      comment: text,
+                      errors: {
+                        comment: !text,
+                      },
+                    })
+                  }
                   value={comment}
+                  error={errors.comment && reason.value === 'OTHER'}
                 />
               </FormGroup>
             )}
