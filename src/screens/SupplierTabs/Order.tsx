@@ -61,7 +61,6 @@ const convertFilter = (params: any) => {
       deliveryDate_gte: now.startOf('day').valueOf(),
       deliveryDate_lte: now.endOf('day').valueOf(),
     };
-    console.log('filter :>> ', filter);
   }
   return filter;
 };

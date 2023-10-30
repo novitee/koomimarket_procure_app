@@ -2,7 +2,7 @@ import React, {useReducer, useState, useCallback, useEffect} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import Label from 'components/Form/Label';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {DynamicColorIOS, ScrollView, StyleSheet, View} from 'react-native';
 import Button from 'components/Button';
 import FormGroup from 'components/Form/FormGroup';
 import Input from 'components/Input';
@@ -123,8 +123,14 @@ export default function FinalizeOrderScreen({
       portalOrderUrl: '/orders',
     });
 
+    const {message, details} = error || {};
+    let errorMessage = details
+      ? "Please update your outlet's information before proceeding"
+      : message;
+
+    console.log('error :>> ', error);
     if (!success) {
-      Toast.show(error?.message, Toast.LONG);
+      Toast.show(errorMessage, Toast.LONG);
       return;
     }
     const checkoutData = await handleCreateOfflinePaymentOrders();

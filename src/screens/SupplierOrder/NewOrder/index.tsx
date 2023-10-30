@@ -217,7 +217,9 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         supplier,
       });
     } else {
-      Toast.show(error?.message || message, Toast.LONG);
+      const {message, details} = error || {};
+      let errorMessage = details ? Object.values(details)[0] : message;
+      Toast.show(errorMessage, Toast.LONG);
     }
   }, [generateCheckoutCart, cartDetails]);
 
@@ -311,7 +313,9 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
               to the invoice.
             </Text>
             <Button
-              disabled={!allowCheckout || loading}
+              disabled={
+                !allowCheckout || loading || estimatedTotal < minOrderAmount
+              }
               onPress={handleCheckoutCart}>
               Next
             </Button>
