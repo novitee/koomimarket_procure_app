@@ -40,7 +40,7 @@ export default function GoodsReceivingDone({
           </>
         ) : (
           <>
-            <Text className="text-gray-700 font-medium mt-4 text-16 ">
+            <Text className="text-gray-700 font-medium mt-4 text-16 text-center">
               We have sent your feedback to the supplier.
             </Text>
           </>
