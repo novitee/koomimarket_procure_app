@@ -102,10 +102,9 @@ export default function SupplierDetailScreen({
             (orderCreationMethod === 'BOTH' && (
               <Text className="mt-2">{`Phone: +${orderMobileCode} ${orderMobileNumber}`}</Text>
             ))}
-          {orderCreationMethod === 'EMAIL' ||
-            (orderCreationMethod === 'BOTH' && (
-              <Text className="mt-2">{`Email: ${emails?.join(', ')}`}</Text>
-            ))}
+          {['EMAIL', 'BOTH'].includes(orderCreationMethod) && (
+            <Text className="mt-2">{`Email: ${emails?.join(', ')}`}</Text>
+          )}
         </>
       )}
     </Container>

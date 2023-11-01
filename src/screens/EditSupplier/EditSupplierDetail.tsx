@@ -18,17 +18,17 @@ import Toast from 'react-native-simple-toast';
 
 const options = [
   {
-    id: false,
-    label: 'No',
-  },
-  {
     id: true,
     label: 'Yes',
   },
+  {
+    id: false,
+    label: 'No',
+  },
 ];
 
-const WHATSAPP = 'Whatsapp';
-const EMAIL = 'Email';
+const WHATSAPP = 'WHATSAPP';
+const EMAIL = 'EMAIL';
 const BOTH = 'BOTH';
 
 const contactOptions = [

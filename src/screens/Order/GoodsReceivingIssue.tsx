@@ -99,10 +99,17 @@ export default function GoodsReceivingIssue({
   const {reason, requestTroubleQuantity, photos, comment, errors} = values;
 
   function handleChangeRequestTroubleQuantity(text: string) {
+    let error = '';
+    if (
+      typeof parseFloat(text) === 'number' &&
+      parseFloat(text) > lineItem.qty
+    ) {
+      error = `Must be less than ${lineItem.qty}`;
+    }
     dispatch({
       requestTroubleQuantity: text,
       errors: {
-        requestTroubleQuantity: !text,
+        requestTroubleQuantity: error ? error : !text,
       },
     });
   }
@@ -154,6 +161,7 @@ export default function GoodsReceivingIssue({
                   decimalPlaces={2}
                   keyboardType="numeric"
                   error={errors.requestTroubleQuantity}
+                  // eslint-disable-next-line react/no-unstable-nested-components
                   EndComponent={() => (
                     <View className="flex-row items-center px-2 bg-gray-EEF3FD ">
                       <Text className="text-gray-500 font-semibold">
@@ -162,6 +170,11 @@ export default function GoodsReceivingIssue({
                     </View>
                   )}
                 />
+                {typeof errors.requestTroubleQuantity === 'string' && (
+                  <Text className="text-error mt-2">
+                    {errors.requestTroubleQuantity}
+                  </Text>
+                )}
               </FormGroup>
             )}
 
@@ -235,7 +248,9 @@ export default function GoodsReceivingIssue({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Button disabled={!reason} onPress={handleUpdateIssue}>
+      <Button
+        disabled={!reason || errors.requestTroubleQuantity}
+        onPress={handleUpdateIssue}>
         Confirm
       </Button>
     </Container>
