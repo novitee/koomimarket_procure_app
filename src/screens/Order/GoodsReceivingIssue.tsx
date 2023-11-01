@@ -27,13 +27,16 @@ export default function GoodsReceivingIssue({
   route,
 }: NativeStackScreenProps<any>) {
   const {lineItem, onUpdateIssue} = route.params || {};
+  const {deliveryCheck} = lineItem || {};
   const {showModal, closeModal} = useModal();
   const [values, dispatch] = useReducer(reducer, {
-    reason: null,
+    reason: REASON_OPTIONS.find(
+      (opt: any) => opt?.value === deliveryCheck.reason,
+    ),
     showedNotice: false,
-    comment: '',
-    photos: [],
-    requestTroubleQuantity: '',
+    comment: deliveryCheck?.comment,
+    photos: deliveryCheck?.photos || [],
+    requestTroubleQuantity: deliveryCheck?.requestTroubleQuantity,
     errors: {},
   });
 

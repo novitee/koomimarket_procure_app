@@ -57,7 +57,7 @@ function Counter({
     let newAmount = parseFloat((value || min).toString()) - 1;
     newAmount = parsePrecision(newAmount);
     if (newAmount <= min) {
-      newAmount = 0;
+      newAmount = min;
     }
     if (max && newAmount > max) {
       newAmount = max;
@@ -68,8 +68,8 @@ function Counter({
 
   function handleChange(v: string) {
     if (v === '') {
-      setValue('0');
-      onChange(0);
+      setValue(min.toString());
+      onChange(min);
       return;
     } else if (!isValidTypeNumber(v, allowDecimal)) {
       setValue(value);

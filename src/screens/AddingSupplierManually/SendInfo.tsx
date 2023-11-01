@@ -88,7 +88,7 @@ export default function SendInfo({
     }
     const response = await newManualOrder(opts);
     const {data, success, error} = response || {};
-    console.log('response :>> ', response);
+
     if (!success) {
       Toast.show(error?.message, Toast.LONG);
       return false;

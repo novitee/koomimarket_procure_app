@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import Text from 'components/Text';
 import {TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
 import Counter from 'components/Counter';
@@ -34,6 +34,12 @@ export default function OrderItem({
     },
     [updateItemQty],
   );
+
+  useEffect(() => {
+    if (!!item && !item?.procureQty && item?.minOfQty > 0) {
+      handleUpdateQty(item?.minOfQty);
+    }
+  }, [item]);
 
   return (
     <View className="flex-row items-center justify-between rounded-lg p-5 w-full">

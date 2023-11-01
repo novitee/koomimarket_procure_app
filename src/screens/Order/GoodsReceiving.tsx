@@ -1,5 +1,5 @@
 import {FlatList, View} from 'react-native';
-import React, {useCallback, useMemo, useReducer, useState} from 'react';
+import React, {useCallback, useMemo, useReducer} from 'react';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import Button from 'components/Button';
@@ -24,8 +24,8 @@ function LineItem({
       : 'yes'
     : undefined;
   const deliveryCheckReasonText = REASON_OPTIONS.find(
-    r => r.name === deliveryCheck?.reason,
-  )?.value;
+    r => r.value === deliveryCheck?.reason,
+  )?.name;
 
   return (
     <View className="flex-row items-center py-6 border-b border-gray-400">
@@ -48,7 +48,6 @@ export default function GoodsReceivingScreen({
   route,
 }: NativeStackScreenProps<any>) {
   const {orderNo, lineItems} = route.params || {};
-  const [currentState, setCurrentState] = useState(0);
   const [values, dispatch] = useReducer(reducer, {
     render: false,
     lineItemData: lineItems.map((item: any) => ({
@@ -65,16 +64,7 @@ export default function GoodsReceivingScreen({
   });
 
   function reducer(state: any, action: any) {
-    const updatedValues = state;
-
-    if (action.render) {
-      setCurrentState(1 - currentState);
-    }
-
-    return {
-      ...updatedValues,
-      ...action,
-    };
+    return {...state, ...action};
   }
 
   const {lineItemData} = values;
@@ -95,6 +85,7 @@ export default function GoodsReceivingScreen({
           lineItem: {
             ...item,
             deliveryCheck: {
+              ...(item.deliveryCheck || {}),
               status: 'TROUBLED',
             },
           },
@@ -179,8 +170,6 @@ export default function GoodsReceivingScreen({
     const {data, success, error, message} = response || {};
 
     if (!success) {
-      console.log('error :>> ', error);
-      console.log('message :>> ', message);
       Toast.show("Couldn't update the delivery status", Toast.LONG);
       return;
     }

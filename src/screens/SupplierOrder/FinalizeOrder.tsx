@@ -128,7 +128,6 @@ export default function FinalizeOrderScreen({
       ? "Please update your outlet's information before proceeding"
       : message;
 
-    console.log('error :>> ', error);
     if (!success) {
       Toast.show(errorMessage, Toast.LONG);
       return;
