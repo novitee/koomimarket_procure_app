@@ -1,5 +1,5 @@
 import {View, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
-import React, {createRef, useLayoutEffect, useState} from 'react';
+import React, {createRef, useCallback, useLayoutEffect, useState} from 'react';
 import PagerView, {
   PagerViewOnPageSelectedEventData,
 } from 'react-native-pager-view';
@@ -15,6 +15,7 @@ import Button from 'components/Button';
 import {BackButton} from 'navigations/common';
 import {toCurrency} from 'utils/format';
 import useQuery from 'libs/swr/useQuery';
+import ViewIssuesSheet from './ViewIssuesSheet';
 const tabs = [
   {
     id: 'items_ordered',
@@ -70,6 +71,8 @@ export default function OrderDetailScreen({
   const {data, mutate} = useQueryOrder(orderNo);
   const {order} = data || {};
 
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const {
     readyForDeliveryCheck,
     remarks,
@@ -118,120 +121,138 @@ export default function OrderDetailScreen({
     (status === 'SUBMITTED' && isTodayDeliveryDate) ||
     (readyForDeliveryCheck && status === 'ACKNOWLEDGED');
 
+  const handleSelectItem = useCallback((item: any) => {
+    setSelectedItem(item);
+  }, []);
+
   return (
-    <Container className="px-0">
-      <View className="flex-row">
-        {tabs.map((tab, index: number) => (
-          <TouchableOpacity
-            onPress={() => pageViewRef.current?.setPage(index)}
-            className={clsx({
-              'flex-1 border-b-2 py-2': true,
-              'border-primary': index === selectedPage,
-              'border-gray-D4D4D8': index !== selectedPage,
-            })}
-            key={tab.id}>
-            <View className="items-center justify-center flex-row">
-              <Text className="text-center font-medium">{tab.label}</Text>
-              {tab.id === 'remarks' && remarks && (
-                <View className="ml-3 rounded-full w-5 h-5 bg-primary items-center justify-center">
-                  <Text className="text-white">1</Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <PagerView
-        onPageSelected={onPageSelected}
-        className={'flex-1'}
-        ref={pageViewRef}
-        initialPage={0}>
-        <ScrollView
-          key={0}
-          className="flex-1"
-          contentContainerStyle={styles.scrollViewContent}>
-          {(status === 'COMPLETED' || status === 'CANCELED') && (
-            <LineButton
-              onPress={() => navigation.navigate('AddingProductType')}
-              className="border-t border-gray-D4D4D8">
-              Repeat Order
-            </LineButton>
-          )}
-          {lineItems.map((item: any, index: number) => (
-            <View
-              className="flex-row items-center py-6 border-b border-gray-400"
-              key={index}>
-              <Text className="text-30 font-bold w-16 text-center">
-                {item.qty}
-              </Text>
-              <View className="flex-1">
-                <Text className="font-bold">{item.name}</Text>
-                <Text className="font-light mt-2">{item.uom}</Text>
+    <>
+      <Container className="px-0">
+        <View className="flex-row">
+          {tabs.map((tab, index: number) => (
+            <TouchableOpacity
+              onPress={() => pageViewRef.current?.setPage(index)}
+              className={clsx({
+                'flex-1 border-b-2 py-2': true,
+                'border-primary': index === selectedPage,
+                'border-gray-D4D4D8': index !== selectedPage,
+              })}
+              key={tab.id}>
+              <View className="items-center justify-center flex-row">
+                <Text className="text-center font-medium">{tab.label}</Text>
+                {tab.id === 'remarks' && remarks && (
+                  <View className="ml-3 rounded-full w-5 h-5 bg-primary items-center justify-center">
+                    <Text className="text-white">1</Text>
+                  </View>
+                )}
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
-          <View className="px-4">
-            <Text className="mt-6 font-bold">
-              Estimated Order Total: {toCurrency(total, 'SGD')}
-            </Text>
-            <Text className="text-sm font-light mt-2">
-              KoomiMarket does not guarantee the accuracy of prices and does not
-              assume liability for errors.
-            </Text>
-          </View>
-        </ScrollView>
-        <View key={1} className="p-4">
-          {!!remarks && <Text>{remarks}</Text>}
-          {!remarks && (
-            <Text className="text-center text-gray-600 mt-2">No comment</Text>
-          )}
         </View>
-        <ScrollView
-          key={2}
-          className="flex-1 p-4"
-          contentContainerStyle={styles.scrollViewContent}>
-          <View className="border border-gray-900 rounded-xl px-3 divide-y divide-gray-900">
-            {orderSummary.map(([label, value]: any) => {
-              return (
-                <View
-                  key={label}
-                  className="flex-row items-center justify-between py-4">
-                  <Text className="font-semibold">{label}</Text>
-                  {label === 'Status' ? (
-                    <StatusBadge status={value} />
-                  ) : (
-                    <Text className="font-semibold">{value}</Text>
-                  )}
+        <PagerView
+          onPageSelected={onPageSelected}
+          className={'flex-1'}
+          ref={pageViewRef}
+          initialPage={0}>
+          <ScrollView
+            key={0}
+            className="flex-1"
+            contentContainerStyle={styles.scrollViewContent}>
+            {(status === 'COMPLETED' || status === 'CANCELED') && (
+              <LineButton
+                onPress={() => navigation.navigate('AddingProductType')}
+                className="border-t border-gray-D4D4D8">
+                Repeat Order
+              </LineButton>
+            )}
+            {lineItems.map((item: any, index: number) => (
+              <View
+                className="flex-row items-center py-6 border-b border-gray-400"
+                key={index}>
+                <Text className="text-30 font-bold w-16 text-center">
+                  {item.qty}
+                </Text>
+                <View className="flex-1">
+                  <Text className="font-bold">{item.name}</Text>
+                  <Text className="font-light mt-2">{item.uom}</Text>
+                  {/* NOTE: for testing only, need to check later */}
+                  <TouchableOpacity
+                    className="mt-2"
+                    onPress={() => handleSelectItem(item)}>
+                    <Text className=" text-error underline ">View Issues</Text>
+                  </TouchableOpacity>
                 </View>
-              );
-            })}
+              </View>
+            ))}
+            <View className="px-4">
+              <Text className="mt-6 font-bold">
+                Estimated Order Total: {toCurrency(total, 'SGD')}
+              </Text>
+              <Text className="text-sm font-light mt-2">
+                KoomiMarket does not guarantee the accuracy of prices and does
+                not assume liability for errors.
+              </Text>
+            </View>
+          </ScrollView>
+          <View key={1} className="p-4">
+            {!!remarks && <Text>{remarks}</Text>}
+            {!remarks && (
+              <Text className="text-center text-gray-600 mt-2">No comment</Text>
+            )}
           </View>
-          <View>
-            {orderDetails.map(([label, value]: any) => {
-              return (
-                <View key={label} className="mt-4">
-                  <Text className="font-semibold">{label}</Text>
-                  <Text className="mt-1 text-sm">{value}</Text>
-                </View>
-              );
-            })}
+          <ScrollView
+            key={2}
+            className="flex-1 p-4"
+            contentContainerStyle={styles.scrollViewContent}>
+            <View className="border border-gray-900 rounded-xl px-3 divide-y divide-gray-900">
+              {orderSummary.map(([label, value]: any) => {
+                return (
+                  <View
+                    key={label}
+                    className="flex-row items-center justify-between py-4">
+                    <Text className="font-semibold">{label}</Text>
+                    {label === 'Status' ? (
+                      <StatusBadge status={value} />
+                    ) : (
+                      <Text className="font-semibold">{value}</Text>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+            <View>
+              {orderDetails.map(([label, value]: any) => {
+                return (
+                  <View key={label} className="mt-4">
+                    <Text className="font-semibold">{label}</Text>
+                    <Text className="mt-1 text-sm">{value}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </PagerView>
+        {shouldShowReceived && (
+          <View className="px-5">
+            <Button
+              onPress={() =>
+                navigation.navigate('GoodsReceiving', {
+                  orderNo: orderNo,
+                  lineItems: lineItems,
+                })
+              }>
+              I have received the order
+            </Button>
           </View>
-        </ScrollView>
-      </PagerView>
-      {shouldShowReceived && (
-        <View className="px-5">
-          <Button
-            onPress={() =>
-              navigation.navigate('GoodsReceiving', {
-                orderNo: orderNo,
-                lineItems: lineItems,
-              })
-            }>
-            I have received the order
-          </Button>
-        </View>
-      )}
-    </Container>
+        )}
+      </Container>
+
+      <ViewIssuesSheet
+        isOpen={!!selectedItem}
+        onCancel={() => setSelectedItem(null)}
+        selectedItem={selectedItem}
+      />
+    </>
   );
 }
 

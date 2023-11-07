@@ -19,6 +19,7 @@ import StatusBadge from 'components/StatusBadge';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import CheckIcon from 'assets/images/check.svg';
+import IssueIcon from 'assets/images/issue.svg';
 import SearchBar from 'components/SearchBar';
 import useSearch from 'hooks/useSearch';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
@@ -101,6 +102,16 @@ function OrderItem({
           <CheckIcon color={colors.green} className="w-6 h-6" />
           <Text className="text-14 text-[#16D66E] flex-shrink-0 truncate ml-2">
             Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`}
+          </Text>
+        </View>
+      )}
+      {/* TODO: need to check later */}
+      {deliveryDate && status === 'ISSUE' && (
+        <View className="flex-row w-full items-center mt-3">
+          <IssueIcon className="w-6 h-6" />
+          <Text className="text-14 text-[#EAB308] flex-shrink-0 truncate ml-2">
+            Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`},
+            with issues
           </Text>
         </View>
       )}
