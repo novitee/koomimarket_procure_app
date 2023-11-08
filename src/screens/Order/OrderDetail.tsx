@@ -16,6 +16,7 @@ import {BackButton} from 'navigations/common';
 import {toCurrency} from 'utils/format';
 import useQuery from 'libs/swr/useQuery';
 import ViewIssuesSheet from './ViewIssuesSheet';
+
 const tabs = [
   {
     id: 'items_ordered',
@@ -165,25 +166,33 @@ export default function OrderDetailScreen({
                 Repeat Order
               </LineButton>
             )}
-            {lineItems.map((item: any, index: number) => (
-              <View
-                className="flex-row items-center py-6 border-b border-gray-400"
-                key={index}>
-                <Text className="text-30 font-bold w-16 text-center">
-                  {item.qty}
-                </Text>
-                <View className="flex-1">
-                  <Text className="font-bold">{item.name}</Text>
-                  <Text className="font-light mt-2">{item.uom}</Text>
-                  {/* NOTE: for testing only, need to check later */}
-                  <TouchableOpacity
-                    className="mt-2"
-                    onPress={() => handleSelectItem(item)}>
-                    <Text className=" text-error underline ">View Issues</Text>
-                  </TouchableOpacity>
+            {lineItems.map((item: any, index: number) => {
+              const {deliveryCheck} = item || {};
+              return (
+                <View
+                  className="flex-row items-center py-6 border-b border-gray-400"
+                  key={index}>
+                  <Text className="text-30 font-bold w-16 text-center">
+                    {item.qty}
+                  </Text>
+                  <View className="flex-1">
+                    <Text className="font-bold">{item.name}</Text>
+                    <Text className="font-light mt-2">{item.uom}</Text>
+                    {deliveryCheck?.status === 'NOTHING' ? (
+                      <Text className=" text-[#22C55E] ">No Issue</Text>
+                    ) : (
+                      <TouchableOpacity
+                        className="mt-2"
+                        onPress={() => handleSelectItem(item)}>
+                        <Text className=" text-error underline ">
+                          View Issues
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
             <View className="px-4">
               <Text className="mt-6 font-bold">
                 Estimated Order Total: {toCurrency(total, 'SGD')}
