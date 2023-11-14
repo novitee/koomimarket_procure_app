@@ -25,7 +25,7 @@ const colors: Record<string, string> = {
   COMPLETED: '#16D66E',
   RESOLVED: '#16D66E',
   CANCELED: '#EF4444',
-  ACKNOWLEDGED: '#EAB308',
+  ACKNOWLEDGED: '#f97315',
   RESOLVING: '#EAB308',
 };
 
