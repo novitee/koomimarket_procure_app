@@ -23,8 +23,10 @@ const colors: Record<string, string> = {
   '': '#374151',
   SUBMITTED: '#374151',
   COMPLETED: '#16D66E',
+  RESOLVED: '#16D66E',
   CANCELED: '#EF4444',
   ACKNOWLEDGED: '#EAB308',
+  RESOLVING: '#EAB308',
 };
 
 export default function StatusBadge({status, ...props}: StatusBadgeProps) {
@@ -43,7 +45,9 @@ export default function StatusBadge({status, ...props}: StatusBadgeProps) {
       <Text
         className="ml-2 text-14 font-semibold"
         style={{color: colors[status || '']}}>
-        {convertStatus(status).toUpperCase()}
+        {status === 'RESOLVED'
+          ? 'COMPLETE'
+          : convertStatus(status).toUpperCase()}
       </Text>
     </StyledView>
   );

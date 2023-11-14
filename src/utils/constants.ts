@@ -4,7 +4,8 @@ export const ORDER_STATUS: any = {
   packed: 'PACKED',
   completed: 'COMPLETED',
   cancelled: 'CANCELED',
-  resolving: 'RESOLVING',
+  issue: 'RESOLVING',
+  resolved: 'RESOLVED',
 };
 
 export const REASON_OPTIONS = [

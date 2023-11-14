@@ -16,6 +16,8 @@ import {BackButton} from 'navigations/common';
 import {toCurrency} from 'utils/format';
 import useQuery from 'libs/swr/useQuery';
 import ViewIssuesSheet from './ViewIssuesSheet';
+import CheckIcon from 'assets/images/check.svg';
+import colors from 'configs/colors';
 
 const tabs = [
   {
@@ -54,7 +56,7 @@ function useQueryOrder(orderNo: string) {
   const url = orderNo ? `orders/${orderNo}` : undefined;
   const params = {
     fields:
-      'id,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck',
+      'id,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck,resolvedAt,resolvedRemarks',
     include: 'supplier(name)',
   };
   return useQuery([url, params]);
@@ -70,6 +72,7 @@ export default function OrderDetailScreen({
   const {orderNo} = route.params || {};
 
   const {data, mutate} = useQueryOrder(orderNo);
+
   const {order} = data || {};
 
   const [selectedItem, setSelectedItem] = useState(null);
@@ -159,7 +162,9 @@ export default function OrderDetailScreen({
             key={0}
             className="flex-1"
             contentContainerStyle={styles.scrollViewContent}>
-            {(status === 'COMPLETED' || status === 'CANCELED') && (
+            {(status === 'COMPLETED' ||
+              status === 'RESOLVED' ||
+              status === 'CANCELED') && (
               <LineButton
                 onPress={() => navigation.navigate('AddingProductType')}
                 className="border-t border-gray-D4D4D8">
@@ -178,16 +183,36 @@ export default function OrderDetailScreen({
                   <View className="flex-1">
                     <Text className="font-bold">{item.name}</Text>
                     <Text className="font-light mt-2">{item.uom}</Text>
-                    {deliveryCheck?.status === 'NOTHING' ? (
-                      <Text className=" text-[#22C55E] ">No Issue</Text>
-                    ) : (
-                      <TouchableOpacity
-                        className="mt-2"
-                        onPress={() => handleSelectItem(item)}>
-                        <Text className=" text-error underline ">
-                          View Issues
-                        </Text>
-                      </TouchableOpacity>
+                    {deliveryCheck?.status === 'NOTHING' && (
+                      <Text className=" text-[#22C55E] mt-2 ">No Issue</Text>
+                    )}
+
+                    {deliveryCheck?.status === 'TROUBLED' && (
+                      <>
+                        {status === 'RESOLVED' ? (
+                          <View className="flex-1 flex-row items-center mt-2">
+                            <CheckIcon
+                              color={colors.green}
+                              className="w-6 h-6"
+                            />
+                            <TouchableOpacity
+                              className=" ml-2"
+                              onPress={() => handleSelectItem(item)}>
+                              <Text className="text-[#22C55E] underline">
+                                Issue Solved
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        ) : (
+                          <TouchableOpacity
+                            className="mt-2"
+                            onPress={() => handleSelectItem(item)}>
+                            <Text className=" text-error underline ">
+                              View Issues
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      </>
                     )}
                   </View>
                 </View>
@@ -260,6 +285,7 @@ export default function OrderDetailScreen({
         isOpen={!!selectedItem}
         onCancel={() => setSelectedItem(null)}
         selectedItem={selectedItem}
+        order={order}
       />
     </>
   );

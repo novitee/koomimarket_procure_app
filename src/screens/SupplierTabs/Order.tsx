@@ -53,7 +53,13 @@ const convertFilter = (params: any) => {
       ...filter,
       status: filteredBy,
     };
+  } else if (filteredBy === 'COMPLETED') {
+    filter = {
+      ...filter,
+      status_in: [ORDER_STATUS['completed'], ORDER_STATUS['resolved']],
+    };
   }
+
   if (listFilteredBy !== 'ALL_ORDERS') {
     let now = dayjs();
     filter = {
@@ -66,6 +72,20 @@ const convertFilter = (params: any) => {
   return filter;
 };
 
+const convertOrderBy = (params: any) => {
+  const {filteredBy} = params || {};
+  if (['ALL', 'COMPLETED', 'RESOLVING'].includes(filteredBy)) {
+    return {
+      updatedAt: 'desc',
+      orderedAt: 'desc',
+    };
+  } else {
+    return {
+      orderedAt: 'desc',
+    };
+  }
+};
+
 function OrderItem({
   item,
   onPress,
@@ -73,7 +93,8 @@ function OrderItem({
   item: any;
   onPress?: TouchableOpacityProps['onPress'];
 }) {
-  const {supplier, status, lineItems, deliveryDate, orderedAt} = item;
+  const {supplier, status, lineItems, deliveryDate, orderedAt, resolvedAt} =
+    item;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -97,16 +118,25 @@ function OrderItem({
           color={colors.primary.DEFAULT}
         />
       </View>
-      {deliveryDate && status === 'COMPLETED' && (
+      {status === 'COMPLETED' && (
         <View className="flex-row w-full items-center mt-3">
           <CheckIcon color={colors.green} className="w-6 h-6" />
           <Text className="text-14 text-[#16D66E] flex-shrink-0 truncate ml-2">
-            Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`}
+            Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`},
+            no issues
           </Text>
         </View>
       )}
-      {/* TODO: need to check later */}
-      {deliveryDate && status === 'ISSUE' && (
+      {status === 'RESOLVED' && (
+        <View className="flex-row w-full items-center mt-3">
+          <CheckIcon color={colors.green} className="w-6 h-6" />
+          <Text className="text-14 text-[#16D66E] flex-shrink-0 truncate ml-2">
+            Order received on {`${dayjs(deliveryDate).format('DD/MM/YYYY')}`},
+            issue solved on {`${dayjs(resolvedAt).format('DD/MM/YYYY')}`}
+          </Text>
+        </View>
+      )}
+      {deliveryDate && status === 'RESOLVING' && (
         <View className="flex-row w-full items-center mt-3">
           <IssueIcon className="w-6 h-6" />
           <Text className="text-14 text-[#EAB308] flex-shrink-0 truncate ml-2">
@@ -119,7 +149,7 @@ function OrderItem({
   );
 }
 
-function useQueryOrders(searchString: string, filter: any) {
+function useQueryOrders(searchString: string, filter: any, orderBy: any) {
   const url = 'orders';
   const params = {
     first: 100,
@@ -128,9 +158,7 @@ function useQueryOrders(searchString: string, filter: any) {
       'id,orderNo,orderedAt,lineItems,status,deliveryDate,total,orderedAt',
     include: 'supplier(name,photo)',
     searchString,
-    orderBy: {
-      orderedAt: 'desc',
-    },
+    orderBy,
     filter,
   };
   return useQuery([url, params]);
@@ -185,6 +213,7 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
   const {data, isLoading, mutate} = useQueryOrders(
     searchString,
     convertFilter(values),
+    convertOrderBy(values),
   );
   const {records} = data || {};
   function reducer(state: any, action: any) {

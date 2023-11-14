@@ -3,15 +3,20 @@ import React from 'react';
 import BottomSheet from 'components/BottomSheet';
 import Button from 'components/Button';
 import {REASON_OPTIONS} from 'utils/constants';
+import dayjs from 'dayjs';
+
 export default function ViewIssuesSheet({
   isOpen,
   onCancel,
   selectedItem,
+  order,
 }: {
   isOpen: boolean;
   onCancel: (refresh?: boolean) => void;
   selectedItem?: any;
+  order?: any;
 }) {
+  const {resolvedAt, status} = order || {};
   const {name, qty, uom, deliveryCheck} = selectedItem || {};
   const {reason, photos, requestTroubleQuantity, comment} = deliveryCheck || {};
   const reason_option = REASON_OPTIONS.find(r => r.value === reason);
@@ -68,9 +73,24 @@ export default function ViewIssuesSheet({
                 </View>
               </View>
             )}
+            {resolvedAt && status === 'RESOLVED' && (
+              <View>
+                <View className="flex-1 mt-4 border-black border-t-[1px]"></View>
+                <View className="flex-1 mt-4 border-black border-t-[1px]"></View>
+                <View className="flex-row justify-between items-center mt-4">
+                  <Text className=" text-[#22C55E] text-[16px] leading-6">
+                    Issue Solved:
+                  </Text>
+                  {resolvedAt && (
+                    <Text className="font-bold text-[#22C55E] text-[16px] leading-6">
+                      {dayjs(resolvedAt).format('DD/MM/YYYY')}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            )}
           </ScrollView>
         </View>
-
         <View className="flex-row">
           <Button onPress={() => onCancel()} className="flex-1">
             Close
