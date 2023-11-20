@@ -49,15 +49,18 @@ const convertFilter = (params: any) => {
   const {listFilteredBy, filteredBy} = params || {};
   let filter = {};
   if (filteredBy !== 'ALL') {
-    filter = {
-      ...filter,
-      status: filteredBy,
-    };
-  } else if (filteredBy === 'COMPLETED') {
-    filter = {
-      ...filter,
-      status_in: [ORDER_STATUS['completed'], ORDER_STATUS['resolved']],
-    };
+    if (filteredBy === 'COMPLETED') {
+      filter = {
+        ...filter,
+        status_in: [ORDER_STATUS['completed'], ORDER_STATUS['resolved']],
+      };
+    } else {
+      filter = {
+        ...filter,
+        status:
+          filteredBy === 'COMPLETED' ? ORDER_STATUS['completed'] : filteredBy,
+      };
+    }
   }
 
   if (listFilteredBy !== 'ALL_ORDERS') {
@@ -194,7 +197,7 @@ const orderStatuses = [
   },
   {
     label: 'Issue',
-    value: ORDER_STATUS['resolving'],
+    value: ORDER_STATUS['issue'],
   },
 ];
 

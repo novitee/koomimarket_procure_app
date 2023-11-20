@@ -62,7 +62,11 @@ export default function GoodsReceivingIssue({
         reason: values.reason?.value,
         comment: values.comment,
         requestTroubleQuantity: values.requestTroubleQuantity,
-        photos: values.photos || [],
+        photos: values.photos.map((photo: any) => ({
+          ...photo,
+          filename: photo?.fileName,
+          url: photo?.uri,
+        })),
       },
     };
 
