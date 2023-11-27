@@ -6,6 +6,7 @@ import dummyCover from 'assets/images/dummy_cover.png';
 import useSearch from 'hooks/useSearch';
 import {
   FlatList,
+  Image,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -37,10 +38,10 @@ function SupplierItem({
     <TouchableOpacity
       className=" mt-5 w-full border border-gray-D4D4D8"
       onPress={onPress}>
-      <Animated.Image
+      <Image
         source={imageUrl}
         className="w-full h-[112px] bg-slate-300 "
-        sharedTransitionTag={`supplier-${item.name}`}
+        // sharedTransitionTag={`supplier-${item.name}`}
       />
 
       <View className="bg-white h-14 w-14 rounded-full items-center justify-center absolute top-4 left-4">

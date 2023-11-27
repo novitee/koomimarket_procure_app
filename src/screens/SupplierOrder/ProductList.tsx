@@ -1,4 +1,4 @@
-import {Text, FlatList, TouchableOpacity, View} from 'react-native';
+import {Text, FlatList, TouchableOpacity, View, Image} from 'react-native';
 import React, {useCallback, useMemo} from 'react';
 import {PRODUCTS} from 'configs/data';
 import {toCurrency} from 'utils/format';
@@ -57,8 +57,8 @@ function ProductItem({
           <Text className="text-primary font-semibold">See Details</Text>
         </TouchableOpacity>
       </View>
-      <Animated.Image
-        sharedTransitionTag={`product-${name}`}
+      <Image
+        // sharedTransitionTag={`product-${name}`}
         source={{uri: photos?.[0]?.url}}
         className="w-[72px] h-[72px]"
       />

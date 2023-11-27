@@ -1,10 +1,12 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import Container from 'components/Container';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Animated from 'react-native-reanimated';
 import {toCurrency} from 'utils/format';
+const {width} = Dimensions.get('window');
 
+const characterLength = parseInt(String(width / 13), 10);
+ 
 export default function ProductDetailScreen({
   navigation,
   route,
@@ -14,7 +16,10 @@ export default function ProductDetailScreen({
   const {currencyCode, pricing, unit} = finalPricing || {};
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: name,
+      headerTitle:
+        name.length >= characterLength
+          ? name.slice(0, characterLength) + '...'
+          : name,
     });
   }, [name, navigation]);
 
@@ -27,10 +32,10 @@ export default function ProductDetailScreen({
 
   return (
     <Container>
-      <Animated.Image
+      <Image
         source={{uri: photos?.[0]?.url}}
         className="w-full h-[240px] bg-slate-300"
-        sharedTransitionTag={`product-${name}`}
+        // sharedTransitionTag={`product-${name}`}
       />
 
       <Text className="font-extrabold text-xl mt-5">Product details</Text>

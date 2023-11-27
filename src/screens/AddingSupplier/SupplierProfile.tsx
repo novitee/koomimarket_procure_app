@@ -180,10 +180,10 @@ export default function SupplierProfileScreen({
         backgroundColor="transparent"
       />
 
-      <Animated.Image
+      <Image
         source={imageUrl}
         className="w-screen h-[240px]"
-        sharedTransitionTag={`supplier-${name}`}
+        // sharedTransitionTag={`supplier-${name}`}
       />
       <SafeAreaView className="absolute left-4 ios:top-0 android:top-10 z-50">
         <BackButton canGoBack goBack={navigation.goBack} />
