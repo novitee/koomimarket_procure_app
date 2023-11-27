@@ -69,9 +69,11 @@ export default function OrderDetailScreen({
   const pageViewRef = createRef<PagerView>();
   const [selectedPage, setSelectedPage] = useState(0);
 
+
   const {orderNo} = route.params || {};
 
   const {data, mutate} = useQueryOrder(orderNo);
+
 
   const {order} = data || {};
 

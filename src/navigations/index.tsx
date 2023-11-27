@@ -33,10 +33,25 @@ function Navigator(): JSX.Element {
   );
 }
 
+const linking = {
+  prefixes: ['koomimarket://'],
+  config: {
+    screens: {
+      MainStack: {
+        initialRouteName: 'MyOutlets',
+        screens: {
+          OrderDetail: 'orders/:orderNo',
+        },
+      },
+    },
+  },
+};
+
 export default function Navigations() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Navigator />
     </NavigationContainer>
   );
 }
+
