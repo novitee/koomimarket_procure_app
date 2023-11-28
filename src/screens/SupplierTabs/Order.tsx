@@ -54,6 +54,11 @@ const convertFilter = (params: any) => {
         ...filter,
         status_in: [ORDER_STATUS['completed'], ORDER_STATUS['resolved']],
       };
+    } else if (filteredBy === 'ACKNOWLEDGED') {
+      filter = {
+        ...filter,
+        status_in: [ORDER_STATUS['confirmed'], 'PACKED'],
+      };
     } else {
       filter = {
         ...filter,

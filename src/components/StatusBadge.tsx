@@ -8,9 +8,9 @@ interface StatusBadgeProps extends ViewProps {
 }
 
 const convertStatus = (status: string | undefined) => {
-  let result = Object.keys(ORDER_STATUS).find(
-    key => ORDER_STATUS[key] === status,
-  );
+  let result = Object.keys(ORDER_STATUS).find(key => {
+    return ORDER_STATUS[key] === status;
+  });
   if (!result) return '';
   return result.charAt(0).toUpperCase() + result.slice(1).toLowerCase();
 };
@@ -27,6 +27,7 @@ const colors: Record<string, string> = {
   CANCELED: '#EF4444',
   ACKNOWLEDGED: '#f97315',
   RESOLVING: '#EAB308',
+  PACKED: '#f97315',
 };
 
 export default function StatusBadge({status, ...props}: StatusBadgeProps) {
@@ -45,7 +46,9 @@ export default function StatusBadge({status, ...props}: StatusBadgeProps) {
       <Text
         className="ml-2 text-14 font-semibold"
         style={{color: colors[status || '']}}>
-        {status === 'RESOLVED'
+        {status === 'PACKED'
+          ? 'CONFIRMED'
+          : status === 'RESOLVED'
           ? 'COMPLETE'
           : convertStatus(status).toUpperCase()}
       </Text>
