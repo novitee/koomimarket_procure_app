@@ -27,8 +27,6 @@ import CompleteAdding from 'screens/AddingSupplierManually/CompleteAdding';
 import SendInfo from 'screens/AddingSupplierManually/SendInfo';
 import AddTeamMemberScreen from 'screens/SupplierTabs/AddTeamMember';
 import InviteNewMemberScreen from 'screens/SupplierTabs/InviteNew';
-import {TouchableOpacity} from 'react-native';
-import Text from 'components/Text';
 import {ParamListBase, RouteProp} from '@react-navigation/native';
 import SupplierListScreen from 'screens/AddingSupplier/SupplierList';
 import SupplierGroupScreen from 'screens/AddingSupplier/SupplierGroup';
