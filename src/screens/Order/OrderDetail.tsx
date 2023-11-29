@@ -123,7 +123,7 @@ export default function OrderDetailScreen({
   const isTodayDeliveryDate = dayjs(deliveryDate).isSame(dayjs(), 'day');
   const shouldShowReceived =
     (status === 'SUBMITTED' && isTodayDeliveryDate) ||
-    (readyForDeliveryCheck && status === 'ACKNOWLEDGED');
+    (readyForDeliveryCheck && ['ACKNOWLEDGED', 'PACKAGED'].includes(status));
 
   const handleSelectItem = useCallback((item: any) => {
     setSelectedItem(item);
