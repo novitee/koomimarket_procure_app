@@ -1,11 +1,16 @@
-import {View, ScrollView} from 'react-native';
+import {View, ScrollView, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Container from 'components/Container';
 import Text from 'components/Text';
-import Button from 'components/Button';
+import colors from 'configs/colors';
 import useMutation from 'libs/swr/useMutation';
-import OtpInput from 'components/OtpInput';
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
 import {saveAuthData} from 'utils/auth';
 import {useGlobalStore} from 'stores/global';
 import {ROLE_BUYER} from 'configs/index';
@@ -13,6 +18,8 @@ import Toast from 'react-native-simple-toast';
 import useMe from 'hooks/useMe';
 import {IAppStore, setState} from 'stores/app';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
+
+const CELL_COUNT = 6;
 
 const urls: Record<string, string> = {
   signUp: 'registrations/verify-otp-code',
@@ -61,10 +68,18 @@ export default function VerifyOTP({
   }
 
   function handleChangeText(text: string) {
+    setValue(text);
     if (text.length === 6) {
       handleVerify(text);
     }
   }
+
+  const [value, setValue] = useState('');
+  const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
   return (
     <Container>
@@ -79,7 +94,27 @@ export default function VerifyOTP({
               Enter the code below
             </Text>
 
-            <OtpInput containerClassName="mt-10" onChange={handleChangeText} />
+            <CodeField
+              ref={ref}
+              {...props}
+              // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+              autoFocus
+              caretHidden={false}
+              value={value}
+              onChangeText={handleChangeText}
+              cellCount={CELL_COUNT}
+              rootStyle={styles.codeFieldRoot}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              renderCell={({index, symbol, isFocused}) => (
+                <Text
+                  key={index}
+                  style={[styles.cell, isFocused && styles.focusCell]}
+                  onLayout={getCellOnLayoutHandler(index)}>
+                  {symbol || (isFocused ? <Cursor /> : null)}
+                </Text>
+              )}
+            />
           </View>
         </ScrollView>
         {/* <View>
@@ -91,3 +126,21 @@ export default function VerifyOTP({
     </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  codeFieldRoot: {marginTop: 20, width: 320, alignSelf: 'center'},
+  cell: {
+    width: 45,
+    height: 45,
+    lineHeight: 45,
+    fontSize: 24,
+    color: '#000',
+    borderWidth: 1,
+    borderColor: colors.chevron,
+    textAlign: 'center',
+    borderRadius: 5,
+  },
+  focusCell: {
+    borderWidth: 2,
+  },
+});

@@ -72,6 +72,7 @@ export default function ImagePicker({
               body: getImageData(file) as any,
               headers: {
                 'Content-Type': file.type,
+                'x-amz-acl': 'public-read',
               } as any,
             });
 
