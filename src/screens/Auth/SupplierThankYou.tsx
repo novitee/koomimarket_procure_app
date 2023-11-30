@@ -32,7 +32,9 @@ export default function SupplierThankYouScreen({
         token: authData?.token,
         refreshToken: authData?.refreshToken,
       });
-      setState({authStatus: 'BUYER_COMPLETED'});
+      setTimeout(() => {
+        setState({authStatus: 'BUYER_COMPLETED'});
+      }, 200);
     } else {
       Toast.show(error?.message || message, Toast.LONG);
     }
