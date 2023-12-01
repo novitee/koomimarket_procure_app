@@ -32,14 +32,18 @@ export default function SupplierThankYouScreen({
         token: authData?.token,
         refreshToken: authData?.refreshToken,
       });
-      setTimeout(() => {
-        setState({authStatus: 'BUYER_COMPLETED'});
-      }, 200);
     } else {
       Toast.show(error?.message || message, Toast.LONG);
     }
   }
 
+  useEffect(() => {
+    handleComplete();
+  }, []);
+
+  function backToHome() {
+    setState({authStatus: 'BUYER_COMPLETED'});
+  }
   return (
     <Container>
       <View className="flex-1 justify-center items-center">
@@ -57,7 +61,7 @@ export default function SupplierThankYouScreen({
           className={clsx({
             'bg-gray-400 cursor-not-allowed': loadingComplete,
           })}
-          onPress={handleComplete}>
+          onPress={backToHome}>
           Back to home page
         </Button>
       </View>
