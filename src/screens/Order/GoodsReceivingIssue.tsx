@@ -44,7 +44,24 @@ export default function GoodsReceivingIssue({
     return {...state, ...action};
   }
 
-  function handleUpdateIssue() {
+  const checkIncludePhoto = () => {
+    if (photos.length === 0) {
+      showModal({
+        title: '',
+        message:
+          "Please ensure you include photo(s) of the received item when telling us an issue. Without visual evidence of the product, we won't be able to proceed with your report.",
+        onConfirm: () => {
+          closeModal();
+          handleUpdateIssue(false);
+        },
+        modifiers: {
+          confirmTitle: 'Got it',
+        },
+      });
+    }
+  };
+
+  function handleUpdateIssue(checkPhoto: boolean = true) {
     if (
       (['WRONG_AMOUNT', 'POOR_QUALITY'].includes(reason?.value) &&
         !requestTroubleQuantity) ||
@@ -52,6 +69,11 @@ export default function GoodsReceivingIssue({
     ) {
       dispatch({errors: {requestTroubleQuantity: true}});
       Toast.show('Please enter all required fields', Toast.LONG);
+      return;
+    }
+
+    if (checkPhoto) {
+      checkIncludePhoto();
       return;
     }
 
@@ -102,7 +124,6 @@ export default function GoodsReceivingIssue({
       });
     }
   }
-
   const {reason, requestTroubleQuantity, photos, comment, errors} = values;
 
   function handleChangeRequestTroubleQuantity(text: string) {
@@ -257,7 +278,7 @@ export default function GoodsReceivingIssue({
       </KeyboardAvoidingView>
       <Button
         disabled={!reason || errors.requestTroubleQuantity}
-        onPress={handleUpdateIssue}>
+        onPress={() => handleUpdateIssue()}>
         Confirm
       </Button>
     </Container>
