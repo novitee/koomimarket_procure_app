@@ -34,13 +34,18 @@ function Navigator(): JSX.Element {
 }
 
 const linking = {
-  prefixes: ['koomimarket://'],
+  prefixes: ['koomimarket://', 'https://supplier-procure.koomimarket.com'],
   config: {
     screens: {
       MainStack: {
         initialRouteName: 'MyOutlets',
         screens: {
           OrderDetail: 'orders/:orderNo',
+        },
+      },
+      AuthStack: {
+        screens: {
+          Welcome: 'login',
         },
       },
     },
@@ -54,4 +59,3 @@ export default function Navigations() {
     </NavigationContainer>
   );
 }
-

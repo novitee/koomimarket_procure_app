@@ -15,7 +15,7 @@ export const baseUrls = {
 const dashboardUrls = {
   development: 'https://supplier-procure-dev.koomimarket.com',
   staging: 'https://supplier-procure-dev.koomimarket.com',
-  production: 'https://admin-procure-dev.koomimarket.com',
+  production: 'https://supplier-procure.koomimarket.com',
 };
 
 export const BASE_URL = `${baseUrls[environment]}/api/v1/procure-storefront/`;
