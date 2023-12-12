@@ -1,6 +1,6 @@
-import {View, TouchableOpacity, Linking} from 'react-native';
+import {View, TouchableOpacity, Linking, AppState} from 'react-native';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import Container from 'components/Container';
 import Text, {Title} from 'components/Text';
 import ChevronRightIcon from 'assets/images/chevron-right.svg';
@@ -13,8 +13,11 @@ import {resetAuthData} from 'utils/auth';
 import colors from 'configs/colors';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useModal} from 'libs/modal';
+import Button from 'components/Button';
 const TERM_AND_CONDITIONS_URL = 'https://koomimarket.com/terms-and-conditions';
 const PRIVACY_POLICY_URL = 'https://koomimarket.com/privacy-policy';
+const REQUEST_DELETE_URL = 'https://koomi.com.sg/purchase/delete-request';
+
 const Divider = () => <View className="h-[1px] w-full bg-gray-D1D5DB my-2" />;
 
 const menus = [
@@ -38,6 +41,8 @@ const menus = [
 export default function SettingsScreen({
   navigation,
 }: NativeStackScreenProps<any>) {
+  const appState = useRef(AppState.currentState);
+
   const {user, refresh} = useMe();
   const isFocused = useIsFocused();
 
@@ -46,8 +51,25 @@ export default function SettingsScreen({
       if (isFocused) {
         refresh();
       }
-    }, [isFocused]),
+    }, [isFocused, refresh]),
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        refresh();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refresh]);
 
   const {navigate} = navigation;
 
@@ -76,58 +98,95 @@ export default function SettingsScreen({
     }
   }
 
-  return (
-    <Container className="px-0">
-      <Title className="text-primary px-4">Settings</Title>
-      <TouchableOpacity
-        onPress={() => navigate('EditProfile')}
-        className="flex-row items-center mt-8 p-4">
-        <View className="flex-row items-center flex-1 ">
-          <Avatar url={me?.avatar?.url} name={me?.fullName} />
-          <Text className="ml-4 text-32 font-medium flex-1">
-            {me?.fullName}
+  function onDeleteAccount() {
+    showModal({
+      title: 'Delete Account Confirmation',
+      message: (
+        <View>
+          <Text className="text-sm text-justify">
+            You are requesting to delete your account. This action will erase
+            all your data from our database. Please note that it is
+            irreversible, and the completion of this process may require up to 7
+            business days.
+          </Text>
+          <Text className="mt-2 text-sm text-justify">
+            To complete the account deletion process, you will be redirected to
+            our secure deletion page. Please take a moment to review your
+            decision carefully.
           </Text>
         </View>
-        <View>
-          <ChevronRightIcon color={colors.chevron} />
-        </View>
-      </TouchableOpacity>
-      <Divider />
-      {currentCompany && (
-        <>
-          <Text className="px-4 font-semibold">Business</Text>
-          <TouchableOpacity
-            onPress={() => navigate('EditBusiness')}
-            className="flex-row items-center mt-2 p-4">
-            <View className="flex-row items-center flex-1">
-              <Avatar
-                url={currentCompany?.photo?.url}
-                name={currentCompany?.name}
-              />
-              <Text className="ml-4 text-16 font-medium">
-                {currentCompany?.name}
-              </Text>
-            </View>
+      ),
+      onConfirm: () => {
+        Linking.openURL(REQUEST_DELETE_URL);
+        closeModal();
+      },
+      modifiers: {
+        type: 'confirm',
+        confirmTitle: 'Delete',
+      },
+    });
+  }
+
+  return (
+    <Container className="px-0">
+      <View className="flex-1">
+        <Title className="text-primary px-4">Settings</Title>
+        <TouchableOpacity
+          onPress={() => navigate('EditProfile')}
+          className="flex-row items-center mt-8 p-4">
+          <View className="flex-row items-center flex-1 ">
+            <Avatar url={me?.avatar?.url} name={me?.fullName} />
+            <Text className="ml-4 text-32 font-medium flex-1">
+              {me?.fullName}
+            </Text>
+          </View>
+          <View>
             <ChevronRightIcon color={colors.chevron} />
-          </TouchableOpacity>
-          <Divider />
-        </>
-      )}
-      <View className="px-4 gap-y-8 mt-1">
-        {menus.map(menu => {
-          return (
+          </View>
+        </TouchableOpacity>
+        <Divider />
+        {currentCompany && (
+          <>
+            <Text className="px-4 font-semibold">Business</Text>
             <TouchableOpacity
-              onPress={() => handleMenuAction(menu.id)}
-              className="flex-row items-center"
-              key={menu.id}>
-              <View className="flex-1 flex-row items-center">
-                {menu.icon}
-                <Text className="font-medium text-sm ml-2">{menu.name}</Text>
+              onPress={() => navigate('EditBusiness')}
+              className="flex-row items-center mt-2 p-4">
+              <View className="flex-row items-center flex-1">
+                <Avatar
+                  url={currentCompany?.photo?.url}
+                  name={currentCompany?.name}
+                />
+                <Text className="ml-4 text-16 font-medium">
+                  {currentCompany?.name}
+                </Text>
               </View>
               <ChevronRightIcon color={colors.chevron} />
             </TouchableOpacity>
-          );
-        })}
+            <Divider />
+          </>
+        )}
+        <View className="px-4 gap-y-8 mt-1">
+          {menus.map(menu => {
+            return (
+              <TouchableOpacity
+                onPress={() => handleMenuAction(menu.id)}
+                className="flex-row items-center"
+                key={menu.id}>
+                <View className="flex-1 flex-row items-center">
+                  {menu.icon}
+                  <Text className="font-medium text-sm ml-2">{menu.name}</Text>
+                </View>
+                <ChevronRightIcon color={colors.chevron} />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+
+      <View className="px-5 pb-2">
+        <Button variant="outline" onPress={onDeleteAccount}>
+          Delete Account
+        </Button>
       </View>
     </Container>
   );
