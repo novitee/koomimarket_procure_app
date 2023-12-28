@@ -31,7 +31,7 @@ export default function WhatYouDoScreen({
 }: NativeStackScreenProps<any>) {
   const {navigate} = navigation;
   const mode = useGlobalStore(s => s.authMode) || '';
-  const {authRegisterType} = useAppStore();
+  const {authRegisterType, authToken, authRefreshToken} = useAppStore();
 
   useEffect(() => {
     triggerNavigate(authRegisterType);
@@ -71,7 +71,11 @@ export default function WhatYouDoScreen({
       if (code === 'buyer') {
         setState({authStatus: 'BUYER_COMPLETED'});
       } else if (code === 'supplier') {
-        SUPPLIER_DASHBOARD_URL && Linking.openURL(SUPPLIER_DASHBOARD_URL);
+        SUPPLIER_DASHBOARD_URL &&
+          Linking.openURL(
+            SUPPLIER_DASHBOARD_URL +
+              `/login?token=${authToken}&refreshToken=${authRefreshToken}`,
+          );
       }
     } else if (mode === 'signUp') {
       if (code === 'buyer') {

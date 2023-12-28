@@ -66,8 +66,6 @@ export default function ManageOrderListScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
-  const [currentState, setCurrentState] = useState(0);
-
   const {supplierId} = route?.params || {};
 
   const {
@@ -84,10 +82,7 @@ export default function ManageOrderListScreen({
   });
 
   function reducer(state: any, action: any) {
-    return {
-      ...state,
-      ...action,
-    };
+    return {...state, ...action};
   }
   const {showSheet, selectedEditItem, selectedEditCategory} = values;
 
