@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   View,
+  ImageBackground,
 } from 'react-native';
 import {useQueryProducts} from './SupplierProfile';
 import Animated from 'react-native-reanimated';
@@ -38,9 +39,10 @@ function SupplierItem({
     <TouchableOpacity
       className=" mt-5 w-full border border-gray-D4D4D8"
       onPress={onPress}>
-      <Image
+      <ImageBackground
         source={imageUrl}
-        className="w-full h-[112px] bg-slate-300 "
+        className="item-center justify-center w-full h-[112px] bg-slate-300"
+        resizeMode="contain"
         // sharedTransitionTag={`supplier-${item.name}`}
       />
 
