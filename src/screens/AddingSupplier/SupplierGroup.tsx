@@ -41,7 +41,7 @@ function SupplierItem({
       onPress={onPress}>
       <ImageBackground
         source={imageUrl}
-        className="item-center justify-center w-full h-[112px] bg-slate-300"
+        className="item-center justify-center w-full h-[112px] bg-white"
         resizeMode="contain"
         // sharedTransitionTag={`supplier-${item.name}`}
       />
