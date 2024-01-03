@@ -117,7 +117,7 @@ export default function SettingsScreen({
         </View>
       ),
       onConfirm: () => {
-        Linking.openURL(REQUEST_DELETE_URL);
+        Linking.openURL(REQUEST_DELETE_URL + '?uuid=' + me?.id);
         closeModal();
       },
       modifiers: {
