@@ -247,10 +247,23 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         {!!records && records.length > 0 && (
           <View className="mt-5">
             <TouchableOpacity
-              className="flex-row justify-between items-center mx-5 mb-4 py-4 px-2 border-y border-gray-D4D4D8"
+              className="flex-row justify-between items-center mx-5 py-4 px-2 border-t border-gray-D4D4D8"
               onPress={() => toAddProduct(true)}>
               <Text className="font-semibold text-primary">
                 Add Product Manually
+              </Text>
+              <ChevronRightIcon
+                width={20}
+                height={20}
+                color={colors.primary.DEFAULT}
+                strokeWidth={2}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="flex-row justify-between items-center mx-5 mb-4 py-4 px-2 border-y border-gray-D4D4D8"
+              onPress={() => toAddProduct()}>
+              <Text className="font-semibold text-primary">
+                Browse Catalogue
               </Text>
               <ChevronRightIcon
                 width={20}
