@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import React, {useCallback, useLayoutEffect, useReducer, useState} from 'react';
 import Container from 'components/Container';
@@ -351,6 +352,14 @@ export default function OrderScreen({navigation}: NativeStackScreenProps<any>) {
         data={records || []}
         extraData={records}
         ListEmptyComponent={isLoading ? null : EmptyComponent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={() => {
+              mutate();
+            }}
+          />
+        }
       />
       {isLoading && <Loading />}
     </Container>

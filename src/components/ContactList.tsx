@@ -6,27 +6,55 @@ import colors from 'configs/colors';
 import CheckBox from './CheckBox';
 import {PermissionsAndroid} from 'react-native';
 import Toast from 'react-native-simple-toast';
+import countries from 'utils/country';
 const DEFAULT_COUNTRY_CODE = '65';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
 
+function getMobileCode(originalNumber: string) {
+  const shouldApplyMobileCode = !!originalNumber.match(/^\+/);
+  if (!shouldApplyMobileCode) {
+    return DEFAULT_COUNTRY_CODE;
+  }
+  if (originalNumber.startsWith('+1 (510)')) {
+    return '1 (510)';
+  }
+  const mobileCode = originalNumber
+    .match(/^\+?\(?\d+/)?.[0]
+    ?.replace(/[+\-()\s]/g, '');
+
+  if (!mobileCode) {
+    return DEFAULT_COUNTRY_CODE;
+  }
+
+  let country = countries
+    .map((c: any) => c.phone_code)
+    .find((pc: any) => mobileCode.toString().startsWith(pc));
+  return country?.toString() || DEFAULT_COUNTRY_CODE;
+}
+
+function getMobileNumber(originalNumber: string) {
+  const mobileCode = getMobileCode(originalNumber);
+  return [
+    mobileCode,
+    originalNumber
+      .replace(/[+\-()\s]/g, '')
+      .replace(mobileCode.replace(/[+\-()\s]/g, ''), ''),
+  ];
+}
+
 function resolveContact(data: any) {
   const {phoneNumbers, givenName, familyName} = data || {};
   let phoneNumber = phoneNumbers ? phoneNumbers[0]?.number : '';
-  phoneNumber = (phoneNumber || '').replace(/[+\-()\s]/g, '');
-  if (phoneNumber.length > 8) {
-    phoneNumber = phoneNumber.replace(
-      new RegExp(`^${DEFAULT_COUNTRY_CODE}`),
-      '',
-    );
-  }
+  const [mobileCode, mobileNumber] = getMobileNumber(phoneNumber);
 
   return {
     name: [givenName, familyName].join(' '),
-    mobileCode: DEFAULT_COUNTRY_CODE,
-    mobileNumber: phoneNumber,
-    phoneNumber: `+${DEFAULT_COUNTRY_CODE}${phoneNumber}`,
+    mobileCode,
+    mobileNumber,
+    phoneNumber: `+${mobileCode}${mobileNumber}`,
+    originalNumber: phoneNumbers[0]?.number,
   };
 }
 
@@ -51,7 +79,7 @@ function ContactItem({
       </View>
       <View className="ml-4 flex-1">
         <Text className="font-medium">{item.name}</Text>
-        <Text>{item.phoneNumber}</Text>
+        <Text>{item.originalNumber}</Text>
       </View>
       <View>
         <CheckBox onChange={onPress} defaultValue={selected} />

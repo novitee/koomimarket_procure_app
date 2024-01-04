@@ -11,11 +11,15 @@ import clsx from 'libs/clsx';
 import Button from 'components/Button';
 import SearchBar from 'components/SearchBar';
 import useSearch from 'hooks/useSearch';
+import {useModal} from 'libs/modal';
 
 export default function AddTeamMemberScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any>) {
+  const {showModal, closeModal} = useModal();
+
+  const [showWarning, setShowWarning] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<any[]>([]);
   const outlet = useGlobalStore(state => state.currentOutlet);
   const {currentMembers} = route.params || {};
@@ -26,6 +30,25 @@ export default function AddTeamMemberScreen({
   const {searchString, handleSearch} = useSearch();
 
   async function handleAdd() {
+    const anyPhoneWithoutPlus = selectedMembers.find(
+      (item: any) => !item.mobileNumber.startsWith('+'),
+    );
+    if (!showWarning && anyPhoneWithoutPlus) {
+      showModal({
+        title: '',
+        message:
+          "To ensure seamless notification delivery, kindly ensure that the contact number added to the app includes the correct country code with the '+' symbol. This ensures that you receive important updates without any interruptions.",
+        onConfirm: () => {
+          closeModal();
+          setShowWarning(true);
+        },
+        modifiers: {
+          confirmTitle: 'Got it',
+        },
+      });
+      return;
+    }
+
     const members = selectedMembers.map(item => ({
       mobileCode: item.mobileCode,
       mobileNumber: item.mobileNumber,
