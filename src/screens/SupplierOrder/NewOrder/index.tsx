@@ -3,7 +3,13 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import Container from 'components/Container';
 import Text from 'components/Text';
 import IllustrationIcon from 'assets/images/Illustration.svg';
-import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  RefreshControl,
+} from 'react-native';
 import Button from 'components/Button';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import SearchBar from 'components/SearchBar';
@@ -308,11 +314,21 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
                 : styles.flatListEmptyStyle
             }
             renderItem={_renderItem}
-            data={records || []}
-            extraData={records}
+            data={(records || []).sort(
+              (a: any, b: any) => b.updatedAt - a.updatedAt,
+            )}
+            extraData={records.sort(
+              (a: any, b: any) => b.updatedAt - a.updatedAt,
+            )}
             ListEmptyComponent={isLoading ? null : EmptyComponent}
             ItemSeparatorComponent={_renderItemSeparator}
             ListFooterComponent={_renderItemSeparator}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={refreshCartItems}
+              />
+            }
           />
         </KeyboardAvoidingView>
 
