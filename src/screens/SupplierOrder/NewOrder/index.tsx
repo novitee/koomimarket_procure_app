@@ -317,9 +317,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
             data={(records || []).sort(
               (a: any, b: any) => b.updatedAt - a.updatedAt,
             )}
-            extraData={records.sort(
-              (a: any, b: any) => b.updatedAt - a.updatedAt,
-            )}
+            extraData={records}
             ListEmptyComponent={isLoading ? null : EmptyComponent}
             ItemSeparatorComponent={_renderItemSeparator}
             ListFooterComponent={_renderItemSeparator}
