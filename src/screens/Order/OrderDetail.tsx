@@ -18,7 +18,8 @@ import useQuery from 'libs/swr/useQuery';
 import ViewIssuesSheet from './ViewIssuesSheet';
 import CheckIcon from 'assets/images/check.svg';
 import colors from 'configs/colors';
-
+import ToggleEditOrder from './ToggleEdit';
+import ArrowCircleRightIcon from 'assets/images/arrow-circle-right.svg';
 const tabs = [
   {
     id: 'items_ordered',
@@ -56,8 +57,8 @@ function useQueryOrder(orderNo: string) {
   const url = orderNo ? `orders/${orderNo}` : undefined;
   const params = {
     fields:
-      'id,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck,resolvedAt,resolvedRemarks',
-    include: 'supplier(name)',
+      'id,orderNo,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck,resolvedAt,resolvedRemarks,editStatus',
+    include: 'supplier(name),orderLineItemsHistory(lineItems)',
   };
   return useQuery([url, params]);
 }
@@ -68,7 +69,7 @@ export default function OrderDetailScreen({
 }: NativeStackScreenProps<any>) {
   const pageViewRef = createRef<PagerView>();
   const [selectedPage, setSelectedPage] = useState(0);
-
+  const [isOpenEdit, setOpenEdit] = useState(false);
   const {orderNo} = route.params || {};
 
   const {data} = useQueryOrder(orderNo);
@@ -88,6 +89,8 @@ export default function OrderDetailScreen({
     total,
     shippingAddress,
     customer,
+    editStatus,
+    orderLineItemsHistory,
   } = order || {};
   const {fullName, address, postal} = shippingAddress || {};
   const {name} = customer || {};
@@ -128,7 +131,9 @@ export default function OrderDetailScreen({
   const handleSelectItem = useCallback((item: any) => {
     setSelectedItem(item);
   }, []);
-
+  const shouldShowEdit =
+    ['SUBMITTED', 'ACKNOWLEDGED', 'RESOLVING', 'RESOLVED'].includes(status) &&
+    editStatus !== 'REQUESTED';
   return (
     <>
       <Container className="px-0">
@@ -227,6 +232,18 @@ export default function OrderDetailScreen({
                 not assume liability for errors.
               </Text>
             </View>
+            {orderLineItemsHistory && (
+              <View className="pt-4 px-4 flex-row justify-between">
+                <Text className="font-bold">Show edit details</Text>
+                <TouchableOpacity onPress={() => {}}>
+                  <ArrowCircleRightIcon
+                    width={20}
+                    height={20}
+                    strokeWidth={2}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
           </ScrollView>
           <View key={1} className="p-4">
             {!!remarks && <Text>{remarks}</Text>}
@@ -278,6 +295,20 @@ export default function OrderDetailScreen({
               I have received the order
             </Button>
           </View>
+        )}
+        {shouldShowEdit && (
+          <>
+            <View className="px-5">
+              <Button onPress={() => setOpenEdit(true)}>
+                Request To Edit Order
+              </Button>
+            </View>
+            <ToggleEditOrder
+              isOpen={isOpenEdit}
+              onClose={() => setOpenEdit(false)}
+              order={order}
+            />
+          </>
         )}
       </Container>
 

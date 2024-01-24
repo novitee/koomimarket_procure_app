@@ -54,7 +54,7 @@ function useQueryCartItems({supplierId = '', searchString = ''}) {
 function useQuerySupplier(id: string) {
   const url = `suppliers/${id}`;
   const params = {
-    fields: 'id,minOrder,name',
+    fields: 'id,minOrder,name,manualSupplierId',
   };
   return useQuery([url, params]);
 }
@@ -147,7 +147,9 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
           </>
         )}
 
-        <Button className="mt-4" onPress={() => toAddProduct()}>
+        <Button
+          className="mt-4"
+          onPress={() => toAddProduct(supplier?.manualSupplierId)}>
           Add Products
         </Button>
       </View>
@@ -265,19 +267,21 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
                 strokeWidth={2}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-row justify-between items-center mx-5 mb-4 py-4 px-2 border-y border-gray-D4D4D8"
-              onPress={() => toAddProduct()}>
-              <Text className="font-semibold text-primary">
-                Browse Catalogue
-              </Text>
-              <ChevronRightIcon
-                width={20}
-                height={20}
-                color={colors.primary.DEFAULT}
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
+            {!supplier?.manualSupplierId && (
+              <TouchableOpacity
+                className="flex-row justify-between items-center mx-5 mb-4 py-4 px-2 border-y border-gray-D4D4D8"
+                onPress={() => toAddProduct()}>
+                <Text className="font-semibold text-primary">
+                  Browse Catalogue
+                </Text>
+                <ChevronRightIcon
+                  width={20}
+                  height={20}
+                  color={colors.primary.DEFAULT}
+                  strokeWidth={2}
+                />
+              </TouchableOpacity>
+            )}
             <View className="flex-row justify-between items-center px-5">
               <Text className="text-primary font-bold text-2xl">
                 My Order List
