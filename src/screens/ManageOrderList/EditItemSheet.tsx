@@ -80,7 +80,11 @@ export default function EditItemSheet({
     .filter(cat => cat.value !== 'uncategorized');
 
   return (
-    <BottomSheet ref={bottomSheetRef} isOpen={isOpen} contentHeight={550}>
+    <BottomSheet
+      ref={bottomSheetRef}
+      isOpen={isOpen}
+      contentHeight={550}
+      onClose={onClose}>
       <View className="pb-10 px-5 pt-5 flex-1">
         <View className="flex-1">
           <View className="border-b border-gray-300 pb-5">

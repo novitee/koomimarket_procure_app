@@ -283,33 +283,35 @@ export default function OrderDetailScreen({
             </View>
           </ScrollView>
         </PagerView>
-        {shouldShowReceived && (
-          <View className="px-5">
-            <Button
-              onPress={() =>
-                navigation.navigate('GoodsReceiving', {
-                  orderNo: orderNo,
-                  lineItems: lineItems,
-                })
-              }>
-              I have received the order
-            </Button>
-          </View>
-        )}
-        {shouldShowEdit && (
-          <>
-            <View className="px-5">
-              <Button onPress={() => setOpenEdit(true)}>
-                Request To Edit Order
+        <View className="">
+          {shouldShowEdit && (
+            <View className="px-5 mb-5">
+              <View className="">
+                <Button onPress={() => setOpenEdit(true)}>
+                  Request To Edit Order
+                </Button>
+              </View>
+              <ToggleEditOrder
+                isOpen={isOpenEdit}
+                onClose={() => setOpenEdit(false)}
+                order={order}
+              />
+            </View>
+          )}
+          {shouldShowReceived && (
+            <View className="px-5 ">
+              <Button
+                onPress={() =>
+                  navigation.navigate('GoodsReceiving', {
+                    orderNo: orderNo,
+                    lineItems: lineItems,
+                  })
+                }>
+                I have received the order
               </Button>
             </View>
-            <ToggleEditOrder
-              isOpen={isOpenEdit}
-              onClose={() => setOpenEdit(false)}
-              order={order}
-            />
-          </>
-        )}
+          )}
+        </View>
       </Container>
 
       <ViewIssuesSheet

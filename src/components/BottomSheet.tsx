@@ -4,7 +4,14 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import {Dimensions, Modal, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  Modal,
+  StyleSheet,
+  View,
+  TouchableWithoutFeedback,
+  Pressable,
+} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -74,14 +81,18 @@ function BottomSheet(
       visible={openModal}
       onRequestClose={onClose}>
       <View style={styles.centeredView}>
-        <Animated.View
-          style={[
-            styles.bottomSheetContainer,
-            {height: contentHeight},
-            rBottomSheetStyle,
-          ]}>
-          {children}
-        </Animated.View>
+        <Pressable onPress={onClose}>
+          <TouchableWithoutFeedback>
+            <Animated.View
+              style={[
+                styles.bottomSheetContainer,
+                {height: contentHeight},
+                rBottomSheetStyle,
+              ]}>
+              {children}
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </Pressable>
       </View>
     </Modal>
   );

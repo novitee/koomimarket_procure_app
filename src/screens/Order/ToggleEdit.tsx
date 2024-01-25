@@ -45,6 +45,9 @@ export default function ToggleEditOrder({
   const bottomSheetRef = useRef<any>(null);
 
   const handleUpdate = async () => {
+    if (lineItems.every(item => item.qty === item.originalQty)) {
+      onClose();
+    }
     try {
       const response = await requestEditOrder({
         request: {
@@ -101,7 +104,7 @@ export default function ToggleEditOrder({
             </Text>
           </View>
           <KeyboardAvoidingView>
-            <ScrollView className="flex-1 ">
+            <ScrollView className="flex-1 mb-4 ">
               {lineItems.length > 0 ? (
                 lineItems.map((lineItem, index) => {
                   return (
@@ -128,12 +131,12 @@ export default function ToggleEditOrder({
         </View>
 
         <View className="flex-row px-5">
-          <Button onPress={onClose} className="flex-1 ml-2">
-            Cancel
-          </Button>
           <Button
             loading={loading}
-            disabled={lineItems.length === 0}
+            disabled={
+              lineItems.length === 0 ||
+              lineItems.every(item => item.qty === item.originalQty)
+            }
             onPress={handleUpdate}
             className="flex-1 ml-2">
             Send Request
