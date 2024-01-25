@@ -4,21 +4,14 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import {
-  Dimensions,
-  Modal,
-  StyleSheet,
-  View,
-  TouchableWithoutFeedback,
-  Pressable,
-} from 'react-native';
+import {Dimensions, Modal, StyleSheet, View} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
+import {useClickOutSide} from 'components/ClickOutside';
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 type BottomSheetProps = {
@@ -35,6 +28,9 @@ function BottomSheet(
 ) {
   const translateY = useSharedValue(0);
   const [openModal, setOpenModal] = useState(isOpen);
+  const viewRef = useClickOutSide(() => {
+    onClose?.();
+  });
 
   useImperativeHandle(ref, () => ({
     close() {
@@ -81,18 +77,16 @@ function BottomSheet(
       visible={openModal}
       onRequestClose={onClose}>
       <View style={styles.centeredView}>
-        <Pressable onPress={onClose}>
-          <TouchableWithoutFeedback>
-            <Animated.View
-              style={[
-                styles.bottomSheetContainer,
-                {height: contentHeight},
-                rBottomSheetStyle,
-              ]}>
-              {children}
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        </Pressable>
+        <Animated.View
+          collapsable={false}
+          style={[
+            styles.bottomSheetContainer,
+            {height: contentHeight},
+            rBottomSheetStyle,
+          ]}
+          ref={viewRef}>
+          {children}
+        </Animated.View>
       </View>
     </Modal>
   );

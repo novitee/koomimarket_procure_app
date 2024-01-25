@@ -18,6 +18,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import EditIcon from 'assets/images/edit.svg';
 import colors from 'configs/colors';
 import Toast from 'react-native-simple-toast';
+import {useClickOutSide, ClickOutSideProvider} from 'components/ClickOutside';
 export default function ToggleEditOrder({
   isOpen,
   order,
@@ -91,59 +92,61 @@ export default function ToggleEditOrder({
   };
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      isOpen={isOpen}
-      contentHeight={570}
-      onClose={onClose}>
-      <View className="pb-10 pt-5 flex-1">
-        <View className="flex-1">
-          <View className=" pb-5 mx-5">
-            <Text className="text-primary font-semibold text-xl text-center">
-              Request to Edit Order
-            </Text>
+    <ClickOutSideProvider>
+      <BottomSheet
+        ref={bottomSheetRef}
+        isOpen={isOpen}
+        contentHeight={570}
+        onClose={onClose}>
+        <View className="pb-10 pt-5 flex-1">
+          <View className="flex-1">
+            <View className=" pb-5 mx-5">
+              <Text className="text-primary font-semibold text-xl text-center">
+                Request to Edit Order
+              </Text>
+            </View>
+            <KeyboardAvoidingView>
+              <ScrollView className="flex-1 mb-4 ">
+                {lineItems.length > 0 ? (
+                  lineItems.map((lineItem, index) => {
+                    return (
+                      <View key={index}>
+                        <ProductItem
+                          item={lineItem}
+                          handleChange={(qty: number) =>
+                            handleChangeItem(lineItem.id, qty)
+                          }
+                          handleRemove={() => handleRemoveItem(lineItem.id)}
+                        />
+                      </View>
+                    );
+                  })
+                ) : (
+                  <View className="flex-1 justify-center items-center px-5">
+                    <Text className="font-bold mt-4 text-center">
+                      No item to edit
+                    </Text>
+                  </View>
+                )}
+              </ScrollView>
+            </KeyboardAvoidingView>
           </View>
-          <KeyboardAvoidingView>
-            <ScrollView className="flex-1 mb-4 ">
-              {lineItems.length > 0 ? (
-                lineItems.map((lineItem, index) => {
-                  return (
-                    <View key={index}>
-                      <ProductItem
-                        item={lineItem}
-                        handleChange={(qty: number) =>
-                          handleChangeItem(lineItem.id, qty)
-                        }
-                        handleRemove={() => handleRemoveItem(lineItem.id)}
-                      />
-                    </View>
-                  );
-                })
-              ) : (
-                <View className="flex-1 justify-center items-center px-5">
-                  <Text className="font-bold mt-4 text-center">
-                    No item to edit
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </View>
 
-        <View className="flex-row px-5">
-          <Button
-            loading={loading}
-            disabled={
-              lineItems.length === 0 ||
-              lineItems.every(item => item.qty === item.originalQty)
-            }
-            onPress={handleUpdate}
-            className="flex-1 ml-2">
-            Send Request
-          </Button>
+          <View className="flex-row px-5">
+            <Button
+              loading={loading}
+              disabled={
+                lineItems.length === 0 ||
+                lineItems.every(item => item.qty === item.originalQty)
+              }
+              onPress={handleUpdate}
+              className="flex-1 ml-2">
+              Send Request
+            </Button>
+          </View>
         </View>
-      </View>
-    </BottomSheet>
+      </BottomSheet>
+    </ClickOutSideProvider>
   );
 }
 function ProductItem({
@@ -166,6 +169,8 @@ function ProductItem({
     [handleRemove, swipeableRef],
   );
 
+  const {product} = item;
+  const {allowDecimalQuantity, minOfQty} = product;
   const renderRightActions = (progress: any) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
@@ -207,8 +212,8 @@ function ProductItem({
           <Counter
             defaultValue={item?.qty}
             onChange={handleChange}
-            min={item?.minOfQty || 0}
-            allowDecimal={item?.allowDecimalQuantity}
+            min={minOfQty || 0}
+            allowDecimal={allowDecimalQuantity}
             unit={item.uom?.toUpperCase()}
           />
         </View>
