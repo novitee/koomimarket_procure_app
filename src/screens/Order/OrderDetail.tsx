@@ -1,4 +1,10 @@
-import {View, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import React, {createRef, useCallback, useLayoutEffect, useState} from 'react';
 import PagerView, {
   PagerViewOnPageSelectedEventData,
@@ -72,7 +78,7 @@ export default function OrderDetailScreen({
   const [isOpenEdit, setOpenEdit] = useState(false);
   const {orderNo} = route.params || {};
 
-  const {data} = useQueryOrder(orderNo);
+  const {data, isLoading, mutate: refreshOrder} = useQueryOrder(orderNo);
 
   const {order} = data || {};
 
@@ -131,9 +137,9 @@ export default function OrderDetailScreen({
   const handleSelectItem = useCallback((item: any) => {
     setSelectedItem(item);
   }, []);
-  const shouldShowEdit =
-    ['SUBMITTED', 'ACKNOWLEDGED', 'RESOLVING', 'RESOLVED'].includes(status) &&
-    editStatus !== 'REQUESTED';
+  const shouldShowEditOrder =
+    ['ACKNOWLEDGED'].includes(status) && editStatus !== 'REQUESTED';
+
   return (
     <>
       <Container className="px-0">
@@ -162,7 +168,10 @@ export default function OrderDetailScreen({
           onPageSelected={onPageSelected}
           className={'flex-1'}
           ref={pageViewRef}
-          initialPage={0}>
+          initialPage={0}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={refreshOrder} />
+          }>
           <ScrollView
             key={0}
             className="flex-1"
@@ -284,7 +293,7 @@ export default function OrderDetailScreen({
           </ScrollView>
         </PagerView>
         <View className="">
-          {shouldShowEdit && (
+          {shouldShowEditOrder && (
             <View className="px-5 mb-5">
               <View className="">
                 <Button onPress={() => setOpenEdit(true)}>
