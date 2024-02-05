@@ -4,16 +4,18 @@ import {TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
 import Counter from 'components/Counter';
 import {toCurrency} from 'utils/format';
 import useMutation from 'libs/swr/useMutation';
-
+import InfoIcon from 'assets/images/info.svg';
 export default function OrderItem({
   item,
   onEdit,
   onPress,
+  onPressPriceChange,
   supplierId,
 }: {
   item?: any;
   onPress: (value: number) => void;
   onEdit?: TouchableOpacityProps['onPress'];
+  onPressPriceChange?: TouchableOpacityProps['onPress'];
   supplierId: string;
 }) {
   const [{loading}, updateItemQty] = useMutation({
@@ -45,13 +47,25 @@ export default function OrderItem({
     <View className="flex-row items-center justify-between rounded-lg p-5 w-full">
       <View className="flex-shrink-1 w-1/2">
         <Text className="text-sm font-bold ">{item.name}</Text>
-        <TouchableOpacity
-          className="flex-row items-center pr-2 rounded mt-1 flex-1 self-start"
-          onPress={onEdit}>
-          <Text className="text-primary font-medium">
-            {`${toCurrency(item.pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
-          </Text>
-        </TouchableOpacity>
+        <View className="flex-row items-center pr-2 rounded mt-1 flex-1 self-start">
+          <TouchableOpacity
+            className=""
+            onPress={onEdit}
+            disabled={item?.productType !== 'PROCURE'}>
+            <Text className="text-primary font-medium">
+              {`${toCurrency(item.pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
+            </Text>
+          </TouchableOpacity>
+          {item?.isSupplierUpdated && (
+            <TouchableOpacity
+              className=" relative"
+              onPress={onPressPriceChange}>
+              <View className="absolute -top-3">
+                <InfoIcon className="w-4 h-4" />
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       <Counter
         defaultValue={item?.procureQty}

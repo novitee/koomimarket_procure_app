@@ -29,7 +29,7 @@ import {BackButton} from 'navigations/common';
 import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',

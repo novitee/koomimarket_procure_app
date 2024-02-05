@@ -26,6 +26,7 @@ import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import Toast from 'react-native-simple-toast';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
+import PriceChangeDetail from './PriceChangeDetail';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -46,7 +47,7 @@ function useQueryCartItems({supplierId = '', searchString = ''}) {
     searchString,
     include: 'photos(url,signedKey)',
     fields:
-      'id,name,pricing,uom,procureQty,minOfQty,slug,productType,allowDecimalQuantity',
+      'id,name,pricing,uom,procureQty,minOfQty,slug,productType,allowDecimalQuantity,isSupplierUpdated,oldPricing',
   };
   return useQuery([url, params]);
 }
@@ -79,6 +80,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
     render: false,
     selectedItem: {},
     cartDetails: [],
+    openPriceChangeItem: {},
   });
 
   useEffect(() => {
@@ -94,7 +96,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
       dispatch({cartDetails});
     }
   }, [records]);
-  const {selectedItem, cartDetails} = values;
+  const {selectedItem, cartDetails, openPriceChangeItem} = values;
 
   const [{loading}, generateCheckoutCart] = useMutation({
     url: 'generate-checkout-cart',
@@ -195,6 +197,7 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
               currentCartDetails: cartDetails,
             })
           }
+          onPressPriceChange={() => dispatch({openPriceChangeItem: item})}
           supplierId={supplierId}
         />
       );
@@ -358,6 +361,11 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         supplierId={supplierId}
         item={selectedItem}
         onClose={handleClose}
+      />
+      <PriceChangeDetail
+        isOpen={!!openPriceChangeItem?.name}
+        product={openPriceChangeItem}
+        onClose={() => dispatch({openPriceChangeItem: {}})}
       />
       {isLoading && <Loading />}
     </>

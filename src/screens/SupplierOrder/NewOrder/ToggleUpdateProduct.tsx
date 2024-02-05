@@ -7,7 +7,6 @@ import Input from 'components/Input';
 import useMutation from 'libs/swr/useMutation';
 import {formatDecimalPlaces, toCurrency} from 'utils/format';
 import {isDecimal, isNumber} from 'utils/validate';
-import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
 export default function ToggleUpdateProduct({
   isOpen,
   supplierId,
