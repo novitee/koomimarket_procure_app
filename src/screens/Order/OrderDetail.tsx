@@ -137,8 +137,7 @@ export default function OrderDetailScreen({
   const handleSelectItem = useCallback((item: any) => {
     setSelectedItem(item);
   }, []);
-  const shouldShowEditOrder =
-    ['ACKNOWLEDGED'].includes(status) && editStatus !== 'REQUESTED';
+  const shouldShowEditOrder = ['ACKNOWLEDGED'].includes(status);
 
   return (
     <>

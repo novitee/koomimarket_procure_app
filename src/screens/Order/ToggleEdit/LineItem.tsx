@@ -10,7 +10,7 @@ import {toCurrency} from 'utils/format';
 import Counter from 'components/Counter';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import EditIcon from 'assets/images/edit.svg';
+import TrashIcon from 'assets/images/trash.svg';
 import colors from 'configs/colors';
 
 function LineItem({
@@ -51,7 +51,7 @@ function LineItem({
           <TouchableOpacity
             className="w-10 h-10 rounded-full bg-white items-center justify-center"
             onPress={handlePressEdit}>
-            <EditIcon color={colors.primary.DEFAULT} />
+            <TrashIcon color={colors.primary.DEFAULT} />
           </TouchableOpacity>
         </Animated.View>
       </View>
