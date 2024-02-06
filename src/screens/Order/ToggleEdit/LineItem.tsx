@@ -78,7 +78,7 @@ function LineItem({
           <Counter
             defaultValue={qty}
             onChange={handleChange}
-            min={minOfQty || 0}
+            min={0}
             allowDecimal={allowDecimalQuantity}
             unit={item.uom?.toUpperCase()}
           />

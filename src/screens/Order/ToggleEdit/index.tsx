@@ -62,11 +62,10 @@ export default function ToggleEditOrder({
     const newLineItems = [...lineItems];
     const index = newLineItems.findIndex(item => item.id === id);
     if (index > -1) {
-      if (qty === 0) {
-        // setRemoveConfirm(id);
-        handleRemoveItem(id);
-        return;
-      }
+      // if (qty === 0) {
+      //   handleRemoveItem(id);
+      //   return;
+      // }
       newLineItems[index].qty = qty;
       setLineItems(newLineItems);
     }
