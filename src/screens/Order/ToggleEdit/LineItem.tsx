@@ -57,6 +57,7 @@ function LineItem({
       </View>
     );
   };
+
   const pricing = finalPricing?.pricing || defaultPricing?.pricing;
   return (
     <GestureHandlerRootView>
@@ -69,7 +70,7 @@ function LineItem({
           <View className="flex-shrink-1 w-1/2">
             <Text className="text-sm font-bold mb-4">{item.name}</Text>
             <Text className="text-primary font-medium mb-4">
-              {`${toCurrency(pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
+              {`${toCurrency(item?.pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
             </Text>
             <Text className="text-primary font-medium">
               Original Quantity: {item.originalQty}

@@ -72,12 +72,7 @@ export default function ToggleEditOrder({
   };
 
   const handleRemoveItem = (id: string) => {
-    const newLineItems = [...lineItems];
-    const index = newLineItems.findIndex(item => item.id === id);
-    if (index > -1) {
-      newLineItems.splice(index, 1);
-      setLineItems(newLineItems);
-    }
+    setLineItems(lineItems.filter(item => item.id !== id));
   };
 
   return (
@@ -93,9 +88,9 @@ export default function ToggleEditOrder({
             <KeyboardAvoidingView>
               <ScrollView className="flex-1 mb-4 ">
                 {lineItems.length > 0 ? (
-                  lineItems.map((lineItem, index) => {
+                  lineItems.map(lineItem => {
                     return (
-                      <View key={index}>
+                      <View key={lineItem.id}>
                         <LineItem
                           item={lineItem}
                           qty={lineItem.qty}
