@@ -68,7 +68,9 @@ function LineItem({
         rightThreshold={40}>
         <View className="justify-between items-center flex-row  rounded-lg w-full py-5 px-5 border-b-2 border-[#9CA3AF] bg-white ">
           <View className="flex-shrink-1 w-1/2">
-            <Text className="text-sm font-bold mb-4">{item.name}</Text>
+            <Text className="text-sm font-bold mb-4">
+              {item.name || item.productInfo?.name}
+            </Text>
             <Text className="text-primary font-medium mb-4">
               {`${toCurrency(item?.pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
             </Text>
