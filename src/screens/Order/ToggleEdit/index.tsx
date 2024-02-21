@@ -9,6 +9,7 @@ import Toast from 'react-native-simple-toast';
 import {ClickOutSideProvider} from 'components/ClickOutside';
 import LineItem from './LineItem';
 import RemoveConfirm from './RemoveConfirm';
+import PriceChangeDetail from './PriceChangeDetail';
 export default function ToggleEditOrder({
   isOpen,
   order,
@@ -19,6 +20,7 @@ export default function ToggleEditOrder({
   onClose: () => void;
 }) {
   const [lineItems, setLineItems] = useState<any[]>([]);
+  const [openPriceChangeItem, setPriceChangeItem] = useState<any>(null);
   const [removeConfirmId, setRemoveConfirm] = useState<string | null>(null);
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +100,9 @@ export default function ToggleEditOrder({
                             handleChangeItem(lineItem.id, qty)
                           }
                           handleRemove={() => handleRemoveItem(lineItem.id)}
+                          onPressPriceChange={() =>
+                            setPriceChangeItem(lineItem)
+                          }
                         />
                       </View>
                     );
@@ -135,6 +140,12 @@ export default function ToggleEditOrder({
               setRemoveConfirm(null);
             }
           }}
+        />
+        <PriceChangeDetail
+          isOpen={!!openPriceChangeItem}
+          // product={openPriceChangeItem?.product}
+          item={openPriceChangeItem}
+          onClose={() => setPriceChangeItem(null)}
         />
       </BottomSheet>
     </ClickOutSideProvider>

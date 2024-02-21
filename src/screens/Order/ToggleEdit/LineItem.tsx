@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Animated,
   GestureResponderEvent,
+  TouchableOpacityProps,
 } from 'react-native';
 import {toCurrency} from 'utils/format';
 import Counter from 'components/Counter';
@@ -12,17 +13,19 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import TrashIcon from 'assets/images/trash.svg';
 import colors from 'configs/colors';
-
+import InfoIcon from 'assets/images/info.svg';
 function LineItem({
   item,
   qty,
   handleChange,
   handleRemove,
+  onPressPriceChange,
 }: {
   item: any;
   qty: number;
   handleChange: (qty: number) => void;
   handleRemove?: () => void;
+  onPressPriceChange: TouchableOpacityProps['onPress'];
 }) {
   const swipeableRef = useRef<any>();
   const handlePressEdit = useCallback(
@@ -68,9 +71,20 @@ function LineItem({
         rightThreshold={40}>
         <View className="justify-between items-center flex-row  rounded-lg w-full py-5 px-5 border-b-2 border-[#9CA3AF] bg-white ">
           <View className="flex-shrink-1 w-1/2">
-            <Text className="text-sm font-bold mb-4">
-              {item.name || item.productInfo?.name}
-            </Text>
+            <View className="flex-1 flex-row ">
+              <Text className="text-sm font-bold mb-4">
+                {item.name || item.productInfo?.name}
+              </Text>
+              {item?.product?.isSupplierUpdated && (
+                <TouchableOpacity
+                  className=" relative"
+                  onPress={onPressPriceChange}>
+                  <View className="absolute ml-2">
+                    <InfoIcon className="w-4 h-4" />
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
             <Text className="text-primary font-medium mb-4">
               {`${toCurrency(item?.pricing, 'USD')}/${item.uom?.toUpperCase()}`}{' '}
             </Text>
