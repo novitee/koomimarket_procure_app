@@ -58,7 +58,9 @@ export default function GoodsReceivingIssue({
           confirmTitle: 'Got it',
         },
       });
+      return false;
     }
+    return true;
   };
 
   function handleUpdateIssue(checkPhoto: boolean = true) {
@@ -72,10 +74,7 @@ export default function GoodsReceivingIssue({
       return;
     }
 
-    if (checkPhoto) {
-      checkIncludePhoto();
-      return;
-    }
+    if (checkPhoto && !checkIncludePhoto()) return;
 
     const newItem = {
       ...lineItem,
