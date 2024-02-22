@@ -150,13 +150,14 @@ export default function ContactList({
 
           return {success: true, data: contacts};
         } catch (error) {
+          Toast.show(JSON.stringify(error), Toast.LONG);
           return {success: false};
         }
       }
 
       getContacts().then(({data, success}) => {
         if (!success) {
-          Toast.show('Failed when get contact', Toast.LONG);
+          // Toast.show('Failed when get contact', Toast.LONG);
           return;
         }
         memoRef.current.contacts = data;

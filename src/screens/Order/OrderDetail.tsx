@@ -190,7 +190,7 @@ export default function OrderDetailScreen({
                 <View
                   className="flex-row items-center py-6 border-b border-gray-400"
                   key={index}>
-                  <Text className="text-30 font-bold w-16 text-center">
+                  <Text className="text-30 font-bold px-6 text-center">
                     {item.qty}
                   </Text>
                   <View className="flex-1">
