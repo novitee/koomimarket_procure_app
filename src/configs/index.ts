@@ -4,7 +4,7 @@ export const ROLE_BUYER = 'BUYER';
 export const SUPPORT_EMAIL = 'support@koomi.com';
 export const WHATSAPP_NUMBER = '+6581687729';
 
-const environment: 'development' | 'staging' | 'production' = 'development';
+const environment: 'development' | 'staging' | 'production' = 'staging';
 
 export const baseUrls = {
   development: 'http://localhost:36001',

@@ -26,7 +26,6 @@ import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import colors from 'configs/colors';
 import Toast from 'react-native-simple-toast';
 import KeyboardAvoidingView from 'components/KeyboardAvoidingView';
-import PriceChangeDetail from './PriceChangeDetail';
 function _keyExtractor(item: any, index: number) {
   return `${item.name}-${index}`;
 }
@@ -197,7 +196,6 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
               currentCartDetails: cartDetails,
             })
           }
-          onPressPriceChange={() => dispatch({openPriceChangeItem: item})}
           supplierId={supplierId}
         />
       );
@@ -361,11 +359,6 @@ function NewOrderScreen({navigation}: NativeStackScreenProps<any>) {
         supplierId={supplierId}
         item={selectedItem}
         onClose={handleClose}
-      />
-      <PriceChangeDetail
-        isOpen={!!openPriceChangeItem?.name}
-        product={openPriceChangeItem}
-        onClose={() => dispatch({openPriceChangeItem: {}})}
       />
       {isLoading && <Loading />}
     </>
