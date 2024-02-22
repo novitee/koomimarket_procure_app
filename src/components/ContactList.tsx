@@ -21,7 +21,7 @@ function getMobileCode(originalNumber: string) {
     return '1 (510)';
   }
   const mobileCode = originalNumber
-    .match(/^\+?\(?\d+/)?.[0]
+    ?.match(/^\+?\(?\d+/)?.[0]
     ?.replace(/[+\-()\s]/g, '');
 
   if (!mobileCode) {
@@ -29,8 +29,8 @@ function getMobileCode(originalNumber: string) {
   }
 
   let country = countries
-    .map((c: any) => c.phone_code)
-    .find((pc: any) => mobileCode.toString().startsWith(pc));
+    ?.map((c: any) => c?.phone_code)
+    ?.find((pc: any) => mobileCode?.toString()?.startsWith(pc));
   return country?.toString() || DEFAULT_COUNTRY_CODE;
 }
 
@@ -39,23 +39,30 @@ function getMobileNumber(originalNumber: string) {
   return [
     mobileCode,
     originalNumber
-      .replace(/[+\-()\s]/g, '')
-      .replace(mobileCode.replace(/[+\-()\s]/g, ''), ''),
+      ?.replace(/[+\-()\s]/g, '')
+      ?.replace(mobileCode?.replace(/[+\-()\s]/g, ''), ''),
   ];
 }
 
 function resolveContact(data: any) {
-  const {phoneNumbers, givenName, familyName} = data || {};
-  let phoneNumber = phoneNumbers ? phoneNumbers[0]?.number : '';
-  const [mobileCode, mobileNumber] = getMobileNumber(phoneNumber);
+  try {
+    const {phoneNumbers, givenName, familyName} = data || {};
+    let phoneNumber =
+      phoneNumbers && phoneNumbers.length > 0 ? phoneNumbers[0]?.number : '';
+    const [mobileCode, mobileNumber] = getMobileNumber(phoneNumber);
 
-  return {
-    name: [givenName, familyName].join(' '),
-    mobileCode,
-    mobileNumber,
-    phoneNumber: `+${mobileCode}${mobileNumber}`,
-    originalNumber: phoneNumbers[0]?.number,
-  };
+    return {
+      name: [givenName, familyName].join(' '),
+      mobileCode,
+      mobileNumber,
+      phoneNumber: `+${mobileCode}${mobileNumber}`,
+      originalNumber: phoneNumbers[0]?.number,
+    };
+  } catch (error) {
+    return {
+      name: [givenName, familyName].join(' '),
+    };
+  }
 }
 
 function ContactItem({
