@@ -59,9 +59,7 @@ function resolveContact(data: any) {
       originalNumber: phoneNumbers[0]?.number,
     };
   } catch (error) {
-    return {
-      name: [givenName, familyName].join(' '),
-    };
+    return null;
   }
 }
 
@@ -153,18 +151,19 @@ export default function ContactList({
           }
           const contactsList = await Contacts.getAll();
 
-          let contacts = contactsList.map((item: any) => resolveContact(item));
+          let contacts = contactsList
+            .map((item: any) => resolveContact(item))
+            ?.filter(Boolean);
 
           return {success: true, data: contacts};
         } catch (error) {
-          Toast.show(JSON.stringify(error), Toast.LONG);
           return {success: false};
         }
       }
 
       getContacts().then(({data, success}) => {
         if (!success) {
-          // Toast.show('Failed when get contact', Toast.LONG);
+          Toast.show('Failed when get contact', Toast.LONG);
           return;
         }
         memoRef.current.contacts = data;
