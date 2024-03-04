@@ -22,6 +22,7 @@ export default function ToggleEditOrder({
   const [lineItems, setLineItems] = useState<any[]>([]);
   const [openPriceChangeItem, setPriceChangeItem] = useState<any>(null);
   const [removeConfirmId, setRemoveConfirm] = useState<string | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       setLineItems(
@@ -45,7 +46,11 @@ export default function ToggleEditOrder({
         request: {
           lineItems: lineItems.map(item => ({
             id: item.id,
+            name: item.name,
             qty: item.qty,
+            originalQty: item.originalQty,
+            markDeleted: item.markDeleted,
+            uom: item.uom,
           })),
         },
       });
@@ -74,7 +79,11 @@ export default function ToggleEditOrder({
   };
 
   const handleRemoveItem = (id: string) => {
-    setLineItems(lineItems.filter(item => item.id !== id));
+    setLineItems(
+      lineItems.map(item =>
+        item.id === id ? {...item, qty: 0, markDeleted: true} : item,
+      ),
+    );
   };
 
   return (
@@ -90,23 +99,25 @@ export default function ToggleEditOrder({
             <KeyboardAvoidingView>
               <ScrollView className="flex-1 mb-4 ">
                 {lineItems.length > 0 ? (
-                  lineItems.map(lineItem => {
-                    return (
-                      <View key={lineItem.id}>
-                        <LineItem
-                          item={lineItem}
-                          qty={lineItem.qty}
-                          handleChange={(qty: number) =>
-                            handleChangeItem(lineItem.id, qty)
-                          }
-                          handleRemove={() => handleRemoveItem(lineItem.id)}
-                          onPressPriceChange={() =>
-                            setPriceChangeItem(lineItem)
-                          }
-                        />
-                      </View>
-                    );
-                  })
+                  lineItems
+                    .filter(item => !item.markDeleted)
+                    .map(lineItem => {
+                      return (
+                        <View key={lineItem.id}>
+                          <LineItem
+                            item={lineItem}
+                            qty={lineItem.qty}
+                            handleChange={(qty: number) =>
+                              handleChangeItem(lineItem.id, qty)
+                            }
+                            handleRemove={() => handleRemoveItem(lineItem.id)}
+                            onPressPriceChange={() =>
+                              setPriceChangeItem(lineItem)
+                            }
+                          />
+                        </View>
+                      );
+                    })
                 ) : (
                   <View className="flex-1 justify-center items-center px-5">
                     <Text className="font-bold mt-4 text-center">
@@ -143,7 +154,6 @@ export default function ToggleEditOrder({
         />
         <PriceChangeDetail
           isOpen={!!openPriceChangeItem}
-          // product={openPriceChangeItem?.product}
           item={openPriceChangeItem}
           onClose={() => setPriceChangeItem(null)}
         />
