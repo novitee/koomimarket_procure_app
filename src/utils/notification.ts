@@ -3,6 +3,7 @@ import {getState} from 'stores/app';
 import axios from 'libs/axios';
 import {setGlobal} from 'stores/global';
 import {navigationRef} from 'navigations/index';
+import {Platform} from 'react-native';
 
 async function getChannelById(channelId: string) {
   const authToken = getState().authToken || '';
@@ -22,13 +23,23 @@ async function getChannelById(channelId: string) {
     return null;
   }
 }
-export async function watchInitialNotification() {
-  const initialNotification = await notifee.getInitialNotification();
-  if (initialNotification?.pressAction?.id !== 'open-chat') {
-    return;
+export async function watchInitialNotification(detail?: any) {
+  let channelId;
+  if (Platform.OS === 'android') {
+    const initialNotification = await notifee.getInitialNotification();
+    if (initialNotification?.pressAction?.id !== 'open-chat') {
+      return;
+    }
+    const {data} = initialNotification.notification || {};
+    channelId = data?.channelId;
+  } else if (Platform.OS === 'ios') {
+    if (!detail) {
+      return;
+    }
+    const {data} = detail.notification || {};
+    channelId = data?.channelId;
   }
-  const {data} = initialNotification.notification || {};
-  const {channelId} = data || {};
+
   if (!channelId) {
     return;
   }
