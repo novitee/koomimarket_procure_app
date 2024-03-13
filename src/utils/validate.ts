@@ -20,3 +20,7 @@ export function isNumber(value: string): boolean {
 export function isDecimal(value: string): boolean {
   return /^\d+(\.\d*)?$/.test(value);
 }
+
+export function isEmptyArray(value: any): boolean {
+  return Array.isArray(value) && value.length === 0;
+}

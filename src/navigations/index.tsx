@@ -6,6 +6,10 @@ import MainNavigator from './MainNavigator';
 import {useAppStore} from 'stores/app';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {customScreenOptions} from './common';
+
+import {createNavigationContainerRef} from '@react-navigation/native';
+
+export const navigationRef = createNavigationContainerRef();
 const Stack = createNativeStackNavigator();
 
 function Navigator(): JSX.Element {
@@ -54,7 +58,7 @@ const linking = {
 
 export default function Navigations() {
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer ref={navigationRef} linking={linking}>
       <Navigator />
     </NavigationContainer>
   );

@@ -51,6 +51,7 @@ import AddSupplierProfileScreen from 'screens/AddingSupplier/AddSupplierProfile'
 import CalendarListScreen from 'screens/CalendarListScreen';
 import SupplierDetailScreen from 'screens/EditSupplier/SupplierDetail';
 import EditSupplierDetailScreen from 'screens/EditSupplier/EditSupplierDetail';
+import ChatScreen from 'screens/Chat';
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;
@@ -216,6 +217,17 @@ export default function MainNavigator(): JSX.Element {
             headerLeft: () => null,
           }}
           component={CompleteAdding}
+        />
+      </Stack.Group>
+
+      {/* Chat */}
+      <Stack.Group>
+        <Stack.Screen
+          name="Chat"
+          options={{
+            title: '',
+          }}
+          component={ChatScreen}
         />
       </Stack.Group>
 

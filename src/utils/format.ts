@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
-
+import isToday from 'dayjs/plugin/isToday';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(isToday);
+dayjs.extend(utc);
 export function formatFontWeight(value: number) {
   if (value === 700) {
     return 'Inter-Bold';
@@ -62,4 +65,43 @@ export function formatDecimalPlaces(value: string, numberOfDecimal: number) {
   }
   const regex = new RegExp(`^(\\d+.?\\d{0,${numberOfDecimal}})\\d*$`);
   return value.toString().replace(regex, '$1');
+}
+
+export function toChatDateTime(
+  dateTime?: Date | string | number,
+  returnTodayText = false,
+): string {
+  if (!dateTime) {
+    return '';
+  }
+  const isInLast7days = dayjs().subtract(7, 'days').isBefore(dayjs(dateTime));
+  if (dayjs(dateTime).isToday()) {
+    return returnTodayText ? 'Today' : dayjs(dateTime).format('HH:mm');
+  } else if (isInLast7days) {
+    return dayjs(dateTime).format('dddd');
+  } else {
+    return dayjs(dateTime).format('DD/MM/YYYY');
+  }
+}
+
+export const fileSize = (size: number) => {
+  return Math.round((size / 1024 / 1024) * 100) / 100;
+};
+
+export function formatBytes(value: string | number): string {
+  if (!value) {
+    return '';
+  }
+  const bytes = parseFloat(value.toString());
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  } else if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(2)} KB`;
+  } else if (bytes < 1024 * 1024 * 1024) {
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  } else if (bytes < 1024 * 1024 * 1024 * 1024) {
+    return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+  } else {
+    return `${(bytes / 1024 / 1024 / 1024 / 1024).toFixed(2)} TB`;
+  }
 }

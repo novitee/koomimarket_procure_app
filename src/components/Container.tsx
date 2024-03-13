@@ -1,4 +1,4 @@
-import {SafeAreaView, View, ViewProps} from 'react-native';
+import {View, ViewProps, SafeAreaView} from 'react-native';
 import React from 'react';
 import {styled} from 'nativewind';
 

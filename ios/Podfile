@@ -4,8 +4,6 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# $RNFirebaseAsStaticFramework = true
-
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
 # because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
 #
@@ -24,8 +22,9 @@ end
 
 target 'koomimarket_procure_app' do
   config = use_native_modules!
-  # use_frameworks! :linkage => :static
-
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
+  $FirebaseSDKVersion = '10.21.0'
   # pod 'Firebase', :modular_headers => true
   # pod 'FirebaseMessaging', :modular_headers => true
   # pod 'FirebaseCoreInternal', :modular_headers => true
@@ -45,10 +44,13 @@ target 'koomimarket_procure_app' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  pod 'FirebaseFirestoreBinary', :podspec => 'https://raw.githubusercontent.com/invertase/firestore-ios-sdk-frameworks/10.21.0/FirebaseFirestoreBinary.podspec'
+
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '10.21.0'
 
   target 'koomimarket_procure_appTests' do
     inherit! :complete

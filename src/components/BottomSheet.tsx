@@ -4,7 +4,13 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import {Dimensions, Modal, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  Modal,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -77,6 +83,9 @@ function BottomSheet(
       visible={openModal}
       onRequestClose={onClose}>
       <View style={styles.centeredView}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.backdrop} />
+        </TouchableWithoutFeedback>
         <Animated.View
           collapsable={false}
           style={[
@@ -108,5 +117,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: SCREEN_HEIGHT,
     backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: '100%',
   },
 });
