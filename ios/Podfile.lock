@@ -385,8 +385,6 @@ PODS:
   - react-native-simple-toast (1.1.4):
     - React-Core
     - Toast (~> 4.0.0)
-  - react-native-splash-screen (3.3.0):
-    - React-Core
   - React-perflogger (0.71.8)
   - React-RCTActionSheet (0.71.8):
     - React-Core/RCTActionSheetHeaders (= 0.71.8)
@@ -473,6 +471,8 @@ PODS:
     - React-perflogger (= 0.71.8)
   - ReactNativeAvoidSoftinput (5.0.0):
     - RCT-Folly (= 2021.07.22.00)
+    - React-Core
+  - RNBootSplash (5.4.1):
     - React-Core
   - RNCClipboard (1.11.2):
     - React-Core
@@ -571,7 +571,6 @@ DEPENDENCIES:
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
-  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -586,6 +585,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeAvoidSoftinput (from `../node_modules/react-native-avoid-softinput`)
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -691,8 +691,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-simple-toast:
     :path: "../node_modules/react-native-simple-toast"
-  react-native-splash-screen:
-    :path: "../node_modules/react-native-splash-screen"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -721,6 +719,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeAvoidSoftinput:
     :path: "../node_modules/react-native-avoid-softinput"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNFBApp:
@@ -804,7 +804,6 @@ SPEC CHECKSUMS:
   react-native-render-html: 984dfe2294163d04bf5fe25d7c9f122e60e05ebe
   react-native-safe-area-context: f5549f36508b1b7497434baa0cd97d7e470920d4
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
-  react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   React-perflogger: d21f182895de9d1b077f8a3cd00011095c8c9100
   React-RCTActionSheet: 0151f83ef92d2a7139bba7dfdbc8066632a6d47b
   React-RCTAnimation: 5ec9c0705bb2297549c120fe6473aa3e4a01e215
@@ -819,6 +818,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 7c51ae9d4b3e9608a2366e39ccaa606aa551b9ed
   ReactCommon: 9957c7530467adbdf4a4a1476d636bd00b2e4dd8
   ReactNativeAvoidSoftinput: 38b9cecfa0379c16556aeccd934fc0bcfebf6ecc
+  RNBootSplash: eff8239c4f795ce42a0604873aef3733aac0dedd
   RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
   RNFBApp: 1c8688e63b58bb57e6a6e9032aa227f8df8371bf
   RNFBFirestore: 866cbb84f3e6e48e8006bc03107355ec69633ed0

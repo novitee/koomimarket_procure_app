@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import Navigations from './navigations';
-import SplashScreen from 'react-native-splash-screen';
+import BootSplash from 'react-native-bootsplash';
 import messaging from '@react-native-firebase/messaging';
 import useMutation from 'libs/swr/useMutation';
 import notifee, {
@@ -80,13 +80,12 @@ function RootView(): JSX.Element {
     }
 
     requestPermission();
-
+    onAppBootstrap();
     setTimeout(() => {
       setIsReady(true);
       setTimeout(() => {
         watchInitialNotification();
-        SplashScreen.hide();
-        onAppBootstrap();
+        BootSplash.hide({fade: true});
       }, 100);
     }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
