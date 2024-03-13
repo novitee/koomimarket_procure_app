@@ -5,7 +5,7 @@ import {setGlobal} from 'stores/global';
 import {navigationRef} from 'navigations/index';
 import {Platform} from 'react-native';
 
-async function getChannelById(channelId: string) {
+export async function getChannelById(channelId: string) {
   const authToken = getState().authToken || '';
   const authRefreshToken = getState().authRefreshToken || '';
   const cartToken = getState().cartToken || '';

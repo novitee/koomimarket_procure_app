@@ -26,6 +26,9 @@ import CheckIcon from 'assets/images/check.svg';
 import colors from 'configs/colors';
 import ToggleEditOrder from './ToggleEdit';
 import ArrowCircleRightIcon from 'assets/images/arrow-circle-right.svg';
+import {navigationRef} from 'navigations/index';
+import {setGlobal} from 'stores/global';
+import {getChannelById} from 'utils/notification';
 const tabs = [
   {
     id: 'items_ordered',
@@ -63,7 +66,7 @@ function useQueryOrder(orderNo: string) {
   const url = orderNo ? `orders/${orderNo}` : undefined;
   const params = {
     fields:
-      'id,orderNo,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck,resolvedAt,resolvedRemarks,editStatus',
+      'id,orderNo,orderedAt,deliveryDate,lineItems,status,deliveredAt,total,remarks,shippingAddress,customer,readyForDeliveryCheck,resolvedAt,resolvedRemarks,editStatus,channelId',
     include: 'supplier(name),orderLineItemsHistory(lineItems)',
   };
   return useQuery([url, params]);
@@ -97,6 +100,7 @@ export default function OrderDetailScreen({
     customer,
     editStatus,
     orderLineItemsHistory,
+    channelId,
   } = order || {};
   const {fullName, address, postal} = shippingAddress || {};
   const {name} = customer || {};
@@ -138,7 +142,16 @@ export default function OrderDetailScreen({
     setSelectedItem(item);
   }, []);
   const shouldShowEditOrder = ['ACKNOWLEDGED'].includes(status);
+  const handleForwardMessage = async () => {
+    const channelData = await getChannelById(channelId as string);
 
+    setGlobal({currentChannel: channelData?.channel});
+    setTimeout(() => {
+      if (navigationRef.isReady()) {
+        navigationRef.navigate('Chat' as never);
+      }
+    }, 100);
+  };
   return (
     <>
       <Container className="px-0">
@@ -240,10 +253,10 @@ export default function OrderDetailScreen({
                 not assume liability for errors.
               </Text>
             </View>
-            {orderLineItemsHistory && (
+            {editStatus && (
               <View className="pt-4 px-4 flex-row justify-between">
                 <Text className="font-bold">Show edit details</Text>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={handleForwardMessage}>
                   <ArrowCircleRightIcon
                     width={20}
                     height={20}
