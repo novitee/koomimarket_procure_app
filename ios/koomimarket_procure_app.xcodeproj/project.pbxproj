@@ -548,8 +548,17 @@
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = koomimarket_procure_app/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Koomimarket Procure";
+				INFOPLIST_KEY_CFBundleDisplayName = "Koomi Procure";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) would like to use your camera to take photos of your products";
+				INFOPLIST_KEY_NSContactsUsageDescription = "$(PRODUCT_NAME) would like access to your contacts to get the phone number to add or update the team member profile";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "$(PRODUCT_NAME) would like to your microphone (for videos)";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) would like access to your photo gallery to upload your profile photo or product photo";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -580,8 +589,17 @@
 				DEVELOPMENT_TEAM = QHX8326X9Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = koomimarket_procure_app/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Koomimarket Procure";
+				INFOPLIST_KEY_CFBundleDisplayName = "Koomi Procure";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) would like to use your camera to take photos of your products";
+				INFOPLIST_KEY_NSContactsUsageDescription = "$(PRODUCT_NAME) would like access to your contacts to get the phone number to add or update the team member profile";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "$(PRODUCT_NAME) would like to your microphone (for videos)";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(PRODUCT_NAME) would like access to your photo gallery to upload your profile photo or product photo";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
