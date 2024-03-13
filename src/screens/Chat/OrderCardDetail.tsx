@@ -3,6 +3,7 @@ import clsx from 'libs/clsx';
 
 import React from 'react';
 import {toCurrency} from 'utils/format';
+import {navigationRef} from 'navigations/index';
 
 import {View, TouchableOpacity} from 'react-native';
 
@@ -22,6 +23,7 @@ const colorByStatus: Record<string, string> = {
   '': '',
   SUBMITTED: 'blue-500',
   ACKNOWLEDGED: 'orange-400',
+  PACKED: 'orange-400',
   CANCELED: 'gray-500',
   COMPLETED: 'green-700',
   RESOLVING: 'purple-700',
@@ -49,6 +51,8 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
         return 'SENT';
       case 'ACKNOWLEDGED':
         return 'CONFIRMED';
+      case 'PACKED':
+        return 'PACKED';
       case 'CANCELED':
         return 'CANCELED';
       case 'COMPLETED':
@@ -60,6 +64,18 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
     }
   };
 
+  const handleViewDetails = () => {
+    setTimeout(() => {
+      if (navigationRef.isReady()) {
+        navigationRef.navigate({
+          name: 'OrderDetail',
+          params: {
+            orderNo,
+          },
+        } as never);
+      }
+    }, 100);
+  };
   return (
     <View
       className={clsx({
@@ -154,7 +170,8 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
           // bg-green-700: status === 'COMPLETED',
           // bg-purple-700: status === 'RESOLVING',
           ...getColorByStatus(status, 'bg'),
-        })}>
+        })}
+        onPress={handleViewDetails}>
         <Text className="text-white text-lg font-bold">View Details</Text>
       </TouchableOpacity>
     </View>
