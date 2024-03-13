@@ -2,7 +2,12 @@ import colors from 'configs/colors';
 import clsx from 'libs/clsx';
 import {styled} from 'nativewind';
 import React from 'react';
-import {TextInput as RNTextInput, TextInputProps, View} from 'react-native';
+import {
+  TextInput as RNTextInput,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 const StyledTextInput = styled(
   RNTextInput,
@@ -20,6 +25,7 @@ export interface RNTextInputProps extends TextInputProps {
   inputClassName?: string;
   inputType?: 'text' | 'amount';
   decimalPlaces?: number;
+  inputStyle?: ViewStyle;
   error?: boolean;
 }
 
@@ -30,6 +36,7 @@ export default function Input({
   style,
   onChangeText,
   error,
+  inputStyle,
   ...props
 }: RNTextInputProps): JSX.Element {
   return (
@@ -42,6 +49,7 @@ export default function Input({
       {StartComponent && <StartComponent />}
       <StyledTextInput
         {...props}
+        style={inputStyle}
         onChangeText={onChangeText}
         placeholderTextColor={colors.gray.D1D5DB}
         selectionColor={colors.dark}

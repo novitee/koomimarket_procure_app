@@ -11,3 +11,4 @@ declare module '*.svg' {
 declare module '*.png' {}
 
 declare module 'lodash.debounce';
+declare module 'uuid';

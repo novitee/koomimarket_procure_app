@@ -30,6 +30,7 @@ import Loading from 'components/Loading';
 import clsx from 'libs/clsx';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {useChatStore} from 'stores/chat';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -142,6 +143,7 @@ export default function SupplierScreen({
   const currentOutlet = useGlobalStore(state => state.currentOutlet);
   const {params} = route || {};
   const isFocused = useIsFocused();
+  const {resetLocalMessages} = useChatStore();
 
   useEffect(() => {
     if (params?.searchString) {
@@ -166,6 +168,7 @@ export default function SupplierScreen({
         status_nin: ['INACTIVE'],
       },
       searchString: searchString,
+      include: 'channelMembers(id,userId,,user,role)',
     },
   ]);
 
@@ -215,7 +218,8 @@ export default function SupplierScreen({
   const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
       setGlobal({currentChannel: item});
-      navigation.navigate('NewOrder');
+      resetLocalMessages();
+      navigation.navigate('Chat');
     },
     [navigation],
   );

@@ -1,30 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {TouchableOpacity, TouchableOpacityProps} from 'react-native';
 import Text from './Text';
-import {
-  CameraOptions,
-  ImageLibraryOptions,
-  ImagePickerResponse,
-  launchImageLibrary,
-  Asset,
-} from 'react-native-image-picker';
+import DocumentPicker, {
+  DocumentPickerResponse,
+} from 'react-native-document-picker';
 import useMutation from 'libs/swr/useMutation';
-import {fileSize, formatFilename} from 'utils/format';
+import {formatFilename} from 'utils/format';
 import Toast from 'react-native-simple-toast';
 import {useGlobalStore} from 'stores/global';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
-export type IAsset = Asset & {
+
+export type IFile = DocumentPickerResponse & {
   uuid?: string;
-  size?: number;
-  name?: string;
   url?: string;
 };
+interface FilePickerProps extends Omit<TouchableOpacityProps, 'children'> {
+  onChange?: (value: IFile[]) => void;
+  onSelect?: (value: IFile[]) => void;
 
-interface ImagePickerProps extends Omit<TouchableOpacityProps, 'children'> {
-  onChange?: (value: IAsset[]) => void;
-  onSelect?: (value: IAsset[]) => void;
-  options?: CameraOptions | ImageLibraryOptions;
   multiple?: boolean;
   placeholder?: string;
   children?: ({
@@ -38,38 +32,29 @@ interface ImagePickerProps extends Omit<TouchableOpacityProps, 'children'> {
   }) => void;
 }
 
-export default function ImagePicker({
+export default function FilePicker({
   onChange,
   onSelect,
-  options = {
-    mediaType: 'photo',
-    includeBase64: false,
-    includeExtra: true,
-  },
-  multiple = false,
   placeholder = 'Select Photo',
   children,
-}: ImagePickerProps) {
-  const [resp, setResp] = useState<ImagePickerResponse>();
-  const [progress, setProgress] = useState(0);
+}: FilePickerProps) {
   const {setUploadProgress} = useGlobalStore();
-
   const [{}, getSignS3] = useMutation({
     url: 's3/sign',
   });
 
-  function getImageData(file: Asset) {
+  function getFileData(file: DocumentPickerResponse) {
     return {
       uri: file.uri,
       type: file.type,
-      name: file.fileName,
+      name: file.name,
+      size: file.size,
     };
   }
 
-  async function handleUpload(assets: Asset[]) {
-    const uploadedImages: (Asset & {signedKey?: string})[] = [];
-    setProgress(1);
-    const uploadToS3 = (data: any, file: Asset) => {
+  async function handleUpload(assets: IFile[]) {
+    const uploadedFiles: (IFile & {signedKey?: string})[] = [];
+    const uploadToS3 = (data: any, file: IFile) => {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', data.signedRequestURL, true);
@@ -77,7 +62,7 @@ export default function ImagePicker({
           if (event.lengthComputable) {
             const percentComplete = (event.loaded / event.total) * 100;
             setUploadProgress?.({
-              [file.fileName as string]: percentComplete,
+              [file.name as string]: percentComplete,
             });
           }
         };
@@ -88,7 +73,7 @@ export default function ImagePicker({
                 ...file,
                 uri: data.url || '',
                 signedKey: data.signedKey,
-                size: fileSize(file.fileSize || 0),
+                size: file.size || 0,
               });
             } else {
               reject(xhr.statusText);
@@ -100,13 +85,14 @@ export default function ImagePicker({
           file.type || 'application/octet-stream',
         );
         xhr.setRequestHeader('x-amz-acl', 'public-read');
-        xhr.send(getImageData(file));
+        xhr.send(getFileData(file));
       });
     };
+
     await Promise.all(
       assets.map(async file => {
         const variables = {
-          filename: formatFilename(file.fileName),
+          filename: formatFilename(file.name || ''),
         };
 
         const {data} = await getSignS3(variables);
@@ -114,54 +100,36 @@ export default function ImagePicker({
         if (data) {
           try {
             const uploadedFile = await uploadToS3(data, file);
-
             if (uploadedFile) {
-              uploadedImages.push(uploadedFile as any);
-            } else {
-              Toast.show('Storage provider error! Can not upload photo.');
+              uploadedFiles.push(uploadedFile as any);
             }
           } catch (error) {
-            Toast.show('Storage provider error! Can not upload photo.');
+            Toast.show('Storage provider error! Can not upload file.');
           }
         } else {
-          Toast.show('Server side error! Can not upload photo.');
+          Toast.show('Server side error! Can not upload file.');
         }
       }),
     );
-    setProgress(100);
-
-    onChange?.(uploadedImages);
+    onChange?.(uploadedFiles);
   }
 
   async function handleSelect() {
-    launchImageLibrary(
-      {
-        ...options,
-        selectionLimit: multiple ? 0 : 1,
-      },
-      async res => {
-        if (res.didCancel) {
-          return;
-        }
-        setResp(res);
-        if (res && res.assets) {
-          const selectedAssets = res.assets.map(asset => {
-            return {
-              ...asset,
-              uuid: uuidv4(),
-            };
-          });
-          onSelect?.(selectedAssets);
-          await handleUpload(selectedAssets);
-        }
-      },
-    );
+    try {
+      const pickerResult = await DocumentPicker.pickSingle({});
+      const selectedFile: IFile = {
+        ...pickerResult,
+        uuid: uuidv4(),
+      };
+      onSelect?.([selectedFile]);
+      await handleUpload([selectedFile]);
+    } catch (e) {
+      console.log(`e :>>`, e);
+    }
   }
 
-  const uri = resp && resp.assets && resp.assets.map(asset => asset.uri || '');
-
   return children ? (
-    <>{children({onPick: handleSelect, selectedUri: uri, progress})}</>
+    <>{children({onPick: handleSelect})}</>
   ) : (
     <TouchableOpacity
       className="px-5 py-3 rounded-5 bg-gray-F5F6FA min-h-[56px] justify-center"
