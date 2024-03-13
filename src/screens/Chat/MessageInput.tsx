@@ -1,4 +1,4 @@
-import {View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity, Platform} from 'react-native';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import Input from 'components/Input';
 import AttachmentPicker from './AttachmentPicker';
@@ -110,7 +110,7 @@ export default function MessageInput() {
         inputClassName="px-3 pb-3.5 pt-0"
         onChangeText={handleChangeText}
         showSoftInputOnFocus={!!isFirstLoad.current}
-        autoFocus={true}
+        autoFocus={Platform.OS === 'android'}
         onContentSizeChange={e =>
           setInputHeight(e.nativeEvent.contentSize.height)
         }

@@ -15,6 +15,7 @@ import useMutation from 'libs/swr/useMutation';
 import notifee, {
   AuthorizationStatus,
   AndroidImportance,
+  EventType,
 } from '@notifee/react-native';
 import {watchInitialNotification} from 'utils/notification';
 
@@ -79,26 +80,24 @@ function RootView(): JSX.Element {
     }
 
     requestPermission();
-    onAppBootstrap();
 
     setTimeout(() => {
       setIsReady(true);
       setTimeout(() => {
         watchInitialNotification();
         SplashScreen.hide();
+        onAppBootstrap();
       }, 100);
     }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    return notifee.onForegroundEvent(({type, detail}) => {
-      console.log(`type :>>`, type);
-      console.log(
-        `
-     detail :>>`,
-        detail,
-      );
+    return notifee.onForegroundEvent(async ({type, detail}) => {
+      if (type !== EventType.PRESS && type !== EventType.ACTION_PRESS) {
+        return;
+      }
+      watchInitialNotification(detail);
     });
   }, []);
 
