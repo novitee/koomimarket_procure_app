@@ -268,9 +268,56 @@ export default function MessageItem({
     );
   }
   function renderDocument() {
+    const {files} = attachmentObject || {};
     return (
-      <View>
-        <Text>{text}</Text>
+      <View
+        className={clsx({
+          'w-full': true,
+          'rounded-b-xl rounded-tr-xl bg-gray-50': !isMine,
+          'rounded-t-xl rounded-bl-xl bg-red-50': isMine,
+        })}>
+        <View className="w-full">
+          {Array.isArray(files) &&
+            files.map(file => (
+              <View
+                key={file.url}
+                className="flex-row w-full items-center justify-between px-2 pt-2">
+                <View className="flex-row items-center">
+                  <TouchableOpacity
+                    onPress={() => openLink(file.url)}
+                    disabled={status === 'unsent'}
+                    className="items-center justify-center w-[56px] h-[56px] bg-red-100/50 rounded-full">
+                    {status === 'unsent' ? (
+                      <UploadProgressCircle name={file.name || ''} />
+                    ) : (
+                      <ClipboardListIcon
+                        color={colors.primary.DEFAULT}
+                        width={36}
+                        height={36}
+                      />
+                    )}
+                  </TouchableOpacity>
+
+                  <View className="flex-1 ml-3">
+                    <Text
+                      className="text-base font-medium text-gray-500"
+                      numberOfLines={1}>
+                      {file.name}
+                    </Text>
+                    <Text className="text-sm  text-gray-500">
+                      {formatBytes(file.size)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+        </View>
+        <View className="px-2 py-1">
+          {!!text && (
+            <Text className="text-gray-700 text-sm mt-1">{getTextMsg()}</Text>
+          )}
+          {renderMessageFooter()}
+        </View>
       </View>
     );
   }
