@@ -101,9 +101,9 @@ export default function ToggleEditOrder({
                 {lineItems.length > 0 ? (
                   lineItems
                     .filter(item => !item.markDeleted)
-                    .map(lineItem => {
+                    .map((lineItem, idx) => {
                       return (
-                        <View key={lineItem.id}>
+                        <View key={idx}>
                           <LineItem
                             item={lineItem}
                             qty={lineItem.qty}
