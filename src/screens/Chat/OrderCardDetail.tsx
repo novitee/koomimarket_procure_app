@@ -79,57 +79,71 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
   return (
     <View
       className={clsx({
-        'w-70 rounded-xl border overflow-hidden bg-white mb-1': true,
+        'w-[260px] rounded-xl border overflow-hidden bg-white mb-1': true,
         // border-blue-500: status === 'SUBMITTED',
         // border-orange-400: status === 'ACKNOWLEDGED',
         // border-gray-500: status === 'CANCELED',
         // border-green-700: status === 'COMPLETED',
         // border-purple-700: status === 'RESOLVING',
+        // 'border-orange-400': status === 'PACKED',
         ...getColorByStatus(status, 'border'),
       })}>
-      <View className="flex-row items-center justify-between px-4 py-5 border-b border-gray-300 ">
+      <View className="flex-col px-4 py-3 border-b border-gray-300 ">
         <Text className="text-xl font-semibold text-gray-900">Order</Text>
-        <Text
-          className={clsx({
-            'uppercase text-lg font-semibold': true,
-            // text-blue-500: status === 'SUBMITTED',
-            // text-orange-400: status === 'ACKNOWLEDGED',
-            // text-gray-500: status === 'CANCELED',
-            // text-green-700: status === 'COMPLETED',
-            // text-purple-700: status === 'RESOLVING',
-            ...getColorByStatus(status, 'text'),
-          })}>
-          {renderStatus(status)}
+        <Text className="text-gray-500 font-bold text-xs">
+          {dayjs(orderedAt).format('DD MMM YYYY')}
+          {' - '}
+          {orderNo}
         </Text>
       </View>
-      <View className="px-4 py-5 border-b border-gray-300">
-        <View className="flex-row items-center justify-between py-2">
-          <View className="flex-row items-center">
-            <CircleCheckIcon width={20} height={20} />
-            <Text className="text-gray-500 font-medium text-xs ml-2">
-              Ordered
-            </Text>
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-300 ">
+        <Text className="text-gray-500 font-medium text-xs mr-2 ">
+          Order Status
+        </Text>
+        <View className="flex-row text-gray-500 font-bold text-xs border border-gray-300 p-2 rounded-lg flex items-center justify-center">
+          <View
+            className={clsx({
+              'rounded-full w-4 h-4 mr-2': true,
+              // bg-blue-500: status === 'SUBMITTED',
+              // bg-orange-400: status === 'ACKNOWLEDGED',
+              // bg-gray-500: status === 'CANCELED',
+              // bg-green-700: status === 'COMPLETED',
+              // bg-purple-700: status === 'RESOLVING',
+              // 'bg-orange-400': status === 'PACKED',
+              ...getColorByStatus(status, 'bg'),
+            })}></View>
+          <View
+            className={clsx({
+              'uppercase text-lg font-semibold': true,
+              // text-blue-500: status === 'SUBMITTED',
+              // text-orange-400: status === 'ACKNOWLEDGED',
+              // text-gray-500: status === 'CANCELED',
+              // text-green-700: status === 'COMPLETED',
+              // text-purple-700: status === 'RESOLVING',
+              // 'text-orange-400': status === 'PACKED',
+              ...getColorByStatus(status, 'text'),
+            })}>
+            <Text>{renderStatus(status)}</Text>
           </View>
-          <Text className="text-gray-500 font-bold text-xs">
-            {dayjs(orderedAt).format('ddd HH:mm, DD MMM YYYY')}
-          </Text>
         </View>
+      </View>
+      <View className="px-4 py-3 border-b border-gray-300">
         <View className="flex-row items-center justify-between py-2">
           <View className="flex-row items-center">
-            <TruckIcon width={20} height={16} />
-            <Text className="text-gray-500 font-medium text-xs ml-2">
-              Delivery
+            <Text className="text-gray-500 font-medium text-xs">
+              Delivery date
             </Text>
           </View>
           <Text className="text-gray-500 font-bold text-xs">
             {dayjs(deliveryDate).format('ddd, DD MMM YYYY')}
           </Text>
         </View>
+      </View>
+      <View className="px-4 py-3 border-b border-gray-300">
         <View className="flex-row items-center justify-between py-2">
           <View className="flex-row items-center">
-            <CartIcon width={20} height={20} />
-            <Text className="text-gray-500 font-medium text-xs ml-2">
-              Items
+            <Text className="text-gray-500 font-medium text-xs">
+              Products ordered
             </Text>
           </View>
           <Text className="text-gray-500 font-bold text-xs">
@@ -137,10 +151,11 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
           </Text>
         </View>
       </View>
-      <View className="flex-row items-center justify-between px-4 py-5 border-b border-gray-300">
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-300">
         <View className="flex-row items-center">
-          <DollarIcon width={20} height={20} />
-          <Text className="text-gray-500 font-medium text-xs ml-2">Cost</Text>
+          <Text className="text-gray-500 font-medium text-xs">
+            Cost of goods
+          </Text>
         </View>
         <Text className="text-gray-500 font-bold text-xs">
           {toCurrency(total, 'SGD')?.replace('SGD', 'S$')}
@@ -148,13 +163,12 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
       </View>
       <View
         className={clsx({
-          'flex-row px-4 py-5 border-b border-gray-300': true,
+          'flex-row px-4 py-3 border-b border-gray-300': true,
           'flex-col': !!remarks,
           'flex-row justify-between items-center': !remarks,
         })}>
         <View className="flex-row items-center">
-          <InformationCircleIcon width={20} height={20} />
-          <Text className="text-gray-500 font-medium text-xs ml-2">Remark</Text>
+          <Text className="text-gray-500 font-medium text-xs">Remark</Text>
         </View>
         <Text className="text-gray-500 font-bold text-xs mt-2">
           {remarks || '_'}
@@ -169,6 +183,7 @@ function OrderCardDetail({order}: OrderCardDetailProps) {
           // bg-gray-500: status === 'CANCELED',
           // bg-green-700: status === 'COMPLETED',
           // bg-purple-700: status === 'RESOLVING',
+          // 'bg-orange-400': status === 'PACKED',
           ...getColorByStatus(status, 'bg'),
         })}
         onPress={handleViewDetails}>
