@@ -92,6 +92,10 @@ export default function MessageInput() {
   }
   useEffect(() => {
     isFirstLoad.current = true;
+
+    return () => {
+      turnOffTyping();
+    };
   }, []);
 
   function handleAddAttachment() {}
