@@ -1,11 +1,13 @@
 import {ROLE_BUYER} from './../configs/index';
 import useNavigation from 'hooks/useNavigation';
 import useQuery from 'libs/swr/useQuery';
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {getState} from 'stores/app';
 import {resetAuthData} from 'utils/auth';
+import {useModal} from 'libs/modal';
 
 export default function useMe() {
+  const {showModal, closeModal} = useModal();
   const navigation = useNavigation();
   const {
     data: userInfo,
@@ -26,6 +28,23 @@ export default function useMe() {
       }
     },
   });
+
+  useEffect(() => {
+    if (userInfo?.deleted) {
+      showModal({
+        title: 'Account Deleted',
+        message:
+          'Description: We are sorry to see you go. Your account has been deleted. You will be logged out instantly from this app.',
+        onConfirm: () => {
+          resetAuthData();
+          closeModal();
+        },
+        modifiers: {
+          confirmTitle: 'OK',
+        },
+      });
+    }
+  }, [userInfo]);
 
   const refresh = useCallback(() => {
     refreshUser();

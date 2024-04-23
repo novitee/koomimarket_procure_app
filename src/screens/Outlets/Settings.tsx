@@ -100,20 +100,18 @@ export default function SettingsScreen({
 
   function onDeleteAccount() {
     showModal({
-      title: 'Delete Account Confirmation',
+      title: 'Delete Account',
       message: (
         <View>
           <Text className="text-sm text-justify">
-            You are requesting to delete your account. This action will erase
-            all your data from our database. Please note that it is
-            irreversible, and the completion of this process may require up to 7
-            business days.
+            You will be deleting your account. All your data will be permanently
+            gone. This action cannot be undone. Are you sure?
           </Text>
-          <Text className="mt-2 text-sm text-justify">
+          {/* <Text className="mt-2 text-sm text-justify">
             To complete the account deletion process, you will be redirected to
             our secure deletion page. Please take a moment to review your
             decision carefully.
-          </Text>
+          </Text> */}
         </View>
       ),
       onConfirm: () => {
