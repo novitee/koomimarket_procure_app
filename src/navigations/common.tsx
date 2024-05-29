@@ -73,9 +73,10 @@ const barSources: Record<
   FunctionComponent<SVGAttributes<SVGElement>>
 > = {
   supplier: SupplierIcon,
+  home: SupplierIcon,
   order: ClipBoardListIcon,
   team: UserGroupIcon,
-  supplier_active: SupplierIconActive,
+  home_active: SupplierIconActive,
   order_active: ClipBoardListIconActive,
   team_active: UserGroupIconActive,
 };

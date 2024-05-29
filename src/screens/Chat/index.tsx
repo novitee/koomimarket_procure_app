@@ -43,9 +43,7 @@ export default function ChatScreen({navigation}: NativeStackScreenProps<any>) {
     });
   }, [chatHeaderCallback, navigation]);
   return (
-    <SafeAreaView
-      className="px-0 flex-1 bg-white"
-      edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="px-0 flex-1 bg-white" edges={['left', 'right']}>
       <AvoidSoftInputView className="flex-1">
         <View className="flex-1 px-3 bg-slate-300">
           <MessageListing />

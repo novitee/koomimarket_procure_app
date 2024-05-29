@@ -74,6 +74,23 @@ export default function MyOutletsScreen({
   const {data, isLoading, mutate} = useQueryOutlets();
   // useIsFocused();
 
+  const {data: channelData} = useQuery([
+    '/channels',
+    {
+      first: 1,
+      skip: 0,
+      orderby: {
+        updatedAt: 'desc',
+      },
+      filter: {
+        status_nin: ['INACTIVE'],
+      },
+      include: 'channelMembers(id,userId,,user,role)',
+    },
+  ]);
+
+  const {records: channelRecords} = channelData || {};
+
   const isFocused = useIsFocused();
   useFocusEffect(
     React.useCallback(() => {
@@ -94,7 +111,8 @@ export default function MyOutletsScreen({
 
   const handleSelectOutlet = useCallback(
     async ({item}: {item?: any}) => {
-      setGlobal({currentOutlet: item});
+      setGlobal({currentOutlet: item, currentChannel: channelRecords[0]});
+
       const {data: dataResp, success} = await setOutlet({outletId: item.id});
       if (success) {
         const {token, refreshToken} = dataResp;
@@ -102,7 +120,7 @@ export default function MyOutletsScreen({
         navigation.navigate('SupplierTabs');
       }
     },
-    [navigation, setOutlet],
+    [channelRecords, navigation, setOutlet],
   );
 
   const EmptyComponent = useCallback(() => {
