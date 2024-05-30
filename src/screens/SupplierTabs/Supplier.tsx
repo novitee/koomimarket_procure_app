@@ -45,7 +45,7 @@ function SupplierItem({
   onPress?: TouchableOpacityProps['onPress'];
   onPressEdit?: TouchableOpacityProps['onPress'];
 }) {
-  const {name, createdAt, lastMessage, supplier, lastOrderAt} = item || {};
+  const {createdAt, lastMessage, supplier, lastOrderAt} = item || {};
   const swipeableRef = useRef<any>();
   const imageUrl = supplier?.photo?.url;
   const {type, text} = lastMessage || {};
@@ -105,9 +105,9 @@ function SupplierItem({
             'bg-slate-50': isPendingSetup,
             'bg-white': !isPendingSetup,
           })}>
-          <Avatar url={imageUrl} size={64} name={name} />
+          <Avatar url={imageUrl} size={64} name={supplier?.name} />
           <View className="flex-1 justify-center ml-4">
-            <Text className="font-bold text-18">{name}</Text>
+            <Text className="font-bold text-18">{supplier?.name}</Text>
             {!isPendingSetup && (
               <Text className="font-light text-xs mt-2">
                 {lastOrderAt
