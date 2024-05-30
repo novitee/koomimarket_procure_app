@@ -168,7 +168,7 @@ export default function SupplierScreen({
         status_nin: ['INACTIVE'],
       },
       searchString: searchString,
-      include: 'channelMembers(id,userId,,user,role)',
+      include: 'channelMembers(id,userId,,user,role),supplier(name,photo)',
     },
   ]);
 
