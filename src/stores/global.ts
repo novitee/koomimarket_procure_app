@@ -26,4 +26,5 @@ const useGlobalStore = create<GlobalStore>(set => ({
     })),
 }));
 const setGlobal = useGlobalStore.setState;
-export {useGlobalStore, setGlobal};
+const getGlobal = useGlobalStore.getState;
+export {useGlobalStore, getGlobal, setGlobal};
