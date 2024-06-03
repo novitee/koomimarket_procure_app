@@ -1,45 +1,80 @@
 {
   "project_info": {
-    "project_number": "61607500826",
-    "project_id": "new-east-asia-trading",
-    "storage_bucket": "new-east-asia-trading.appspot.com"
+    "project_number": "805147007611",
+    "firebase_url": "https://koomimarket-procure-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "koomimarket-procure",
+    "storage_bucket": "koomimarket-procure.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:61607500826:android:a55a2daab8fe17011485a3",
+        "mobilesdk_app_id": "1:805147007611:android:8ed550febf17df25e720de",
         "android_client_info": {
-          "package_name": "com.neweastasia.staging"
+          "package_name": "com.koomimarket.procure"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAi-lUA4aUe61pM996PBSG8IPY6cfHYoR8"
+          "current_key": "AIzaSyBAo7GhIAZIK9SUFGk7ThXv1vG8kLOfZDk"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "805147007611-2rgc3a99qh1q88ieve9vu9lc0s32p4a2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.koomimarket.procure"
+              }
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:61607500826:android:522e26a1301d359b1485a3",
+        "mobilesdk_app_id": "1:805147007611:android:ffbb96f01737afede720de",
         "android_client_info": {
-          "package_name": "com.neweastasia.trading"
+          "package_name": "com.neweastasia.staging"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAi-lUA4aUe61pM996PBSG8IPY6cfHYoR8"
+          "current_key": "AIzaSyBAo7GhIAZIK9SUFGk7ThXv1vG8kLOfZDk"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "805147007611-o42kr0poj853e8rhbn8kp4rcbvb8892v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "805147007611-2rgc3a99qh1q88ieve9vu9lc0s32p4a2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.koomimarket.procure"
+              }
+            }
+          ]
         }
       }
     }

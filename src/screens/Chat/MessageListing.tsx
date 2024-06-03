@@ -22,7 +22,6 @@ export default function MessageListing() {
   const {user} = useMe();
   const {id: currentUserId} = user?.me || {};
   const {localMessages} = useChatStore();
-
   const isFirstSnapshotLoaded = useRef<Boolean>(false);
   const fireStoreInstance = firestore()
     .collection('channelMessages')

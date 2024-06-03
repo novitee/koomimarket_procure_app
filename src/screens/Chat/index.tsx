@@ -20,7 +20,10 @@ import {useGlobalStore} from 'stores/global';
 
 export default function ChatScreen({navigation}: NativeStackScreenProps<any>) {
   const onFocusEffect = React.useCallback(() => {
-    AvoidSoftInput.setShouldMimicIOSBehavior(true);
+    if (Platform.OS === 'ios') {
+      AvoidSoftInput.setShouldMimicIOSBehavior(true);
+    }
+
     if (Platform.OS === 'android') {
       AvoidSoftInput.setAdjustPan();
     }
@@ -64,7 +67,6 @@ export default function ChatScreen({navigation}: NativeStackScreenProps<any>) {
   ]);
 
   const {records: channelRecords} = channelData || {};
-  console.log(`channelRecords :>>`, channelRecords);
   useEffect(() => {
     if (channelRecords && channelRecords[0]) {
       setGlobal({

@@ -221,7 +221,7 @@ export default function MainNavigator(): JSX.Element {
       </Stack.Group>
 
       {/* Chat */}
-      <Stack.Group>
+      {/* <Stack.Group>
         <Stack.Screen
           name="Chat"
           options={{
@@ -229,7 +229,7 @@ export default function MainNavigator(): JSX.Element {
           }}
           component={ChatScreen}
         />
-      </Stack.Group>
+      </Stack.Group> */}
 
       {/* Adding Product */}
 

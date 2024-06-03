@@ -114,7 +114,7 @@ export default function MessageInput() {
         inputClassName="px-3 pb-3.5 pt-0"
         onChangeText={handleChangeText}
         showSoftInputOnFocus={!!isFirstLoad.current}
-        autoFocus={Platform.OS === 'android'}
+        // autoFocus={Platform.OS === 'android'}
         onContentSizeChange={e =>
           setInputHeight(e.nativeEvent.contentSize.height)
         }
