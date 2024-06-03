@@ -1,4 +1,4 @@
-package com.koomimarket.procure;
+package com.neweastasia.trading;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

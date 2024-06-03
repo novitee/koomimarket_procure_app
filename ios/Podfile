@@ -20,7 +20,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'koomimarket_procure_app' do
+target 'NewEastAsia' do
   config = use_native_modules!
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
@@ -52,7 +52,7 @@ target 'koomimarket_procure_app' do
 
   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '10.21.0'
 
-  target 'koomimarket_procure_appTests' do
+  target 'NewEastAsiaTests' do
     inherit! :complete
     # Pods for testing
   end

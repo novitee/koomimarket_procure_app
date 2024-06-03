@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:koomimarket_procure_app.xcodeproj">
+      location = "group:NewEastAsia.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:koomimarket_procure_app.xcodeproj">
    </FileRef>
 </Workspace>

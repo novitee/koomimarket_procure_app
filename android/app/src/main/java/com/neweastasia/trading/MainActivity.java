@@ -1,4 +1,4 @@
-package com.koomimarket.procure;
+package com.neweastasia.trading;
 
 import android.os.Bundle;
 
@@ -21,7 +21,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "koomimarket_procure_app";
+    return "New East Asia";
   }
 
   /**

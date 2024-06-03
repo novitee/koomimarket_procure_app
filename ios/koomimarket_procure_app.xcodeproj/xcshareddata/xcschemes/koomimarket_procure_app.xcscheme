@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "koomimarket_procure_app.app"
-               BlueprintName = "koomimarket_procure_app"
-               ReferencedContainer = "container:koomimarket_procure_app.xcodeproj">
+               BuildableName = "NewEastAsia.app"
+               BlueprintName = "NewEastAsia"
+               ReferencedContainer = "container:NewEastAsia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "koomimarket_procure_appTests.xctest"
-               BlueprintName = "koomimarket_procure_appTests"
-               ReferencedContainer = "container:koomimarket_procure_app.xcodeproj">
+               BuildableName = "NewEastAsiaTests.xctest"
+               BlueprintName = "NewEastAsiaTests"
+               ReferencedContainer = "container:NewEastAsia.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "koomimarket_procure_app.app"
-            BlueprintName = "koomimarket_procure_app"
-            ReferencedContainer = "container:koomimarket_procure_app.xcodeproj">
+            BuildableName = "NewEastAsia.app"
+            BlueprintName = "NewEastAsia"
+            ReferencedContainer = "container:NewEastAsia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "koomimarket_procure_app.app"
-            BlueprintName = "koomimarket_procure_app"
-            ReferencedContainer = "container:koomimarket_procure_app.xcodeproj">
+            BuildableName = "NewEastAsia.app"
+            BlueprintName = "NewEastAsia"
+            ReferencedContainer = "container:NewEastAsia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

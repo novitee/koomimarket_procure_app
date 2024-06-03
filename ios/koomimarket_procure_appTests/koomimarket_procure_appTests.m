@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface koomimarket_procure_appTests : XCTestCase
+@interface NewEastAsiaTests : XCTestCase
 
 @end
 
-@implementation koomimarket_procure_appTests
+@implementation NewEastAsiaTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
