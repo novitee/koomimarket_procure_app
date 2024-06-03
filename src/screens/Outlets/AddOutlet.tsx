@@ -23,7 +23,7 @@ export default function AddOutletScreen({
   });
 
   async function handleAddOutlet(paramValues: any) {
-    const response = await addOutlet(paramValues);
+    const response = await addOutlet({...paramValues, supplierCode: 'nea'});
     const {success, message, errors} = response || {};
     if (success) {
       navigation.goBack();
