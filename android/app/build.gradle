@@ -94,9 +94,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.neweastasia.trading"
+    namespace "com.neweastasia.staging"
     defaultConfig {
-        applicationId "com.neweastasia.trading"
+        applicationId "com.neweastasia.staging"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 17

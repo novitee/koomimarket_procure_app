@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>805147007611-2rgc3a99qh1q88ieve9vu9lc0s32p4a2.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.805147007611-2rgc3a99qh1q88ieve9vu9lc0s32p4a2</string>
 	<key>API_KEY</key>
 	<string>AIzaSyA4AP8UyHVwuePeIdiL9LPYcNF8BNTzsVo</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.koomimarket.procure</string>
+	<string>com.neweastasia.staging</string>
 	<key>PROJECT_ID</key>
 	<string>koomimarket-procure</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +25,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:805147007611:ios:0fb05a7f02c3fc48e720de</string>
+	<string>1:805147007611:ios:62c7edaa86bbf2c8e720de</string>
 	<key>DATABASE_URL</key>
 	<string>https://koomimarket-procure-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>

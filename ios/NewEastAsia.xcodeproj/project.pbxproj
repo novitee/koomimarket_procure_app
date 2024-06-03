@@ -246,7 +246,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "koomimarket_procure_app" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "NewEastAsia" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -505,7 +505,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NewEastAsia.app/NewEastAsia";
 			};
@@ -529,7 +529,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NewEastAsia.app/NewEastAsia";
 			};
@@ -543,12 +543,12 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NewEastAsia/NewEastAsia.entitlements;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QHX8326X9Q;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewEastAsia/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "New East Asia";
+				INFOPLIST_KEY_CFBundleDisplayName = NewEastAsia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) would like to use your camera to take photos of your products";
 				INFOPLIST_KEY_NSContactsUsageDescription = "$(PRODUCT_NAME) would like access to your contacts to get the phone number to add or update the team member profile";
@@ -563,13 +563,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.staging;
 				PRODUCT_NAME = NewEastAsia;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -585,11 +585,11 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NewEastAsia/NewEastAsia.entitlements;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QHX8326X9Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewEastAsia/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "New East Asia";
+				INFOPLIST_KEY_CFBundleDisplayName = NewEastAsia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) would like to use your camera to take photos of your products";
 				INFOPLIST_KEY_NSContactsUsageDescription = "$(PRODUCT_NAME) would like access to your contacts to get the phone number to add or update the team member profile";
@@ -604,13 +604,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.trading;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neweastasia.staging;
 				PRODUCT_NAME = NewEastAsia;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -775,7 +775,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "koomimarket_procure_app" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "NewEastAsia" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

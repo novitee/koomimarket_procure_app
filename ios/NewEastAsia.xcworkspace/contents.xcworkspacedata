@@ -8,6 +8,6 @@
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:koomimarket_procure_app.xcodeproj">
+      location = "group:NewEastAsia.xcodeproj">
    </FileRef>
 </Workspace>
