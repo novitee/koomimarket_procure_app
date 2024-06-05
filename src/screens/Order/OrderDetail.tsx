@@ -147,9 +147,7 @@ export default function OrderDetailScreen({
 
     setGlobal({currentChannel: channelData?.channel});
     setTimeout(() => {
-      if (navigationRef.isReady()) {
-        navigationRef.navigate('Chat' as never);
-      }
+      navigation.navigate('SupplierTabs', {screen: 'Home'});
     }, 100);
   };
   return (

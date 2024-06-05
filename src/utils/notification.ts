@@ -50,7 +50,10 @@ export async function watchInitialNotification(detail?: any) {
     setGlobal({currentChannel: channelData.channel});
     setTimeout(() => {
       if (navigationRef.isReady()) {
-        navigationRef.navigate('Chat' as never);
+        navigationRef.navigate(
+          'SupplierTabs' as never,
+          {screen: 'Home'} as never,
+        );
       }
     }, 100);
   }

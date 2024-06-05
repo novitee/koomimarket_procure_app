@@ -49,7 +49,7 @@ export default function ChatScreen({navigation}: NativeStackScreenProps<any>) {
     });
   }, [chatHeaderCallback, navigation]);
 
-  const {currentOutlet} = useGlobalStore();
+  const {currentOutlet, currentChannel} = useGlobalStore();
 
   const {data: channelData} = useQuery([
     `/channels?outlet=${currentOutlet?.id}`,
@@ -79,7 +79,7 @@ export default function ChatScreen({navigation}: NativeStackScreenProps<any>) {
     <SafeAreaView className="px-0 flex-1 bg-white" edges={['left', 'right']}>
       <AvoidSoftInputView className="flex-1">
         <View className="flex-1 px-3 bg-slate-300">
-          <MessageListing />
+          {!!currentChannel && <MessageListing />}
         </View>
         <View>
           <Button

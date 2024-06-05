@@ -62,6 +62,14 @@ function ChatHeader({navigation}: NativeStackHeaderProps) {
     return () => subscriber();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function handleGoBack() {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('MyOutlets');
+    }
+  }
   return (
     <SafeAreaView
       style={{
@@ -69,10 +77,7 @@ function ChatHeader({navigation}: NativeStackHeaderProps) {
       }}
       className="bg-white">
       <View className="px-3 py-3 flex-row items-center">
-        <BackButton
-          canGoBack={navigation.canGoBack()}
-          goBack={navigation.goBack}
-        />
+        <BackButton canGoBack={true} goBack={handleGoBack} />
         <View className="ml-1 flex-1 flex-row">
           <Avatar url={imageUrl} size={48} name={name} />
           <View className="flex-1 justify-center ml-4">

@@ -33,7 +33,7 @@ export default function AuthNavigator() {
 
       {authStatus === 'REGISTERING' && (
         <Stack.Group>
-          <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} />
+          {/* <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} /> */}
           {authRegisterType === 'BUYER' && (
             <>
               <Stack.Screen name="CreateProfile" component={CreateProfile} />

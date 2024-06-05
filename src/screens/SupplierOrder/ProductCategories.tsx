@@ -23,6 +23,7 @@ function useQueryCategories(supplierId: string) {
     },
     supplierFilter: {
       _id: supplierId,
+      specificIdentification: 'nea',
     },
     filter: {
       depth: 0,

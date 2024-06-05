@@ -7,6 +7,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from 'react-native-simple-toast';
 
 import OutletForm from './OutletForm';
+import {setGlobal} from 'stores/global';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -27,6 +28,7 @@ export default function EditOutletScreen({
     const response = await updateOutlet(paramValues);
     const {success, message, errors} = response || {};
     if (success) {
+      setGlobal({currentOutlet: response?.data?.outlet});
       navigation.goBack();
     } else {
       Toast.show(message || errors?.name, Toast.LONG);
