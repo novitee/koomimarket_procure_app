@@ -16,6 +16,9 @@ if (__DEV__) {
 }
 // Note that an async function or a function that returns a Promise 
 // is required for both subscribers.
+if (__DEV__) {
+    require("./ReactotronConfig");
+  }
 async function onMessageReceived(message) {
     console.log(`message :>>`, JSON.stringify(message, null, 2));
     const { data } = message;

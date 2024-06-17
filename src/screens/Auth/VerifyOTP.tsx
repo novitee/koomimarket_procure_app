@@ -53,6 +53,8 @@ export default function VerifyOTP({
     if (success) {
       const {token, refreshToken, roleDepartments} = data;
       saveAuthData({token, refreshToken});
+      console.log('mode', mode)
+      console.log('roleDepartments', roleDepartments)
       if (mode === 'signUp') {
         authStateRef.current = 'REGISTERING';
         setState({authStatus: authStateRef.current, authRegisterType: 'BUYER'});
