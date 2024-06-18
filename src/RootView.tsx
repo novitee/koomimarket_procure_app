@@ -18,6 +18,7 @@ import notifee, {
   EventType,
 } from '@notifee/react-native';
 import {watchInitialNotification} from 'utils/notification';
+import {setGlobal} from 'stores/global';
 
 function RootView(): JSX.Element {
   const [isReady, setIsReady] = useState(false);
@@ -36,6 +37,7 @@ function RootView(): JSX.Element {
           vibration: true,
           importance: AndroidImportance.HIGH,
         });
+        setGlobal({authMode: 'login'});
         await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
         console.log(`token :>>`, token);

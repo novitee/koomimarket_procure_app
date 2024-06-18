@@ -11,6 +11,9 @@ import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidVisibility, EventType } from '@notifee/react-native';
 import colors from 'configs/colors';
 import { watchInitialNotification } from 'utils/notification';
+if (__DEV__) {
+    require("./ReactotronConfig");
+}
 // Note that an async function or a function that returns a Promise 
 // is required for both subscribers.
 async function onMessageReceived(message) {

@@ -49,7 +49,7 @@ const linking = {
       },
       AuthStack: {
         screens: {
-          Welcome: 'login',
+          VerifyNumber: 'login',
         },
       },
     },

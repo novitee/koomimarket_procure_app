@@ -23,12 +23,12 @@ export default function WelcomeScreen({
       </View>
       <View>
         <Button onPress={() => navigateTo('login')}>Login</Button>
-        <Button
+        {/* <Button
           onPress={() => navigateTo('signUp')}
           className="mt-4"
           variant="outline">
           Sign Up
-        </Button>
+        </Button> */}
       </View>
     </Container>
   );

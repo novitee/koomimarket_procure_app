@@ -19,10 +19,10 @@ export default function AuthNavigator() {
   return (
     <Stack.Navigator
       screenOptions={customScreenOptions}
-      initialRouteName="Welcome">
+      initialRouteName="VerifyNumber">
       {authStatus === 'NOT_AUTH' && (
         <Stack.Group>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          {/* <Stack.Screen name="Welcome" component={WelcomeScreen} /> */}
           <Stack.Screen name="VerifyNumber" component={VerifyNumber} />
           <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
         </Stack.Group>
@@ -33,7 +33,7 @@ export default function AuthNavigator() {
 
       {authStatus === 'REGISTERING' && (
         <Stack.Group>
-          <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} />
+          {/* <Stack.Screen name="WhatYouDo" component={WhatYouDoScreen} /> */}
           {authRegisterType === 'BUYER' && (
             <>
               <Stack.Screen name="CreateProfile" component={CreateProfile} />

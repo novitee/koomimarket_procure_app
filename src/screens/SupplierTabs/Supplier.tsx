@@ -13,7 +13,6 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import Button from 'components/Button';
 import useQuery from 'libs/swr/useQuery';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import SearchBar from 'components/SearchBar';
@@ -207,13 +206,13 @@ export default function SupplierScreen({
     }
   }, [currentOutlet, navigation]);
 
-  const toAddSupplier = useCallback(() => {
-    navigation.navigate('AddSupplierName');
-  }, [navigation]);
+  // const toAddSupplier = useCallback(() => {
+  //   navigation.navigate('AddSupplierName');
+  // }, [navigation]);
 
-  const toSupplierProfile = useCallback(() => {
-    navigation.navigate('AddSupplierProfile');
-  }, [navigation]);
+  // const toSupplierProfile = useCallback(() => {
+  //   navigation.navigate('AddSupplierProfile');
+  // }, [navigation]);
 
   const handleSelectSupplier = useCallback(
     ({item}: {item?: any}) => {
@@ -221,6 +220,7 @@ export default function SupplierScreen({
       resetLocalMessages();
       navigation.navigate('Chat');
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigation],
   );
 
@@ -240,30 +240,28 @@ export default function SupplierScreen({
           Start by adding your suppliers.
         </Text>
 
-        <Button className="mt-4" onPress={toSupplierProfile}>
+        {/* <Button className="mt-4" onPress={toSupplierProfile}>
           + Add Supplier
-        </Button>
+        </Button> */}
       </View>
     );
-  }, [toSupplierProfile]);
+  }, []);
 
   const EmptySearchComponent = useCallback(() => {
     return (
       <View className="flex-1 justify-center items-center px-5">
         <IllustrationIcon />
-        <Text className="font-bold mt-4 text-center">
-          Can't find your supplier?
-        </Text>
-        <Text className="font-light mt-4 text-center">
+        <Text className="font-bold mt-4 text-center">Supplier not found</Text>
+        {/* <Text className="font-light mt-4 text-center">
           Submit a form and our team will create it for you.
         </Text>
 
         <Button className="mt-4" onPress={toAddSupplier}>
           + Add Supplier Manually
-        </Button>
+        </Button> */}
       </View>
     );
-  }, [toAddSupplier]);
+  }, []);
 
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
@@ -311,7 +309,7 @@ export default function SupplierScreen({
         }
         ItemSeparatorComponent={_renderItemSeparator}
       />
-      {!!records && records.length > 0 && (
+      {/* {!!records && records.length > 0 && (
         <View className="flex-row justify-end px-5">
           <Button
             fullWidth={false}
@@ -322,7 +320,7 @@ export default function SupplierScreen({
             + Add Supplier
           </Button>
         </View>
-      )}
+      )} */}
       {isLoading && <Loading />}
     </Container>
   );

@@ -55,7 +55,7 @@ export default function VerifyOTP({
       saveAuthData({token, refreshToken});
       if (mode === 'signUp') {
         authStateRef.current = 'REGISTERING';
-        setState({authStatus: authStateRef.current});
+        setState({authStatus: authStateRef.current, authRegisterType: 'BUYER'});
       } else if (roleDepartments.length === 2) {
         authStateRef.current = 'AUTH_COMPLETED';
       } else if (roleDepartments.includes(ROLE_BUYER)) {
