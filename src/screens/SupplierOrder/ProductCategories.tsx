@@ -1,5 +1,6 @@
 import {Text, FlatList, TouchableOpacity, View} from 'react-native';
 import React, {useCallback, useEffect} from 'react';
+import _ from 'lodash'
 // import {PRODUCT_CATEGORIES} from 'configs/data';
 import clsx from 'libs/clsx';
 import useQuery from 'libs/swr/useQuery';
@@ -17,7 +18,7 @@ function useQueryCategories(supplierId: string) {
   const url = 'app/supplier-categories';
   const params = {
     first: 100,
-    fields: 'id,name,position,slug',
+    fields: 'id,name,position,slug,chinaName',
     orderBy: {
       position: 'asc',
     },
@@ -36,7 +37,7 @@ export default function ProductCategories({
   supplierId,
 }: ProductCategoriesProps) {
   const {data} = useQueryCategories(supplierId);
-  const {records: categories} = data || {};
+  const {records: categories, settingLanguage} = data || {};
 
   useEffect(() => {
     if (!selectedCategory && categories && categories.length > 0) {
@@ -44,9 +45,19 @@ export default function ProductCategories({
     }
   }, [selectedCategory, categories]);
 
+  function selectCategoryName({category, settingLanguage}: {category?: any; settingLanguage?: "ENGLISH" | "CHINESE"}) {
+    const name = _.get(category, "name", null)
+    const chinaName = _.get(category, "chinaName", null)
+    if (settingLanguage === "CHINESE" && !!chinaName) {
+      return chinaName
+    }
+    return name
+  }
+
   const _renderItem = useCallback(
     ({item}: {item?: any}) => {
       const isSelected = selectedCategory?.id === item.id;
+      const categoryName = selectCategoryName({category: item, settingLanguage: settingLanguage})
       return (
         <TouchableOpacity
           className={clsx({
@@ -61,7 +72,7 @@ export default function ProductCategories({
               'text-gray-500': !isSelected,
               'text-white': !!isSelected,
             })}>
-            {item.name}
+            {categoryName}
           </Text>
           {isSelected && (
             <View className="absolute left-0 top-1/2 -translate-y-[10px] bg-primary w-[5px] h-[20px] rounded-full" />
