@@ -52,6 +52,7 @@ import CalendarListScreen from 'screens/CalendarListScreen';
 import SupplierDetailScreen from 'screens/EditSupplier/SupplierDetail';
 import EditSupplierDetailScreen from 'screens/EditSupplier/EditSupplierDetail';
 import ChatScreen from 'screens/Chat';
+import DeliveryCalendarScreen from 'screens/DeliveryCalendarScreen';
 const Stack = createNativeStackNavigator();
 
 const HeaderLogo = () => <KoomiLogo width={156} height={32} />;

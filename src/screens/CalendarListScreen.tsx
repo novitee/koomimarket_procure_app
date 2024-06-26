@@ -2,8 +2,10 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import colors from 'configs/colors';
 import dayjs from 'dayjs';
 import React, {useState, useMemo, useCallback, useEffect} from 'react';
-import {StyleSheet, Text, View, TextStyle} from 'react-native';
+import {StyleSheet, Text, View, TextStyle, TouchableOpacity} from 'react-native';
 import {CalendarList, DateData} from 'react-native-calendars';
+import clsx from 'libs/clsx';
+import _ from 'lodash'
 
 const RANGE = 24;
 function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
@@ -14,7 +16,9 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
     minimumDate,
     maximumDate,
     headerTitle,
+    disableElementValues
   } = route.params || {};
+  const today = dayjs().format('YYYY-MM-DD');
 
   useEffect(() => {
     navigation.setOptions({
@@ -43,6 +47,32 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
     [navigation, onSelectDay],
   );
 
+  function CustomDay({date, state, onPress}: any) {
+    let status = state
+    const thisDay = _.get(date, "dateString", "")
+
+    if (!!disableElementValues && disableElementValues.includes(thisDay)) {
+      status = 'disabled'
+    }
+    return <TouchableOpacity 
+    onPress={() => {
+      if (status !== 'disabled') {
+        onPress?.(date)
+      }
+    }}
+    className={clsx({
+      "mt-1": true,
+      "border-red-500 border rounded-full py-1 px-1 mt-0": thisDay === today.toString()
+    })}
+  >
+    <Text style={{
+      textAlign: 'center',
+      color: status === 'disabled' ? 'gray' : 'red',
+      fontWeight: status === 'disabled' ? 'normal' : 'bold',
+    }}>{date?.day}</Text>
+  </TouchableOpacity>
+  }
+
   return (
     <CalendarList
       testID={'calendarList'}
@@ -59,6 +89,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
       staticHeader={horizontalView}
       minDate={minimumDate}
       maxDate={maximumDate}
+      dayComponent={CustomDay}
     />
   );
 }
@@ -85,6 +116,7 @@ const theme = {
       fontWeight: '800',
     },
   },
+    
 };
 
 function renderCustomHeader(date: any) {

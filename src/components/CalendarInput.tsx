@@ -11,6 +11,7 @@ interface CalendarInputProps {
   maximumDate?: string;
   defaultValue?: string;
   headerTitle?: string;
+  disableElementValues?: string[];
 }
 export default function CalendarInput({
   defaultValue,
@@ -18,6 +19,7 @@ export default function CalendarInput({
   minimumDate,
   maximumDate,
   onChange,
+  disableElementValues
 }: CalendarInputProps) {
   const {navigate} = useNavigation();
   const [date, setDate] = useState(defaultValue);
@@ -32,6 +34,7 @@ export default function CalendarInput({
       minimumDate,
       maximumDate,
       headerTitle,
+      disableElementValues: disableElementValues,
     });
   }
   return (

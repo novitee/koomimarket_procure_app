@@ -157,7 +157,18 @@ export default function FinalizeOrderScreen({
   const handleOnInput = (text: string) => {
     debounce(text);
   };
-  
+
+  function selectDisableDateIndex({days = []}:{days: any[]}) {
+    let dates = []
+    for (let index = 0; index < days.length; index++) {
+      const element = days[index];
+      if (!element.active) {
+        dates.push(dayjs(element.value).format('YYYY-MM-DD'))
+      }
+    }
+    return dates
+  }
+
   return (
     <>
       {
@@ -187,8 +198,9 @@ export default function FinalizeOrderScreen({
               <Label required>Requested Delivery Date</Label>
 
               <CalendarInput
-                minimumDate={dayjs().add(1, "day").format('YYYY-MM-DD')}
-                maximumDate={dayjs(_.get(reasonableDeliveryTime[reasonableDeliveryTime.length - 1], "value")).format('YYYY-MM-DD')}
+                minimumDate={dayjs().format('YYYY-MM-DD')}
+                maximumDate={dayjs(_.get(reasonableDeliveryTime[reasonableDeliveryTime.length -1], "value")).format('YYYY-MM-DD')}
+                disableElementValues={selectDisableDateIndex({days: reasonableDeliveryTime})}
                 headerTitle="Delivery Date"
                 onChange={handleUpdateDeliveryDate}
               />
