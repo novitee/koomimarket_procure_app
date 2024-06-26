@@ -12,6 +12,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
     initialDate,
     onSelectDay,
     minimumDate,
+    maximumDate,
     headerTitle,
   } = route.params || {};
 
@@ -57,6 +58,7 @@ function CalendarListScreen({navigation, route}: NativeStackScreenProps<any>) {
       pagingEnabled={horizontalView}
       staticHeader={horizontalView}
       minDate={minimumDate}
+      maxDate={maximumDate}
     />
   );
 }

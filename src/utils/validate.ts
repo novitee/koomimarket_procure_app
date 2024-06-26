@@ -22,5 +22,5 @@ export function isDecimal(value: string): boolean {
 }
 
 export function isEmptyArray(value: any): boolean {
-  return Array.isArray(value) && value.length === 0;
+  return !value || Array.isArray(value) && value.length === 0;
 }
