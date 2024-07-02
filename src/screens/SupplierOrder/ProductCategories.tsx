@@ -38,7 +38,6 @@ export default function ProductCategories({
 }: ProductCategoriesProps) {
   const {data} = useQueryCategories(supplierId);
   const {records: categories, settingLanguage} = data || {};
-
   useEffect(() => {
     if (!selectedCategory && categories && categories.length > 0) {
       onChange(categories[0]);
@@ -80,7 +79,7 @@ export default function ProductCategories({
         </TouchableOpacity>
       );
     },
-    [onChange, selectedCategory?.id],
+    [onChange, selectedCategory?.id, settingLanguage],
   );
   return (
     <FlatList
