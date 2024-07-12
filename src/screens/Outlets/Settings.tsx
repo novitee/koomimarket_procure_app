@@ -7,6 +7,7 @@ import ChevronRightIcon from 'assets/images/chevron-right.svg';
 import LogoutIcon from 'assets/images/login-variant.svg';
 import PrivacyIcon from 'assets/images/protect.svg';
 import TermsIcon from 'assets/images/document-text.svg';
+import CancelIcon from 'assets/images/cancel.svg';
 import useMe from 'hooks/useMe';
 import Avatar from 'components/Avatar';
 import {resetAuthData} from 'utils/auth';
@@ -32,9 +33,9 @@ const menus = [
     name: 'Privacy Policy',
   },
   {
-    id: 'logout',
-    icon: <LogoutIcon color={colors.primary.DEFAULT} />,
-    name: 'Log Out',
+    id: 'request_delete',
+    icon: <CancelIcon width={24} color={colors.primary.DEFAULT} />,
+    name: 'Request Delete Account',
   },
 ];
 
@@ -78,21 +79,10 @@ export default function SettingsScreen({
   const {showModal, closeModal} = useModal();
 
   function handleMenuAction(id: string) {
-    if (id === 'logout') {
-      showModal({
-        title: '',
-        message: 'Are you sure you want to log out?',
-        onConfirm: () => {
-          resetAuthData();
-          closeModal();
-        },
-        modifiers: {
-          type: 'confirm',
-          confirmTitle: 'Yes',
-        },
-      });
-    } else if (id === 'privacy_policy') {
+    if (id === 'privacy_policy') {
       Linking.openURL(PRIVACY_POLICY_URL);
+    } else if (id === 'request_delete') {
+      onDeleteAccount()
     } else {
       Linking.openURL(TERM_AND_CONDITIONS_URL);
     }
@@ -121,6 +111,21 @@ export default function SettingsScreen({
       modifiers: {
         type: 'confirm',
         confirmTitle: 'Delete',
+      },
+    });
+  }
+
+  function onLogout() {
+    showModal({
+      title: '',
+      message: 'Are you sure you want to log out?',
+      onConfirm: () => {
+        resetAuthData();
+        closeModal();
+      },
+      modifiers: {
+        type: 'confirm',
+        confirmTitle: 'Yes',
       },
     });
   }
@@ -182,8 +187,8 @@ export default function SettingsScreen({
       </View>
 
       <View className="px-5 pb-2">
-        <Button variant="outline" onPress={onDeleteAccount}>
-          Delete Account
+        <Button variant="outline" onPress={onLogout} >
+          Log Out
         </Button>
       </View>
     </Container>
